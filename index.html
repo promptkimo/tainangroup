@@ -170,7 +170,9 @@
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('welcome-message').innerText = `歡迎，${result.pharmacyName}`;
         loadProducts();
-      } else if(result) alert(result.message);
+      } else if(result) {
+        alert(result.message);
+      }
     }
 
     async function doRegister() {
@@ -182,7 +184,9 @@
       const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }, 'reg-loading');
       if (result && result.success) { 
         alert(result.message); toggleForm(); document.getElementById('reg-password').value = ''; 
-      } else if(result) alert(result.message);
+      } else if(result) {
+        alert(result.message);
+      }
     }
 
     function logout() {
@@ -200,16 +204,15 @@
 
       if (result && result.success) {
         const products = result.data;
-        tbody.innerHTML = ''; 
         
-        // --- 改版：如果沒有資料 ---
+        // 修正：如果沒有資料的處理方式
         if(products.length === 0) {
-           let tr = document.createElement('tr');
-           tr.innerHTML = '<td colspan="8" style="text-align: center;">目前沒有可訂購的藥品</td>';
-           tbody.appendChild(tr);
+           tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">目前沒有可訂購的藥品</td></tr>';
            return;
         }
 
+        tbody.innerHTML = ''; // 清空載入中訊息，準備填入資料
+        
         products.forEach(p => {
           let stockStatus = '';
           let disableAttr = '';
