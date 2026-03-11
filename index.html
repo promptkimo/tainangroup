@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +19,7 @@
     .header-container h1 { color: #333; margin: 10px 0 5px 0; font-size: 24px;}
     .header-container p { color: #666; font-size: 14px; margin: 0; }
     
-    /* 登入/註冊表單區域 */
+    /* 登入與註冊表單樣式 */
     .form-container {
       background: white; padding: 30px; border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px;
@@ -37,9 +37,9 @@
     .switch-mode { text-align: center; margin-top: 15px; font-size: 14px; color: #0066cc; cursor: pointer; }
     .loading { display: none; text-align: center; margin-top: 10px; color: #ff9800; font-weight: bold;}
     
-    /* 主要應用程式區域 (登入後顯示) */
+    /* 登入後的主要應用程式區域 (預設隱藏) */
     #app-container {
-      display: none; /* 預設隱藏 */
+      display: none; 
       width: 90%;
       max-width: 1200px;
     }
@@ -55,24 +55,31 @@
     }
     
     /* 藥品列表表格樣式 */
+    .table-container {
+      overflow-x: auto; /* 允許在小螢幕上水平捲動 */
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;
+    }
     table {
-      width: 100%; border-collapse: collapse; background: white;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;
+      width: 100%; border-collapse: collapse; 
     }
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-    th { background-color: #4CAF50; color: white; font-weight: bold; }
+    th { background-color: #4CAF50; color: white; font-weight: bold; white-space: nowrap;}
     tr:hover { background-color: #f5f5f5; }
     
-    /* 訂購數量輸入框樣式 */
+    /* 訂購相關樣式 */
     .order-input {
       width: 60px; padding: 5px; text-align: center;
       border: 1px solid #ccc; border-radius: 4px;
     }
     .order-btn {
       padding: 6px 12px; background-color: #2196F3; color: white;
-      border: none; border-radius: 4px; cursor: pointer;
+      border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;
     }
     .order-btn:hover { background-color: #0b7dda; }
+    .order-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+    
+    /* 狀態顏色標示 */
     .status-ok { color: green; font-weight: bold; }
     .status-out { color: red; font-weight: bold; }
   </style>
@@ -91,9 +98,10 @@
       <input type="text" id="login-username" placeholder="請輸入帳號">
       <input type="password" id="login-password" placeholder="請輸入密碼">
       <button onclick="doLogin()">登入系統</button>
-      <div id="login-loading" class="loading">處理中，請稍候...</div>
+      <div id="login-loading" class="loading">連線中，請稍候...</div>
       <div class="switch-mode" onclick="toggleForm()">還沒有帳號？點此註冊</div>
     </div>
+    
     <div id="register-form" style="display:none;">
       <h2 style="text-align: center;">申請帳號</h2>
       <input type="text" id="reg-pharmacy" placeholder="藥局名稱 (必填)">
@@ -101,7 +109,7 @@
       <input type="text" id="reg-username" placeholder="設定帳號">
       <input type="password" id="reg-password" placeholder="設定密碼">
       <button onclick="doRegister()">送出申請</button>
-      <div id="reg-loading" class="loading">處理中，請稍候...</div>
+      <div id="reg-loading" class="loading">連線中，請稍候...</div>
       <div class="switch-mode" onclick="toggleForm()">已有帳號？點此登入</div>
     </div>
   </div>
@@ -115,33 +123,35 @@
       </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>健保碼</th>
-          <th>品名/成分</th>
-          <th>規格</th>
-          <th>單價</th>
-          <th>狀態</th>
-          <th>訂購數量</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody id="product-list">
-        <tr>
-          <td colspan="7" style="text-align: center;">載入藥品資料中...</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>健保碼</th>
+            <th>品名/成分</th>
+            <th>規格</th>
+            <th>單價</th>
+            <th>狀態</th>
+            <th>訂購數量</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="product-list">
+          <tr>
+            <td colspan="7" style="text-align: center;">載入藥品資料中...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <script>
     // ==========================================
-    // 請確認這裡是您最新的 GAS 網址
+    // 您的 GAS 網址
     // ==========================================
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
 
-    // --- 表單與連線邏輯 (與之前類似) ---
+    // 切換登入/註冊表單
     function toggleForm() {
       const loginForm = document.getElementById('login-form');
       const regForm = document.getElementById('register-form');
@@ -152,11 +162,13 @@
       }
     }
 
+    // 核心的連線 API 函式
     async function callGasAPI(data, loadingElementId) {
       if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block';
       try {
         const response = await fetch(GAS_URL, {
           method: 'POST',
+          // 使用 text/plain 避免 CORS 預檢問題
           headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
           body: JSON.stringify(data)
         });
@@ -165,12 +177,12 @@
         return result;
       } catch (error) {
         if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none';
-        alert('連線失敗，請稍後再試。');
-        console.error('Error:', error);
+        alert('連線失敗，請檢查網路狀態或稍後再試。');
+        console.error('API Error:', error);
       }
     }
 
-    // --- 登入/註冊/登出邏輯 ---
+    // 登入功能
     async function doLogin() {
       const user = document.getElementById('login-username').value;
       const pass = document.getElementById('login-password').value;
@@ -180,22 +192,22 @@
 
       if (result) {
         if (result.success) {
-          // 登入成功，隱藏表單區塊，顯示應用程式區塊
+          // 登入成功：切換畫面並顯示歡迎訊息
           document.getElementById('auth-section').style.display = 'none';
           document.getElementById('app-container').style.display = 'block';
           document.getElementById('welcome-message').innerText = `歡迎，${result.pharmacyName}`;
           
-          // 載入藥品資料
+          // 開始載入藥品資料
           loadProducts();
         } else {
-          alert(result.message);
+          alert(result.message); // 顯示錯誤訊息 (如: 等待核准、密碼錯誤)
         }
       }
     }
 
+    // 註冊功能
     async function doRegister() {
-       // ... (保留原本的註冊邏輯，沒有變動)
-       const name = document.getElementById('reg-pharmacy').value;
+      const name = document.getElementById('reg-pharmacy').value;
       const contact = document.getElementById('reg-contact').value;
       const user = document.getElementById('reg-username').value;
       const pass = document.getElementById('reg-password').value;
@@ -205,38 +217,42 @@
       const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }, 'reg-loading');
       if (result) {
         alert(result.message);
-        if (result.success) { toggleForm(); document.getElementById('reg-password').value = '';} 
+        if (result.success) { 
+          toggleForm(); // 註冊成功後切換回登入畫面
+          document.getElementById('reg-password').value = ''; // 清空密碼欄位
+        } 
       }
     }
 
+    // 登出功能
     function logout() {
-      // 登出時，隱藏應用程式，顯示登入表單
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-section').style.display = 'block';
       document.getElementById('login-password').value = '';
     }
 
-    // --- 載入與顯示藥品邏輯 ---
+    // 載入藥品列表
     async function loadProducts() {
       const tbody = document.getElementById('product-list');
       tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">載入藥品資料中...</td></tr>';
 
-      // 向 GAS 請求藥品資料
       const result = await callGasAPI({ action: 'getProducts' }, null);
 
       if (result && result.success) {
         const products = result.data;
-        tbody.innerHTML = ''; // 清空原本的「載入中」文字
+        tbody.innerHTML = ''; // 清空載入中提示
 
         if(products.length === 0) {
            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">目前沒有藥品資料</td></tr>';
            return;
         }
 
-        // 把取得的資料一筆一筆畫成表格列 (tr)
+        // 產生表格內容
         products.forEach(p => {
-          const statusClass = (p.status === '正常供貨') ? 'status-ok' : 'status-out';
-          const disableInput = (p.status !== '正常供貨') ? 'disabled' : '';
+          // 如果狀態不是「正常供貨」，就停用輸入框和按鈕
+          const isAvailable = (p.status === '正常供貨');
+          const statusClass = isAvailable ? 'status-ok' : 'status-out';
+          const disableAttr = isAvailable ? '' : 'disabled';
           
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -246,23 +262,27 @@
             <td>$${p.price || 0}</td>
             <td class="${statusClass}">${p.status || '-'}</td>
             <td>
-              <input type="number" min="1" value="1" class="order-input" id="qty-${p.id}" ${disableInput}>
+              <input type="number" min="1" value="1" class="order-input" id="qty-${p.id}" ${disableAttr}>
             </td>
             <td>
-              <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}')" ${disableInput}>加入購物車</button>
+              <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}')" ${disableAttr}>加入購物車</button>
             </td>
           `;
           tbody.appendChild(tr);
         });
       } else {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">載入失敗</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">載入失敗，請重新登入試試看。</td></tr>';
       }
     }
 
-    // --- 購物車功能 (第三階段會實作，目前先用 Alert 代替) ---
+    // 測試用的加入購物車功能
     function addToCart(productId, productName) {
       const qty = document.getElementById(`qty-${productId}`).value;
-      alert(`已將 ${qty} 個 ${productName} 加入購物車！(此功能將在下一階段實作)`);
+      if(qty < 1) {
+        alert("數量不能小於 1 喔！");
+        return;
+      }
+      alert(`準備將 ${qty} 個 ${productName} (ID:${productId}) 加入購物車！\n\n(購物車系統將於下一階段實作)`);
     }
   </script>
 </body>
