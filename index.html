@@ -24,7 +24,6 @@
     
     .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; flex-wrap: wrap;}
     
-    /* --- 新增：內部功能導覽列 --- */
     .app-nav { display: flex; gap: 10px; }
     .app-nav button { padding: 10px 15px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; color: #666; transition: 0.3s;}
     .app-nav button.active { border-bottom: 3px solid #4CAF50; color: #4CAF50; }
@@ -34,7 +33,6 @@
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
     .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;}
     
-    /* 切換視圖 */
     .view-section { display: none; }
     .view-section.active { display: block; }
 
@@ -54,13 +52,15 @@
     .order-btn:disabled { background-color: #ccc; cursor: not-allowed; }
     .notify-btn { background-color: #ff9800; color: white; }
     .notify-btn:hover { background-color: #e68a00; }
+    .detail-btn { background-color: #607d8b; color: white; }
+    .detail-btn:hover { background-color: #455a64; }
     
     .out-of-stock { color: red; font-weight: bold; }
     .low-stock { color: #ff9800; font-weight: bold; }
     .fav-icon { cursor: pointer; font-size: 20px; margin-right: 5px; user-select: none; }
 
-    /* 購物車 Modal */
-    #cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    /* 購物車與明細共用 Modal 樣式 */
+    #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .cart-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .cart-content h2 { margin-top: 0; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; font-size: 24px;}
     .cart-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #eee; font-size: 18px;}
@@ -74,7 +74,6 @@
     .small-text { font-size: 14px; color: #666; display: block; margin-top: 4px;}
     .nhi-price-text { font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px; }
 
-    /* 留言板樣式 */
     .contact-form { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
     .contact-form textarea { width: 100%; height: 150px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 15px;}
     .contact-form button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
@@ -172,10 +171,19 @@
       <div id="cart-items-container"></div>
       <div class="cart-total" id="cart-total-display">總金額：$0</div>
       <textarea id="cart-remark" class="cart-remark" rows="3" placeholder="有什麼想交代我們的嗎？請寫在這裡 (選填)..."></textarea>
-      
       <div class="cart-actions">
         <button class="btn-close" onclick="closeCart()">繼續購物</button>
         <button class="btn-checkout" onclick="checkout()">確認結帳</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="order-detail-modal">
+    <div class="cart-content">
+      <h2>📋 訂單完整明細</h2>
+      <div id="order-detail-container"></div>
+      <div class="cart-actions" style="justify-content: center;">
+        <button class="btn-close" style="width: 200px;" onclick="closeOrderDetail()">關閉視窗</button>
       </div>
     </div>
   </div>
@@ -186,26 +194,21 @@
     let currentUser = { username: '', pharmacyName: '' };
     let cart = []; 
     let allProducts = []; 
-    let currentMode = 'products'; // 'products' 或 'favorites'
+    let myOrders = []; // 【新增】暫存個人的歷史訂單，方便點擊查看明細
+    let currentMode = 'products'; 
 
-    // 【新增】取得個人最愛清單 (存在瀏覽器 localStorage 裡，超快無延遲)
     function getFavorites() {
       const favs = localStorage.getItem('favs_' + currentUser.username);
       return favs ? JSON.parse(favs) : [];
     }
-    // 【新增】切換最愛狀態
     function toggleFavorite(productId) {
       let favs = getFavorites();
-      if (favs.includes(productId)) {
-        favs = favs.filter(id => id !== productId); // 移除
-      } else {
-        favs.push(productId); // 加入
-      }
+      if (favs.includes(productId)) favs = favs.filter(id => id !== productId); 
+      else favs.push(productId); 
       localStorage.setItem('favs_' + currentUser.username, JSON.stringify(favs));
-      filterProducts(); // 重新渲染畫面
+      filterProducts(); 
     }
 
-    // --- 切換視圖 ---
     function switchView(viewName) {
       document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
@@ -215,7 +218,7 @@
       if(viewName === 'products' || viewName === 'favorites') {
          document.getElementById('view-products').classList.add('active');
          currentMode = viewName;
-         document.getElementById('search-input').value = ''; // 切換時清空搜尋
+         document.getElementById('search-input').value = ''; 
          filterProducts(); 
       } else if (viewName === 'orders') {
          document.getElementById('view-orders').classList.add('active');
@@ -276,7 +279,7 @@
 
     function logout() {
       currentUser = { username: '', pharmacyName: '' };
-      cart = []; allProducts = [];
+      cart = []; allProducts = []; myOrders = [];
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-section').style.display = 'block';
       document.getElementById('login-password').value = '';
@@ -307,7 +310,6 @@
         let stockStatus = '';
         let actionHtml = '';
 
-        // 【修改】判斷庫存並顯示對應按鈕 (加入購物車 vs 到貨通知)
         if (isNaN(stockNum) || stockNum <= 0) {
             stockStatus = '<span class="out-of-stock">缺貨中</span>';
             actionHtml = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 到貨通知</button>`;
@@ -350,9 +352,7 @@
       const favs = getFavorites();
       
       const filtered = allProducts.filter(p => {
-        // 如果目前在「我的最愛」模式，先過濾出最愛清單
         if (currentMode === 'favorites' && !favs.includes(p.id)) return false;
-
         const nhi = (p.nhiCode || '').toLowerCase();
         const name = (p.name || '').toLowerCase();
         const eng = (p.engName || '').toLowerCase();
@@ -363,43 +363,88 @@
       renderTable(filtered);
     }
 
-    // --- 【新增】訂閱到貨通知 ---
     async function subscribeRestock(productId, productName) {
        if(!confirm(`確定要訂閱【${productName}】的到貨通知嗎？`)) return;
        const result = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: productId, productName: productName }, null);
        if(result) alert(result.message);
     }
 
-    // --- 【新增】載入歷史訂單 ---
+    // --- 【修改】載入歷史訂單，隱藏過長的明細，加上「查看明細」按鈕 ---
     async function loadOrders() {
       const tbody = document.getElementById('order-list');
       tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">載入訂單中...</td></tr>';
       const result = await callGasAPI({ action: 'getOrders', username: currentUser.username }, null);
       if (result && result.success) {
+        myOrders = result.data; // 將訂單存入全域變數
         tbody.innerHTML = '';
-        if(result.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">目前沒有歷史訂單喔！</td></tr>'; return; }
-        result.data.forEach(o => {
+        if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">目前沒有歷史訂單喔！</td></tr>'; return; }
+        
+        myOrders.forEach(o => {
           let remarkHtml = o.remark ? `<span style="color:#666; font-size:14px;">${o.remark}</span>` : '-';
           let statusColor = o.status === '新訂單' ? 'color:#2196F3;' : 'color:green;';
-          tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId}</td><td><pre style="margin:0; font-family:inherit;">${o.details}</pre></td><td>$${o.total}</td><td>${remarkHtml}</td><td style="${statusColor} font-weight:bold;">${o.status}</td></tr>`;
+          
+          tbody.innerHTML += `
+            <tr>
+              <td>${o.time}</td>
+              <td>${o.orderId}</td>
+              <td><button class="order-btn detail-btn" onclick="showOrderDetails('${o.orderId}')">📄 檢視明細</button></td>
+              <td><strong style="font-size: 18px; color: #333;">$${o.total}</strong></td>
+              <td>${remarkHtml}</td>
+              <td style="${statusColor} font-weight:bold;">${o.status}</td>
+            </tr>`;
         });
       } else {
          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">載入失敗</td></tr>';
       }
     }
 
-    // --- 【新增】送出客服留言 ---
+    // --- 【新增】顯示訂單完整明細並作編號排列 ---
+    function showOrderDetails(orderId) {
+      const order = myOrders.find(o => o.orderId === orderId);
+      if(!order) return;
+      
+      const container = document.getElementById('order-detail-container');
+      
+      // 將字串拆解成陣列
+      const items = order.details.split('\n').filter(i => i.trim() !== '');
+      
+      let html = `<p style="font-size:18px; color:#555;"><strong>訂單編號：</strong> ${order.orderId}</p>`;
+      html += `<p style="font-size:16px; color:#888;"><strong>訂購時間：</strong> ${order.time}</p>`;
+      html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
+      
+      // 使用有序列表 (ol) 來自動加上 1. 2. 3. 4.
+      html += `<ol style="line-height: 1.8; font-size: 18px; padding-left: 20px; color:#333;">`;
+      items.forEach(item => {
+         html += `<li>${item}</li>`;
+      });
+      html += `</ol>`;
+      
+      html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
+      html += `<div style="text-align:right; font-size: 22px; color:#f44336;"><strong>總金額：$${order.total}</strong></div>`;
+      
+      // 如果有備註也顯示出來
+      if (order.remark) {
+         html += `<div style="margin-top:15px; padding:15px; background:#f9f9f9; border-radius:4px; font-size:16px; color:#555;"><strong>📝 備註事項：</strong><br>${order.remark}</div>`;
+      }
+
+      container.innerHTML = html;
+      document.getElementById('order-detail-modal').style.display = 'flex';
+    }
+
+    function closeOrderDetail() {
+      document.getElementById('order-detail-modal').style.display = 'none';
+    }
+
     async function submitMessage() {
       const msg = document.getElementById('contact-message').value.trim();
       if(!msg) return alert("請輸入留言內容喔！");
       const result = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }, null);
       if(result && result.success) {
         alert(result.message);
-        document.getElementById('contact-message').value = ''; // 清空輸入框
+        document.getElementById('contact-message').value = ''; 
       } else { alert("傳送失敗，請稍後再試。"); }
     }
 
-    // --- 購物車 ---
     function addToCart(productId, productName, productPrice, maxStock) {
       const qtyInput = document.getElementById(`qty-${productId}`);
       const qty = parseInt(qtyInput.value);
@@ -431,7 +476,7 @@
         });
       }
       document.getElementById('cart-total-display').innerText = `總金額：$${totalAmount}`;
-      document.getElementById('cart-remark').value = ''; // 每次打開清空備註
+      document.getElementById('cart-remark').value = ''; 
       document.getElementById('cart-modal').style.display = 'flex';
     }
 
@@ -442,7 +487,7 @@
       if (cart.length === 0) return alert("購物車是空的！");
       if (!confirm("確定要送出訂單嗎？")) return;
       let totalAmount = 0; cart.forEach(item => totalAmount += (item.price * item.qty));
-      const remark = document.getElementById('cart-remark').value.trim(); // 取得備註
+      const remark = document.getElementById('cart-remark').value.trim(); 
 
       const orderData = { action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: totalAmount, remark: remark };
       const result = await callGasAPI(orderData, null); 
