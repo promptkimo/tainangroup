@@ -23,7 +23,6 @@
     .app-nav button { padding: 10px 15px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; color: #666; transition: 0.3s; position: relative;}
     .app-nav button.active { border-bottom: 3px solid #4CAF50; color: #4CAF50; }
     
-    /* 紅點通知 Badge */
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -50,24 +49,20 @@
     .out-of-stock { color: #f44336; font-weight: bold; }
     .fav-icon { cursor: pointer; font-size: 20px; margin-right: 5px; user-select: none; }
 
-    /* 前台分頁器樣式 */
     .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 15px; gap: 15px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
     .pagination-container button { padding: 8px 16px; font-size: 16px; cursor: pointer; border: 1px solid #ccc; background: white; border-radius: 4px; font-weight: bold; color: #333;}
     .pagination-container button:hover:not(:disabled) { background: #f0f0f0; }
     .pagination-container button:disabled { background: #eee; color: #aaa; cursor: not-allowed; border-color: #eee; }
 
-    /* 購物車與訂單明細共用 Modal 樣式 */
     #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .cart-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
     
-    /* 聯絡客服板塊 */
     .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
     .contact-form { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .contact-form textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 15px;}
     .contact-form button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
     .contact-history { flex: 2; min-width: 400px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     
-    /* 對話框樣式 */
     .msg-bubble { background: #f1f1f1; padding: 10px 15px; border-radius: 15px; border-top-left-radius: 0; margin-bottom: 5px; display: inline-block; max-width: 80%; }
     .reply-bubble { background: #e3f2fd; padding: 10px 15px; border-radius: 15px; border-top-right-radius: 0; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold;}
     .msg-time { font-size: 12px; color: #999; margin-bottom: 15px; clear: both;}
@@ -186,10 +181,9 @@
     let cart = []; 
     let allProducts = []; 
     let currentFilteredProducts = []; 
-    let myOrders = []; // 存放個人歷史訂單供明細使用
+    let myOrders = []; 
     let currentMode = 'products'; 
     
-    // 分頁設定
     let currentFrontPage = 1;
     const itemsPerPageFront = 50; 
 
@@ -277,8 +271,9 @@
       let htmlArray = [];
       pageData.forEach(p => {
         let stk = parseInt(p.stock); let stH = ''; let actH = '';
+        // 【修改】將 p.unit 傳入 addToCart 函式
         if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
-        else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk})">加入</button>`; }
+        else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加入</button>`; }
         let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
         let nhiPriceHtml = p.nhiPrice ? `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: $${p.nhiPrice}</div>` : `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: --</div>`;
         
@@ -295,7 +290,6 @@
 
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
-    // --- 客服留言 ---
     async function checkNewMessages() {
       const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username });
       if(res && res.success && res.unreadCount > 0) {
@@ -327,7 +321,6 @@
 
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); alert(res.message); } }
     
-    // --- 訂單查詢與明細 ---
     async function loadOrders() { 
         const tbody = document.getElementById('order-list'); 
         const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); 
@@ -378,10 +371,53 @@
 
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
-    // --- 購物車 ---
-    function addToCart(pId, pName, pPrice, max) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) return alert("超過庫存"); ex.qty += q; } else cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max}); document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; alert('已加入購物車'); }
-    function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t=0; cart.forEach((i,x)=>{ t+=i.price*i.qty; c.innerHTML+=`<div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px;"><div><strong>${i.name}</strong><br><span style="font-size:14px;color:#666;">單價: $${i.price} x 數量: ${i.qty}</span></div><div style="text-align:right;"><div>$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:12px;" onclick="cart.splice(${x},1);openCart()">刪除</button></div></div>`; }); document.getElementById('cart-total-display').innerText=`總金額：$${t}`; document.getElementById('cart-modal').style.display='flex'; }
-    async function checkout() { if(cart.length===0) return; if(!confirm("確定送出？")) return; const remark = document.getElementById('cart-remark').value; const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }); if(res.success){ alert(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); } }
+    // --- 【修改】將單位 pUnit 存入購物車並顯示 ---
+    function addToCart(pId, pName, pPrice, max, pUnit) { 
+        const q = parseInt(document.getElementById(`qty-${pId}`).value); 
+        if(q < 1) return; 
+        const ex = cart.find(i => i.id === pId); 
+        if(ex) { 
+            if(ex.qty + q > max) return alert("超過庫存"); 
+            ex.qty += q; 
+        } else {
+            // 將 unit 屬性一起存進 cart 陣列中
+            cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); 
+        }
+        document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
+        alert('已加入購物車'); 
+    }
+
+    function openCart() { 
+        const c = document.getElementById('cart-items-container'); 
+        c.innerHTML=''; 
+        let t=0; 
+        cart.forEach((i,x)=>{ 
+            t+=i.price*i.qty; 
+            // 在購物車顯示時，數量後面加上單位 (如: x2 盒)
+            c.innerHTML+=`
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px;">
+                <div>
+                  <strong>${i.name}</strong><br>
+                  <span style="font-size:14px;color:#666;">單價: $${i.price} x 數量: ${i.qty} ${i.unit || ''}</span>
+                </div>
+                <div style="text-align:right;">
+                  <div>$${i.price*i.qty}</div>
+                  <button style="background:#ff9800; color:white; border:none; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:12px;" onclick="cart.splice(${x},1);openCart()">刪除</button>
+                </div>
+              </div>`; 
+        }); 
+        document.getElementById('cart-total-display').innerText=`總金額：$${t}`; 
+        document.getElementById('cart-remark').value = ''; 
+        document.getElementById('cart-modal').style.display='flex'; 
+    }
+
+    async function checkout() { 
+        if(cart.length===0) return; 
+        if(!confirm("確定送出？")) return; 
+        const remark = document.getElementById('cart-remark').value; 
+        const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }); 
+        if(res.success){ alert(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); } 
+    }
   </script>
 </body>
 </html>
