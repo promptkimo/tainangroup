@@ -54,7 +54,7 @@
 <body>
 
   <div class="header-container">
-    <img src="https://i.imgur.com/placeholder.jpg" alt="Logo">
+    <img src="https://drive.google.com/uc?export=view&id=1Wn61mL4jXVt0fPcpBnQZRgWZ4H9WK-zx" alt="Logo">
     <h1>台南社區藥局藥品供應平台</h1>
     <p>行政院衛生署補(捐)助科技發展計畫</p>
   </div>
@@ -205,13 +205,12 @@
       if (result && result.success) {
         const products = result.data;
         
-        // 修正：如果沒有資料的處理方式
         if(products.length === 0) {
            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">目前沒有可訂購的藥品</td></tr>';
            return;
         }
 
-        tbody.innerHTML = ''; // 清空載入中訊息，準備填入資料
+        tbody.innerHTML = ''; 
         
         products.forEach(p => {
           let stockStatus = '';
