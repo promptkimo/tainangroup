@@ -55,11 +55,12 @@
     .detail-btn { background-color: #607d8b; color: white; }
     .detail-btn:hover { background-color: #455a64; }
     
-    .out-of-stock { color: red; font-weight: bold; }
-    .low-stock { color: #ff9800; font-weight: bold; }
+    /* --- 【修改】新增供貨中與缺貨的顏色設定 --- */
+    .in-stock { color: #4CAF50; font-weight: bold; font-size: 16px; }
+    .out-of-stock { color: #f44336; font-weight: bold; font-size: 16px; }
+    
     .fav-icon { cursor: pointer; font-size: 20px; margin-right: 5px; user-select: none; }
 
-    /* 購物車與明細共用 Modal 樣式 */
     #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .cart-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
     .cart-content h2 { margin-top: 0; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; font-size: 24px;}
@@ -133,7 +134,7 @@
       <div class="table-container">
         <table>
           <thead>
-            <tr><th>健保碼</th><th>藥名/成分</th><th>規格/單位</th><th>製造商</th><th>賣價</th><th>庫存</th><th>訂購數量</th><th>操作</th></tr>
+            <tr><th>健保碼</th><th>藥名/成分</th><th>規格/單位</th><th>製造商</th><th>賣價</th><th>狀態</th><th>訂購數量</th><th>操作</th></tr>
           </thead>
           <tbody id="product-list">
             <tr><td colspan="8" style="text-align: center;">載入資料中...</td></tr>
@@ -189,12 +190,15 @@
   </div>
 
   <script>
+    // ==========================================
+    // 您專屬的 GAS 網址
+    // ==========================================
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
     let currentUser = { username: '', pharmacyName: '' };
     let cart = []; 
     let allProducts = []; 
-    let myOrders = []; // 【新增】暫存個人的歷史訂單，方便點擊查看明細
+    let myOrders = []; 
     let currentMode = 'products'; 
 
     function getFavorites() {
@@ -310,12 +314,12 @@
         let stockStatus = '';
         let actionHtml = '';
 
+        // --- 【修改】判斷庫存並顯示綠色供貨中/紅色缺貨 ---
         if (isNaN(stockNum) || stockNum <= 0) {
-            stockStatus = '<span class="out-of-stock">缺貨中</span>';
+            stockStatus = '<span class="out-of-stock">缺貨</span>';
             actionHtml = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 到貨通知</button>`;
         } else {
-            if (stockNum < 10) stockStatus = `<span class="low-stock">剩餘 ${stockNum}</span>`;
-            else stockStatus = stockNum;
+            stockStatus = '<span class="in-stock">供貨中</span>';
             actionHtml = `
               <input type="number" min="1" max="${stockNum}" value="1" class="order-input" id="qty-${p.id}">
               <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stockNum})">加入購物車</button>
@@ -369,13 +373,12 @@
        if(result) alert(result.message);
     }
 
-    // --- 【修改】載入歷史訂單，隱藏過長的明細，加上「查看明細」按鈕 ---
     async function loadOrders() {
       const tbody = document.getElementById('order-list');
       tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">載入訂單中...</td></tr>';
       const result = await callGasAPI({ action: 'getOrders', username: currentUser.username }, null);
       if (result && result.success) {
-        myOrders = result.data; // 將訂單存入全域變數
+        myOrders = result.data; 
         tbody.innerHTML = '';
         if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">目前沒有歷史訂單喔！</td></tr>'; return; }
         
@@ -398,31 +401,22 @@
       }
     }
 
-    // --- 【新增】顯示訂單完整明細並作編號排列 ---
     function showOrderDetails(orderId) {
       const order = myOrders.find(o => o.orderId === orderId);
       if(!order) return;
       
       const container = document.getElementById('order-detail-container');
-      
-      // 將字串拆解成陣列
       const items = order.details.split('\n').filter(i => i.trim() !== '');
       
       let html = `<p style="font-size:18px; color:#555;"><strong>訂單編號：</strong> ${order.orderId}</p>`;
       html += `<p style="font-size:16px; color:#888;"><strong>訂購時間：</strong> ${order.time}</p>`;
       html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
-      
-      // 使用有序列表 (ol) 來自動加上 1. 2. 3. 4.
       html += `<ol style="line-height: 1.8; font-size: 18px; padding-left: 20px; color:#333;">`;
-      items.forEach(item => {
-         html += `<li>${item}</li>`;
-      });
+      items.forEach(item => { html += `<li>${item}</li>`; });
       html += `</ol>`;
-      
       html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
       html += `<div style="text-align:right; font-size: 22px; color:#f44336;"><strong>總金額：$${order.total}</strong></div>`;
       
-      // 如果有備註也顯示出來
       if (order.remark) {
          html += `<div style="margin-top:15px; padding:15px; background:#f9f9f9; border-radius:4px; font-size:16px; color:#555;"><strong>📝 備註事項：</strong><br>${order.remark}</div>`;
       }
