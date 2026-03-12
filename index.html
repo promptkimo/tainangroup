@@ -23,7 +23,6 @@
     .app-nav button { padding: 10px 15px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; color: #666; transition: 0.3s; position: relative;}
     .app-nav button.active { border-bottom: 3px solid #4CAF50; color: #4CAF50; }
     
-    /* 紅點通知 Badge */
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
@@ -36,7 +35,9 @@
 
     .search-container { width: 100%; margin-bottom: 15px; }
     .search-container input { width: 100%; padding: 15px 20px; font-size: 18px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box;}
-    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; max-height: 65vh;}
+    
+    /* 調整表格最大高度，避免過長 */
+    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; max-height: 60vh;}
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
     th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
     th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 18px;}
@@ -49,17 +50,21 @@
     .out-of-stock { color: #f44336; font-weight: bold; }
     .fav-icon { cursor: pointer; font-size: 20px; margin-right: 5px; user-select: none; }
 
+    /* 前台分頁器樣式 */
+    .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 15px; gap: 15px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+    .pagination-container button { padding: 8px 16px; font-size: 16px; cursor: pointer; border: 1px solid #ccc; background: white; border-radius: 4px; font-weight: bold; color: #333;}
+    .pagination-container button:hover:not(:disabled) { background: #f0f0f0; }
+    .pagination-container button:disabled { background: #eee; color: #aaa; cursor: not-allowed; border-color: #eee; }
+
     #cart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
     .cart-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
     
-    /* 聯絡客服板塊 */
     .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
     .contact-form { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .contact-form textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 15px;}
     .contact-form button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
     .contact-history { flex: 2; min-width: 400px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     
-    /* 對話框樣式 */
     .msg-bubble { background: #f1f1f1; padding: 10px 15px; border-radius: 15px; border-top-left-radius: 0; margin-bottom: 5px; display: inline-block; max-width: 80%; }
     .reply-bubble { background: #e3f2fd; padding: 10px 15px; border-radius: 15px; border-top-right-radius: 0; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold;}
     .msg-time { font-size: 12px; color: #999; margin-bottom: 15px; clear: both;}
@@ -75,6 +80,7 @@
       <input type="text" id="login-username" placeholder="請輸入帳號">
       <input type="password" id="login-password" placeholder="請輸入密碼">
       <button onclick="doLogin()">登入系統</button>
+      <div id="login-loading" style="display:none; text-align:center; margin-top:10px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
     </div>
   </div>
 
@@ -97,12 +103,17 @@
     </div>
 
     <div id="view-products" class="view-section active">
-      <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋..." onkeyup="filterProducts()"></div>
+      <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋 (可輸入健保碼、藥名、成分、製造商)..." onkeyup="filterProducts()"></div>
       <div class="table-container">
         <table>
           <thead><tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr></thead>
-          <tbody id="product-list"><tr><td colspan="8" style="text-align: center;">載入資料中...</td></tr></tbody>
+          <tbody id="product-list"><tr><td colspan="8" style="text-align: center;">載入資料中，請稍候...</td></tr></tbody>
         </table>
+      </div>
+      <div id="front-pagination" class="pagination-container" style="display:none;">
+         <button id="btn-prev-page" onclick="changeFrontPage(-1)">上一頁</button>
+         <span id="front-page-info" style="font-weight: bold; color: #555;">第 1 / 1 頁</span>
+         <button id="btn-next-page" onclick="changeFrontPage(1)">下一頁</button>
       </div>
     </div>
 
@@ -123,7 +134,6 @@
           <textarea id="contact-message" placeholder="請在此輸入您的訊息..."></textarea>
           <button onclick="submitMessage()">📤 送出留言</button>
         </div>
-        
         <div class="contact-history">
           <h2 style="margin-top:0; color:#333;">歷史對話紀錄</h2>
           <div id="my-message-list" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
@@ -141,8 +151,8 @@
       <div class="cart-total" id="cart-total-display">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:15px; padding:10px;" rows="3" placeholder="備註 (選填)"></textarea>
       <div style="display:flex; justify-content:space-between; margin-top:20px;">
-        <button style="padding:10px 20px;" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
-        <button style="padding:10px 20px; background:#f44336; color:white; border:none;" onclick="checkout()">確認結帳</button>
+        <button style="padding:10px 20px; cursor:pointer;" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
+        <button style="padding:10px 20px; background:#f44336; color:white; border:none; cursor:pointer; font-weight:bold;" onclick="checkout()">確認結帳</button>
       </div>
     </div>
   </div>
@@ -150,7 +160,14 @@
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     let currentUser = { username: '', pharmacyName: '' };
-    let cart = []; let allProducts = []; let currentMode = 'products'; 
+    let cart = []; 
+    let allProducts = []; 
+    let currentFilteredProducts = []; // 存放過濾後的藥品陣列
+    let currentMode = 'products'; 
+    
+    // 分頁設定
+    let currentFrontPage = 1;
+    const itemsPerPageFront = 50; // 每頁顯示 50 筆，保證瞬間渲染
 
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
     function toggleFavorite(id) { let f = getFavorites(); if (f.includes(id)) f = f.filter(i => i !== id); else f.push(id); localStorage.setItem('favs_' + currentUser.username, JSON.stringify(f)); filterProducts(); }
@@ -162,26 +179,24 @@
       
       if(viewName === 'products' || viewName === 'favorites') { document.getElementById('view-products').classList.add('active'); currentMode = viewName; filterProducts(); } 
       else if (viewName === 'orders') { document.getElementById('view-orders').classList.add('active'); loadOrders(); } 
-      else if (viewName === 'contact') { 
-        document.getElementById('view-contact').classList.add('active'); 
-        loadMyMessages(); // 打開客服頁面時自動讀取訊息
-      }
+      else if (viewName === 'contact') { document.getElementById('view-contact').classList.add('active'); loadMyMessages(); }
     }
 
-    async function callGasAPI(data) {
-      try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); return await res.json(); } 
-      catch (err) { alert('連線失敗'); }
+    async function callGasAPI(data, loadingElementId) {
+      if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block';
+      try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} 
+      catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); }
     }
 
     async function doLogin() {
       const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
       if(!u || !p) return alert("輸入帳號密碼！");
-      const res = await callGasAPI({ action: 'login', username: u, password: p });
+      const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading');
       if (res && res.success) {
         currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; cart = []; 
         document.getElementById('auth-section').style.display = 'none'; document.getElementById('app-container').style.display = 'block';
         document.getElementById('welcome-message').innerText = `${res.pharmacyName}`;
-        switchView('products'); loadProducts(); checkNewMessages(); // 登入時檢查是否有新回覆
+        switchView('products'); loadProducts(); checkNewMessages();
       } else alert(res.message);
     }
 
@@ -189,78 +204,104 @@
 
     async function loadProducts() {
       const res = await callGasAPI({ action: 'getProducts' });
-      if (res && res.success) { allProducts = res.data; filterProducts(); }
+      if (res && res.success) { 
+          allProducts = res.data; 
+          filterProducts(); 
+      } else {
+          document.getElementById('product-list').innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">載入失敗，請重新整理</td></tr>';
+      }
     }
 
-    function renderTable(pdts) {
-      const tbody = document.getElementById('product-list'); const favs = getFavorites();
-      if(pdts.length === 0) return tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">無相關藥品</td></tr>';
-      tbody.innerHTML = ''; 
-      pdts.forEach(p => {
-        let stk = parseInt(p.stock); let stH = ''; let actH = '';
-        if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
-        else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk})">加入購物車</button>`; }
-        let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
-        tbody.innerHTML += `<tr><td><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span>${p.nhiCode||'-'}</td><td><strong>${p.name||'-'}</strong><span style="font-size:12px;color:#666;display:block;">${p.ingredients||'-'}</span></td><td>${p.spec||'-'}</td><td>${p.manufacturer||'-'}</td><td><strong>$${p.price||0}</strong></td><td>${stH}</td><td colspan="2">${actH}</td></tr>`;
-      });
-    }
-
+    // 過濾邏輯
     function filterProducts() {
       const q = document.getElementById('search-input').value.toLowerCase(); const f = getFavorites();
-      const filtered = allProducts.filter(p => {
+      currentFilteredProducts = allProducts.filter(p => {
         if (currentMode === 'favorites' && !f.includes(p.id)) return false;
-        return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q);
+        return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q);
       });
-      renderTable(filtered);
+      currentFrontPage = 1; // 每次搜尋或切換分類，都回到第一頁
+      renderTable();
     }
 
-    // --- 【新增】檢查新訊息與讀取歷史訊息 ---
+    // --- HTML 陣列渲染加速 + 分頁機制 ---
+    function renderTable() {
+      const tbody = document.getElementById('product-list'); 
+      const paginationBox = document.getElementById('front-pagination');
+      const favs = getFavorites();
+
+      if(currentFilteredProducts.length === 0) { 
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">無相關藥品，請嘗試其他關鍵字</td></tr>'; 
+          paginationBox.style.display = 'none';
+          return; 
+      }
+
+      // 計算分頁
+      const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1;
+      if(currentFrontPage > totalPages) currentFrontPage = totalPages;
+      const start = (currentFrontPage - 1) * itemsPerPageFront;
+      const end = start + itemsPerPageFront;
+      const pageData = currentFilteredProducts.slice(start, end); // 只取這 50 筆
+
+      // 使用陣列組合 HTML，速度極快
+      let htmlArray = [];
+      pageData.forEach(p => {
+        let stk = parseInt(p.stock); let stH = ''; let actH = '';
+        if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
+        else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk})">加入</button>`; }
+        let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
+        htmlArray.push(`<tr><td><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span>${p.nhiCode||'-'}</td><td><strong>${p.name||'-'}</strong><span style="font-size:12px;color:#666;display:block;">${p.ingredients||'-'}</span></td><td>${p.spec||'-'}</td><td>${p.manufacturer||'-'}</td><td><strong>$${p.price||0}</strong></td><td>${stH}</td><td colspan="2">${actH}</td></tr>`);
+      });
+      tbody.innerHTML = htmlArray.join(''); // 一次性寫入 DOM
+
+      // 更新分頁按鈕顯示狀態
+      paginationBox.style.display = 'flex';
+      document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`;
+      document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1);
+      document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages);
+      
+      // 換頁時讓表格自動捲動回最上方
+      document.querySelector('.table-container').scrollTop = 0;
+    }
+
+    function changeFrontPage(delta) {
+      currentFrontPage += delta;
+      renderTable();
+    }
+
+    // --- 以下為其他既有功能 (無更動) ---
     async function checkNewMessages() {
       const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username });
       if(res && res.success && res.unreadCount > 0) {
-         const badge = document.getElementById('msg-badge');
-         badge.innerText = res.unreadCount;
-         badge.style.display = 'inline-block';
+         const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block';
       }
     }
 
     async function loadMyMessages() {
-      const box = document.getElementById('my-message-list');
-      box.innerHTML = '<p style="text-align:center;">讀取中...</p>';
+      const box = document.getElementById('my-message-list'); box.innerHTML = '<p style="text-align:center;">讀取中...</p>';
       const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username });
       if(res && res.success) {
          if(res.data.length === 0) { box.innerHTML = '<p style="text-align:center; color:#999;">尚無對話紀錄</p>'; return; }
-         
          let html = '';
-         // 資料是從新到舊，我們渲染時由下往上排比較像對話框
          [...res.data].reverse().forEach(m => {
             html += `<div><div class="msg-bubble">${m.content}</div></div>`;
             if(m.reply) html += `<div><div class="reply-bubble">👨‍⚕️ 客服回覆：<br>${m.reply}</div></div>`;
             html += `<div class="msg-time">${m.time}</div>`;
          });
-         box.innerHTML = html;
-         box.scrollTop = box.scrollHeight; // 捲動到最底
-
-         // 如果有未讀訊息，通知後台標記為已讀，並隱藏紅點
-         if(res.unreadCount > 0) {
-            document.getElementById('msg-badge').style.display = 'none';
-            callGasAPI({ action: 'markMessagesRequestRead', username: currentUser.username }); // 背景執行標記
-         }
+         box.innerHTML = html; box.scrollTop = box.scrollHeight; 
+         if(res.unreadCount > 0) { document.getElementById('msg-badge').style.display = 'none'; callGasAPI({ action: 'markMessagesRead', username: currentUser.username }); }
       }
     }
 
     async function submitMessage() {
-      const msg = document.getElementById('contact-message').value.trim();
-      if(!msg) return alert("請輸入內容");
+      const msg = document.getElementById('contact-message').value.trim(); if(!msg) return alert("請輸入內容");
       const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg });
       if(res && res.success) { alert(res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
     }
 
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); alert(res.message); } }
-
-    async function loadOrders() { const tbody = document.getElementById('order-list'); const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); if (res && res.success) { tbody.innerHTML = ''; res.data.forEach(o => tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId}</td><td><strong>$${o.total}</strong></td><td style="color:green;font-weight:bold;">${o.status}</td></tr>`); } }
-
-    function addToCart(pId, pName, pPrice, max) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) return alert("超過庫存"); ex.qty += q; } else cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max}); document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; alert('已加入'); }
+    async function loadOrders() { const tbody = document.getElementById('order-list'); const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); if (res && res.success) { tbody.innerHTML = ''; if(res.data.length===0){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;">無歷史訂單</td></tr>';return;} res.data.forEach(o => tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId}</td><td><strong>$${o.total}</strong></td><td style="color:green;font-weight:bold;">${o.status}</td></tr>`); } }
+    
+    function addToCart(pId, pName, pPrice, max) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) return alert("超過庫存"); ex.qty += q; } else cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max}); document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; alert('已加入購物車'); }
     function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t=0; cart.forEach((i,x)=>{ t+=i.price*i.qty; c.innerHTML+=`<div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:10px 0;"><div>${i.name} (x${i.qty})</div><div>$${i.price*i.qty} <button onclick="cart.splice(${x},1);openCart()">刪除</button></div></div>`; }); document.getElementById('cart-total-display').innerText=`總金額：$${t}`; document.getElementById('cart-modal').style.display='flex'; }
     async function checkout() { if(cart.length===0) return; if(!confirm("確定送出？")) return; const remark = document.getElementById('cart-remark').value; const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }); if(res.success){ alert(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); } }
   </script>
