@@ -75,7 +75,6 @@
     .reply-bubble { background: #e3f2fd; padding: 10px 15px; border-radius: 15px; border-top-right-radius: 0; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold;}
     .msg-time { font-size: 12px; color: #999; margin-bottom: 15px; clear: both;}
 
-    /* --- 【新增】自動消失提示框 (Toast) 樣式 --- */
     #toast {
       visibility: hidden;
       min-width: 250px;
@@ -233,19 +232,18 @@
     let currentMode = 'products'; 
     let currentFrontPage = 1;
     const itemsPerPageFront = 50; 
-    let toastTimeout; // 宣告提示框的計時器
+    let toastTimeout; 
 
-    // --- 【新增】自動消失提示框功能 ---
     function showToast(msg, isError = false) {
       const t = document.getElementById('toast');
       t.innerText = msg;
-      t.style.backgroundColor = isError ? '#f44336' : '#323232'; // 錯誤用紅色，成功用深色
+      t.style.backgroundColor = isError ? '#f44336' : '#323232'; 
       t.classList.add('show');
       
-      clearTimeout(toastTimeout); // 清除上一個計時，避免頻繁點擊造成閃爍
+      clearTimeout(toastTimeout); 
       toastTimeout = setTimeout(() => {
         t.classList.remove('show');
-      }, 1500); // 1.5 秒後消失
+      }, 1500); 
     }
 
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
@@ -381,7 +379,7 @@
     async function submitMessage() {
       const msg = document.getElementById('contact-message').value.trim(); if(!msg) return alert("請輸入內容");
       const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg });
-      if(res && res.success) { alert(res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
+      if(res && res.success) { showToast(res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
     }
 
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.message); } }
@@ -396,7 +394,6 @@
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">目前沒有歷史訂單喔！</td></tr>'; 
                 return; 
             }
-            
             myOrders.forEach(o => { 
                 let statusColor = '';
                 if(o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #ff9800;'; 
@@ -436,7 +433,6 @@
 
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
-    // --- 【修改】將 alert 取代為 Toast 提示框 ---
     function addToCart(pId, pName, pPrice, max, pUnit) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); 
         if(q < 1) return; 
@@ -452,34 +448,70 @@
             cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); 
         }
         
-        // 更新購物車數量顯示
         document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
-        
-        // 【成功提示】呼叫自動消失的 Toast
-        showToast(`✅ 已將 ${q} 筆商品加入購物車！`);
+        showToast(`✅ 已將商品加入購物車！`);
     }
 
+    // --- 【修改】購物車內可以即時修改數量 ---
     function openCart() { 
         const c = document.getElementById('cart-items-container'); 
         c.innerHTML=''; 
-        let t=0; 
-        cart.forEach((i,x)=>{ 
-            t+=i.price*i.qty; 
-            c.innerHTML+=`
-              <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px;">
-                <div>
-                  <strong>${i.name}</strong><br>
-                  <span style="font-size:14px;color:#666;">單價: $${i.price} x 數量: ${i.qty} ${i.unit || ''}</span>
-                </div>
-                <div style="text-align:right;">
-                  <div>$${i.price*i.qty}</div>
-                  <button style="background:#ff9800; color:white; border:none; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:12px;" onclick="cart.splice(${x},1);openCart()">刪除</button>
-                </div>
-              </div>`; 
-        }); 
-        document.getElementById('cart-total-display').innerText=`總金額：$${t}`; 
-        document.getElementById('cart-remark').value = ''; 
-        document.getElementById('cart-modal').style.display='flex'; 
+        let t = 0; 
+        let totalItems = 0;
+        
+        if (cart.length === 0) {
+            c.innerHTML = '<p style="text-align:center; font-size:18px; color:#666;">您的購物車是空的</p>';
+        } else {
+            cart.forEach((i, x) => { 
+                t += i.price * i.qty; 
+                totalItems += i.qty;
+                c.innerHTML += `
+                  <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px; align-items:center;">
+                    <div style="flex:1;">
+                      <strong style="display:block; margin-bottom:6px;">${i.name}</strong>
+                      <div style="font-size:15px;color:#666; display:flex; align-items:center; gap:8px;">
+                        <span>單價: $${i.price}</span>
+                        <span style="color:#ccc;">|</span>
+                        <span>數量:</span>
+                        <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:60px; text-align:center; border:1px solid #ccc; border-radius:4px; padding:4px; font-size:15px;">
+                        <span>${i.unit || ''}</span>
+                      </div>
+                    </div>
+                    <div style="text-align:right; min-width:90px;">
+                      <div style="font-size:20px; font-weight:bold; color:#333; margin-bottom:8px;">$${i.price*i.qty}</div>
+                      <button style="background:#ff9800; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;" onclick="removeFromCart(${x})">🗑️ 刪除</button>
+                    </div>
+                  </div>`; 
+            }); 
+        }
+        
+        document.getElementById('cart-total-display').innerText = `總金額：$${t}`; 
+        document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; 
+        document.getElementById('cart-modal').style.display = 'flex'; 
+    }
+
+    // --- 【新增】更新購物車數量的邏輯 ---
+    function updateCartQty(index, newQty) {
+        let q = parseInt(newQty);
+        let item = cart[index];
+        
+        if (isNaN(q) || q < 1) {
+            showToast("⚠️ 數量最少為 1", true);
+            q = 1;
+        } else if (q > item.maxStock) {
+            showToast(`⚠️ 超過庫存上限！目前庫存剩餘: ${item.maxStock}`, true);
+            q = item.maxStock;
+        }
+        
+        item.qty = q;
+        openCart(); // 重新渲染購物車畫面與計算總額
+    }
+
+    // --- 【新增】刪除購物車商品 ---
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        openCart(); // 重新渲染
+        if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`;
     }
 
     async function checkout() { 
@@ -487,7 +519,7 @@
         if(!confirm("確定送出？")) return; 
         const remark = document.getElementById('cart-remark').value; 
         const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }); 
-        if(res.success){ alert(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); } 
+        if(res.success){ showToast(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; } 
     }
   </script>
 </body>
