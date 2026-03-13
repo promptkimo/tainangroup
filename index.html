@@ -16,7 +16,6 @@
     .form-container input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: 0.3s;}
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
-    .form-container button:hover { background-color: #43a047; transform: translateY(-1px);}
     
     #app-container { display: none; width: 95%; max-width: 1400px; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
@@ -34,7 +33,6 @@
     .top-bar-actions { display: flex; align-items: center; gap: 15px; }
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
     .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
-    .top-bar-actions button:hover { opacity: 0.9; transform: translateY(-1px);}
     
     .view-section { display: none; }
     .view-section.active { display: block; }
@@ -43,54 +41,64 @@
     .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
     .search-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 8px rgba(76,175,80,0.2);}
     
-    /* --- 【新增】首頁公告區塊樣式 --- */
-    .announcement-box {
-      background: #fff9c4; border-left: 6px solid #ff9800;
-      padding: 30px; border-radius: 8px; margin: 30px auto;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      max-width: 900px; width: 90%;
-      text-align: left; font-size: 18px; line-height: 1.8; color: #333;
-    }
+    /* --- 【大改版】首頁公告與快訊的 CSS 樣式 (仿照截圖設計) --- */
+    .news-board { width: 100%; max-width: 900px; margin: 20px auto; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); font-family: "Microsoft JhengHei", sans-serif;}
     
+    /* 區塊 1: 最新消息 (藍綠色底) */
+    .news-top { background-color: #4ba3b6; color: white; }
+    .news-header { font-size: 22px; font-weight: bold; padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;}
+    .news-list { list-style: none; padding: 0; margin: 0; }
+    .news-list li { padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; transition: 0.2s; }
+    .news-list li:hover { background-color: rgba(0,0,0,0.05); }
+    .news-list li:last-child { border-bottom: none; }
+    .icon-arrow { margin-right: 12px; font-size: 14px; font-weight: bold; }
+    .news-date { min-width: 100px; font-size: 16px; margin-right: 20px; color: #e0f7fa;}
+    .news-title { flex: 1; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+    .news-title:hover { text-decoration: underline; }
+    .news-attach { margin-left: 10px; font-size: 14px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; cursor: pointer; color: white; text-decoration: none;}
+    .news-attach:hover { background: rgba(255,255,255,0.4); }
+
+    /* 區塊 2: 醫藥快訊 (白底藍綠字) */
+    .news-bottom { background-color: white; }
+    .news-bottom .news-header { background-color: white; color: #4ba3b6; border-bottom: 2px solid #4ba3b6; }
+    .news-bottom .news-list li { border-bottom: 1px dashed #eee; color: #555; }
+    .news-bottom .news-list li:hover { background-color: #f9f9f9; }
+    .news-bottom .icon-arrow { color: #4ba3b6; }
+    .news-bottom .news-date { color: #4ba3b6; }
+    .news-bottom .news-title { color: #555; }
+    .news-bottom .news-attach { background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;}
+    .news-bottom .news-attach:hover { background: #b2ebf2; }
+
+    .search-hint { margin-top: 30px; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center;}
+
     .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; max-height: 65vh;}
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
     th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-    th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 17px; letter-spacing: 0.5px; white-space: nowrap;}
+    th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 17px; white-space: nowrap;}
     tr:hover { background-color: #f9fbf9; }
     
     .order-input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
     .order-btn { padding: 10px 14px; background-color: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 16px; font-weight: bold; transition: 0.2s;}
-    .order-btn:hover { background-color: #1976d2; transform: translateY(-1px);}
-    .notify-btn { background-color: #ff9800; color: white; }
-    .notify-btn:hover { background-color: #f57c00; }
+    .notify-btn { background-color: #ff9800; }
     
     .in-stock { color: #4CAF50; font-weight: bold; white-space: nowrap; font-size: 16px;}
     .out-of-stock { color: #f44336; font-weight: bold; white-space: nowrap; font-size: 16px;}
     .price-text { font-size: 18px; font-weight: bold; color: #333; white-space: nowrap;}
     .nhi-text { font-size: 14px; color: #e91e63; font-weight: bold; margin-top: 6px; white-space: nowrap;}
-    
     .fav-icon { cursor: pointer; font-size: 22px; margin-right: 8px; user-select: none; transition: 0.2s;}
-    .fav-icon:hover { transform: scale(1.2);}
 
-    .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 15px; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
-    .pagination-container button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555; transition: 0.2s;}
-    .pagination-container button:hover:not(:disabled) { background: #f0f0f0; color: #333;}
-    .pagination-container button:disabled { background: #fafafa; color: #bbb; cursor: not-allowed; border-color: #eee; }
-
-    #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
+    .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 12px; background: white; border-radius: 12px;}
+    .pagination-container button { padding: 10px 20px; font-size: 16px; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555;}
     
+    #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;}
+    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
     .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-    .contact-form { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .contact-form textarea { width: 100%; height: 140px; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; line-height: 1.5;}
-    .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;}
-    .contact-history { flex: 2; min-width: 400px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .contact-form { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 12px;}
+    .contact-form textarea { width: 100%; height: 140px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;}
+    .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;}
+    .contact-history { flex: 2; min-width: 400px; background: white; padding: 30px; border-radius: 12px;}
     
-    .msg-bubble { background: #f1f3f5; padding: 12px 18px; border-radius: 18px; border-top-left-radius: 4px; margin-bottom: 6px; display: inline-block; max-width: 80%; line-height: 1.5; color: #333;}
-    .reply-bubble { background: #e3f2fd; padding: 12px 18px; border-radius: 18px; border-top-right-radius: 4px; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold; line-height: 1.5;}
-    .msg-time { font-size: 13px; color: #999; margin-bottom: 18px; clear: both;}
-
-    #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s, visibility 0.3s; letter-spacing: 1px;}
+    #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
@@ -141,7 +149,6 @@
            <span id="msg-badge" class="badge" style="display:none;">0</span>
         </button>
       </div>
-
       <div class="top-bar-actions">
         <span id="welcome-message">歡迎</span>
         <button id="cart-btn" style="background-color: #ff9800; color:white; padding: 12px 20px; font-size: 18px; border-radius: 8px;" onclick="openCart()">🛒 購物車 (0)</button>
@@ -152,21 +159,29 @@
     <div id="view-products" class="view-section active">
       <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：請在此輸入藥品名稱或健保碼來開始選購..." onkeyup="filterProducts()"></div>
       
-      <div id="announcement-section" style="text-align:center; padding: 20px 0;">
-         <div class="announcement-box">
-            <h2 style="margin-top:0; color:#ff9800; border-bottom: 2px solid #ffcc80; padding-bottom: 10px; font-size:24px;">📢 平台最新公告</h2>
-            <div id="announcement-content" style="white-space: pre-wrap; font-weight: bold;">載入中...</div>
+      <div id="announcement-section">
+         <div class="news-board news-top">
+            <div class="news-header">最新消息</div>
+            <ul class="news-list" id="news-list-top">
+               <li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li>
+            </ul>
          </div>
-         <div style="margin-top: 20px; color: #607d8b; font-size: 20px; font-weight: bold; animation: pulse 2s infinite;">
-            👆 請使用上方的搜尋框，尋找您需要的藥品 👆
+
+         <div class="news-board news-bottom">
+            <div class="news-header">醫藥快訊</div>
+            <ul class="news-list" id="news-list-bottom">
+               <li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li>
+            </ul>
          </div>
+
+         <div class="search-hint">👆 請使用上方的搜尋框，尋找您需要的藥品 👆</div>
       </div>
 
       <div id="products-table-wrapper" style="display:none;">
           <div class="table-container">
             <table>
               <thead><tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr></thead>
-              <tbody id="product-list"><tr><td colspan="8" style="text-align: center; padding: 30px; color:#666;">載入資料中，請稍候...</td></tr></tbody>
+              <tbody id="product-list"><tr><td colspan="8" style="text-align: center; padding: 30px;">載入資料中，請稍候...</td></tr></tbody>
             </table>
           </div>
           <div id="front-pagination" class="pagination-container" style="display:none;">
@@ -181,7 +196,7 @@
       <div class="table-container">
         <table>
           <thead><tr><th>訂購時間</th><th>訂單編號</th><th>總金額</th><th>狀態</th></tr></thead>
-          <tbody id="order-list"><tr><td colspan="4" style="text-align: center; padding: 30px; color:#666;">尚未載入訂單...</td></tr></tbody>
+          <tbody id="order-list"><tr><td colspan="4" style="text-align: center; padding: 30px;">尚未載入訂單...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -211,8 +226,8 @@
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; font-family: inherit; line-height:1.5;" rows="3" placeholder="📝 有什麼想交代我們的嗎？請寫在這裡 (選填)..."></textarea>
       <div style="display:flex; justify-content:space-between; margin-top:25px;">
-        <button style="padding:12px 25px; border:none; border-radius:8px; background:#9e9e9e; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
-        <button style="padding:12px 25px; border:none; border-radius:8px; background:#e53935; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.backgroundColor='#c62828'" onmouseout="this.style.backgroundColor='#e53935'" onclick="checkout()">確認結帳</button>
+        <button style="padding:12px 25px; border:none; border-radius:8px; background:#9e9e9e; color:white; cursor:pointer; font-size:18px; font-weight:bold;" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
+        <button style="padding:12px 25px; border:none; border-radius:8px; background:#e53935; color:white; cursor:pointer; font-size:18px; font-weight:bold;" onclick="checkout()">確認結帳</button>
       </div>
     </div>
   </div>
@@ -222,7 +237,7 @@
       <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; font-size: 26px; color: #2c3e50;">📋 訂單完整明細</h2>
       <div id="order-detail-container"></div>
       <div style="display:flex; justify-content:center; margin-top:25px;">
-        <button style="padding:12px 30px; border:none; border-radius:8px; background:#607d8b; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="closeOrderDetail()">關閉視窗</button>
+        <button style="padding:12px 30px; border:none; border-radius:8px; background:#607d8b; color:white; cursor:pointer; font-size:18px; font-weight:bold;" onclick="closeOrderDetail()">關閉視窗</button>
       </div>
     </div>
   </div>
@@ -231,18 +246,9 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     let currentUser = { username: '', pharmacyName: '' };
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; 
-    let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; 
-    let toastTimeout; 
+    let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
 
-    function showToast(msg, isError = false) {
-      const t = document.getElementById('toast');
-      t.innerText = msg;
-      t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; 
-      t.classList.add('show');
-      clearTimeout(toastTimeout); 
-      toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 1500); 
-    }
-
+    function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 1500); }
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
     function toggleFavorite(id) { let f = getFavorites(); if (f.includes(id)) f = f.filter(i => i !== id); else f.push(id); localStorage.setItem('favs_' + currentUser.username, JSON.stringify(f)); filterProducts(); }
 
@@ -250,29 +256,34 @@
       document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
       document.getElementById(`nav-${viewName}`).classList.add('active');
-      
-      if(viewName === 'products' || viewName === 'favorites') { 
-          document.getElementById('view-products').classList.add('active'); 
-          currentMode = viewName; 
-          filterProducts(); // 切換時自動判斷要不要顯示公告
-      } 
+      if(viewName === 'products' || viewName === 'favorites') { document.getElementById('view-products').classList.add('active'); currentMode = viewName; filterProducts(); } 
       else if (viewName === 'orders') { document.getElementById('view-orders').classList.add('active'); loadOrders(); } 
       else if (viewName === 'contact') { document.getElementById('view-contact').classList.add('active'); loadMyMessages(); }
     }
 
-    async function callGasAPI(data, loadingElementId) {
-      if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block';
-      try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} 
-      catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗，請檢查網路'); }
-    }
+    async function callGasAPI(data, loadingElementId) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block'; try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); } }
 
+    // --- 【新增】載入最新消息與快訊 ---
     async function loadInitialData() {
-      // 背景非同步載入「藥品清單」與「首頁公告」
-      callGasAPI({ action: 'getProducts' }).then(res => {
-         if (res && res.success) { allProducts = res.data; filterProducts(); }
-      });
-      callGasAPI({ action: 'getAnnouncement' }).then(res => {
-         if (res && res.success) document.getElementById('announcement-content').innerText = res.data;
+      // 1. 載入藥品
+      callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); } });
+      
+      // 2. 載入公告
+      callGasAPI({ action: 'getNews' }).then(res => {
+         if (res && res.success) {
+            const listTop = document.getElementById('news-list-top');
+            const listBottom = document.getElementById('news-list-bottom');
+            let topHtml = ''; let bottomHtml = '';
+            
+            res.data.forEach(n => {
+                let titleHtml = n.fileUrl ? `<a href="${n.fileUrl}" target="_blank" class="news-title" style="text-decoration:none; color:inherit;">${n.title} <span class="news-attach">📎 附件</span></a>` : `<span class="news-title">${n.title}</span>`;
+                let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`;
+                if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml;
+            });
+            
+            listTop.innerHTML = topHtml || '<li><div style="padding:15px; color:#e0f7fa;">目前尚無最新消息</div></li>';
+            listBottom.innerHTML = bottomHtml || '<li><div style="padding:15px; color:#999;">目前尚無醫藥快訊</div></li>';
+         }
       });
     }
 
@@ -284,90 +295,47 @@
         currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; cart = []; 
         document.getElementById('auth-section').style.display = 'none'; document.getElementById('app-container').style.display = 'block';
         document.getElementById('welcome-message').innerText = `${res.pharmacyName}`;
-        
-        switchView('products'); 
-        loadInitialData(); // 登入後開始抓取資料
-        checkNewMessages();
+        switchView('products'); loadInitialData(); checkNewMessages();
       } else alert(res.message);
     }
     
-    async function doRegister() {
-      const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value;
-      if(!name || !user || !pass) return alert("請填寫必填欄位！");
-      const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass });
-      if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message);
-    }
-
+    async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
     function logout() { location.reload(); }
 
-    // --- 【修改核心】首頁公告顯示邏輯 ---
     function filterProducts() {
-      const q = document.getElementById('search-input').value.toLowerCase().trim(); 
-      const f = getFavorites();
-      
+      const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites();
       const annSection = document.getElementById('announcement-section');
       const tableWrapper = document.getElementById('products-table-wrapper');
 
-      // 如果在「首頁/搜尋」標籤，且沒有輸入任何字，就顯示公告，隱藏商品表
       if (currentMode === 'products' && q === '') {
-          annSection.style.display = 'block';
-          tableWrapper.style.display = 'none';
-          return; 
+          annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; 
       }
 
-      // 如果有打字，或者是「我的最愛」，就隱藏公告，顯示商品表
-      annSection.style.display = 'none';
-      tableWrapper.style.display = 'block';
+      annSection.style.display = 'none'; tableWrapper.style.display = 'block';
 
       currentFilteredProducts = allProducts.filter(p => {
         if (currentMode === 'favorites' && !f.includes(p.id)) return false;
         return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q);
       });
-      currentFrontPage = 1; 
-      renderTable();
+      currentFrontPage = 1; renderTable();
     }
 
     function renderTable() {
-      const tbody = document.getElementById('product-list'); 
-      const paginationBox = document.getElementById('front-pagination');
-      const favs = getFavorites();
-
-      if(currentFilteredProducts.length === 0) { 
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; 
-          paginationBox.style.display = 'none';
-          return; 
-      }
-
+      const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites();
+      if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; }
       const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1;
       if(currentFrontPage > totalPages) currentFrontPage = totalPages;
-      const start = (currentFrontPage - 1) * itemsPerPageFront;
-      const end = start + itemsPerPageFront;
-      const pageData = currentFilteredProducts.slice(start, end); 
-
+      const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); 
       let htmlArray = [];
       pageData.forEach(p => {
         let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = '';
-        if (isNaN(stk) || stk <= 0) { 
-            stH = '<span class="out-of-stock">缺貨</span>'; 
-            qtyH = '<span style="color:#ccc;">-</span>';
-            btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
-        } else { 
-            stH = '<span class="in-stock">供貨中</span>'; 
-            qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; 
-            btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加車</button>`; 
-        }
-        let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
-        let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`;
+        if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; qtyH = '<span style="color:#ccc;">-</span>'; btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
+        else { stH = '<span class="in-stock">供貨中</span>'; qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加車</button>`; }
+        let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`;
         htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`);
       });
-      tbody.innerHTML = htmlArray.join(''); 
-      paginationBox.style.display = 'flex';
-      document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`;
-      document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1);
-      document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages);
-      document.querySelector('.table-container').scrollTop = 0;
+      tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0;
     }
-
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
     async function checkNewMessages() { const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success && res.unreadCount > 0) { const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } }
@@ -376,12 +344,10 @@
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.success ? "✅ " + res.message : "⚠️ " + res.message, !res.success); } }
     
     async function loadOrders() { const tbody = document.getElementById('order-list'); const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); if (res && res.success) { myOrders = res.data; tbody.innerHTML = ''; if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; return; } myOrders.forEach(o => { let statusColor = ''; if(o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #ff9800;'; else if(o.status === '撿貨中') statusColor = 'color: #9c27b0;'; else statusColor = 'color: #4CAF50;'; tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 10px; font-size:14px; margin-left:12px; border-radius:6px;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; }); } }
-
     function showOrderDetails(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); let html = `<p style="font-size:18px; color:#333;"><strong>訂單編號：</strong> ${order.orderId}</p><p style="font-size:16px; color:#666;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;"><ol style="line-height: 1.8; font-size: 18px; padding-left: 25px; color:#2c3e50; font-weight:bold;">`; items.forEach(item => { html += `<li style="margin-bottom:8px;">${item}</li>`; }); html += `</ol><hr style="border:0; border-top:1px solid #eee; margin:20px 0;"><div style="text-align:right; font-size: 26px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; if (order.remark) { html += `<div style="margin-top:20px; padding:15px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:16px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } container.innerHTML = html; document.getElementById('order-detail-modal').style.display = 'flex'; }
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
     function addToCart(pId, pName, pPrice, max, pUnit) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); } document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); }
-
     function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { cart.forEach((i, x) => { t += i.price * i.qty; totalItems += i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong><div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onmouseover="this.style.backgroundColor='#f57c00'" onmouseout="this.style.backgroundColor='#ff9800'" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; }
     function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 超過庫存！目前僅剩: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; openCart(); }
     function removeFromCart(index) { cart.splice(index, 1); openCart(); if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; }
