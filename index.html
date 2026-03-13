@@ -17,14 +17,29 @@
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
     
     #app-container { display: none; width: 95%; max-width: 1400px; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; flex-wrap: wrap;}
     
-    .app-nav { display: flex; gap: 10px; align-items: center; }
-    .app-nav button { padding: 10px 15px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-bottom: 3px solid transparent; font-weight: bold; color: #666; transition: 0.3s; position: relative;}
-    .app-nav button.active { border-bottom: 3px solid #4CAF50; color: #4CAF50; }
+    /* --- 【大改版】頂部導覽列與生動的圖文按鈕 --- */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
     
-    .badge { background: #f44336; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    .app-nav { display: flex; gap: 15px; align-items: center; }
+    .app-nav button { 
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 12px 20px; font-size: 16px; border: none; background: transparent; 
+      cursor: pointer; border-radius: 12px; font-weight: bold; color: #666; 
+      transition: all 0.3s ease; position: relative;
+    }
+    .app-nav button img { width: 45px; height: 45px; margin-bottom: 8px; transition: transform 0.3s ease; object-fit: contain;}
+    
+    /* 懸停時的生動浮動效果 */
+    .app-nav button:hover { background: #f4f9f4; color: #2e7d32; transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .app-nav button:hover img { transform: scale(1.15); } /* 圖片微微放大 */
+    
+    /* 被選中(Active)時的樣式 */
+    .app-nav button.active { background: #e8f5e9; color: #4CAF50; box-shadow: inset 0 0 0 2px #4CAF50; }
+    
+    /* 紅點通知 Badge 調整位置 */
+    .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
     .top-bar-actions { display: flex; align-items: center; gap: 15px; }
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
@@ -94,19 +109,31 @@
 
   <div id="app-container">
     <div class="top-bar">
+      
       <div class="app-nav">
-        <button id="nav-products" class="active" onclick="switchView('products')">💊 商品清單</button>
-        <button id="nav-favorites" onclick="switchView('favorites')">❤️ 我的最愛</button>
-        <button id="nav-orders" onclick="switchView('orders')">📋 查詢訂單</button>
+        <button id="nav-products" class="active" onclick="switchView('products')">
+          <img src="https://drive.google.com/uc?export=view&id=1vpnZpnQz7K54ijYulFeNw3c_GTUs1Rha" alt="商品清單">
+          <span class="nav-text">藥品清單</span>
+        </button>
+        <button id="nav-favorites" onclick="switchView('favorites')">
+          <img src="https://drive.google.com/uc?export=view&id=1YWiA5nib5sSTMqXBK1S1ZFm2NNmKiCwd" alt="我的最愛">
+          <span class="nav-text">我的最愛</span>
+        </button>
+        <button id="nav-orders" onclick="switchView('orders')">
+          <img src="https://drive.google.com/uc?export=view&id=1YBGb_5LUNmVQOYQQFTWWYCk47xdGjnNj" alt="查詢訂單">
+          <span class="nav-text">我的訂單</span>
+        </button>
         <button id="nav-contact" onclick="switchView('contact')">
-           ✉️ 與我聯繫 <span id="msg-badge" class="badge" style="display:none;">0</span>
+           <img src="https://drive.google.com/uc?export=view&id=1yEaC_Zla3PgE5M33swDGRPIlJ8BK8vTJ" alt="聯絡客服">
+           <span class="nav-text">聯絡客服</span>
+           <span id="msg-badge" class="badge" style="display:none;">0</span>
         </button>
       </div>
 
       <div class="top-bar-actions">
         <span id="welcome-message">歡迎</span>
-        <button id="cart-btn" style="background-color: #ff9800; color:white;" onclick="openCart()">🛒 購物車 (0)</button>
-        <button style="background-color: #f44336; color:white;" onclick="logout()">登出</button>
+        <button id="cart-btn" style="background-color: #ff9800; color:white; padding: 12px 20px; font-size: 18px; border-radius: 8px;" onclick="openCart()">🛒 購物車 (0)</button>
+        <button style="background-color: #f44336; color:white; padding: 12px 20px; border-radius: 8px;" onclick="logout()">登出</button>
       </div>
     </div>
 
@@ -271,7 +298,6 @@
       let htmlArray = [];
       pageData.forEach(p => {
         let stk = parseInt(p.stock); let stH = ''; let actH = '';
-        // 【修改】將 p.unit 傳入 addToCart 函式
         if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
         else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加入</button>`; }
         let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
@@ -371,7 +397,6 @@
 
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
-    // --- 【修改】將單位 pUnit 存入購物車並顯示 ---
     function addToCart(pId, pName, pPrice, max, pUnit) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); 
         if(q < 1) return; 
@@ -380,7 +405,6 @@
             if(ex.qty + q > max) return alert("超過庫存"); 
             ex.qty += q; 
         } else {
-            // 將 unit 屬性一起存進 cart 陣列中
             cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); 
         }
         document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
@@ -393,7 +417,6 @@
         let t=0; 
         cart.forEach((i,x)=>{ 
             t+=i.price*i.qty; 
-            // 在購物車顯示時，數量後面加上單位 (如: x2 盒)
             c.innerHTML+=`
               <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px;">
                 <div>
