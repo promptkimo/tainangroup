@@ -5,16 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
   <style>
-    body { font-family: "Microsoft JhengHei", Arial, sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding-top: 20px; margin: 0; font-size: 16px; }
+    /* --- 【優化】使用更現代平滑的字體、放寬行距與字距 --- */
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; 
+      background-color: #f4f7f6; 
+      display: flex; flex-direction: column; align-items: center; 
+      padding-top: 20px; margin: 0; font-size: 16px; 
+      line-height: 1.6; 
+      color: #333;
+      letter-spacing: 0.3px;
+    }
+
     .header-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; }
     .header-container img { width: 140px; height: auto; }
     .header-text { text-align: left; }
-    .header-text h1 { color: #333; margin: 0 0 5px 0; font-size: 32px; }
-    .header-text p { color: #666; font-size: 18px; margin: 0; font-weight: bold; }
+    .header-text h1 { color: #2c3e50; margin: 0 0 5px 0; font-size: 32px; letter-spacing: 1px;}
+    .header-text p { color: #607d8b; font-size: 18px; margin: 0; font-weight: bold; }
     
-    .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 320px; margin-top: 20px; }
-    .form-container input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;}
-    .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
+    .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.08); width: 320px; margin-top: 20px; }
+    .form-container input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: 0.3s;}
+    .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
+    .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
+    .form-container button:hover { background-color: #43a047; transform: translateY(-1px);}
     
     #app-container { display: none; width: 95%; max-width: 1400px; }
     .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
@@ -36,69 +48,59 @@
 
     .top-bar-actions { display: flex; align-items: center; gap: 15px; }
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
-    .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;}
+    .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
+    .top-bar-actions button:hover { opacity: 0.9; transform: translateY(-1px);}
     
     .view-section { display: none; }
     .view-section.active { display: block; }
 
     .search-container { width: 100%; margin-bottom: 15px; }
-    .search-container input { width: 100%; padding: 15px 20px; font-size: 18px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box;}
+    .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
+    .search-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 8px rgba(76,175,80,0.2);}
     
-    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px; max-height: 60vh;}
+    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; max-height: 65vh;}
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
-    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-    th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 18px;}
     
-    .order-input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-    .order-btn { padding: 8px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap; font-size: 16px; font-weight: bold;}
+    /* --- 【優化】放寬表格 padding，並讓文字垂直置中 --- */
+    th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 17px; letter-spacing: 0.5px; white-space: nowrap;}
+    tr:hover { background-color: #f9fbf9; }
+    
+    .order-input { width: 60px; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+    .order-btn { padding: 10px 14px; background-color: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; font-size: 16px; font-weight: bold; transition: 0.2s;}
+    .order-btn:hover { background-color: #1976d2; transform: translateY(-1px);}
     .notify-btn { background-color: #ff9800; color: white; }
+    .notify-btn:hover { background-color: #f57c00; }
     
-    .in-stock { color: #4CAF50; font-weight: bold; }
-    .out-of-stock { color: #f44336; font-weight: bold; }
-    .fav-icon { cursor: pointer; font-size: 20px; margin-right: 5px; user-select: none; }
+    /* --- 【優化】強制這幾個狀態絕對不換行 --- */
+    .in-stock { color: #4CAF50; font-weight: bold; white-space: nowrap; font-size: 16px;}
+    .out-of-stock { color: #f44336; font-weight: bold; white-space: nowrap; font-size: 16px;}
+    .price-text { font-size: 18px; font-weight: bold; color: #333; white-space: nowrap;}
+    .nhi-text { font-size: 14px; color: #e91e63; font-weight: bold; margin-top: 6px; white-space: nowrap;}
+    
+    .fav-icon { cursor: pointer; font-size: 22px; margin-right: 8px; user-select: none; transition: 0.2s;}
+    .fav-icon:hover { transform: scale(1.2);}
 
-    .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 15px; gap: 15px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-    .pagination-container button { padding: 8px 16px; font-size: 16px; cursor: pointer; border: 1px solid #ccc; background: white; border-radius: 4px; font-weight: bold; color: #333;}
-    .pagination-container button:hover:not(:disabled) { background: #f0f0f0; }
-    .pagination-container button:disabled { background: #eee; color: #aaa; cursor: not-allowed; border-color: #eee; }
+    .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 15px; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
+    .pagination-container button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555; transition: 0.2s;}
+    .pagination-container button:hover:not(:disabled) { background: #f0f0f0; color: #333;}
+    .pagination-container button:disabled { background: #fafafa; color: #bbb; cursor: not-allowed; border-color: #eee; }
 
-    #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-    .cart-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
+    #cart-modal, #order-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
+    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
     
     .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-    .contact-form { flex: 1; min-width: 300px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .contact-form textarea { width: 100%; height: 120px; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: vertical; margin-bottom: 15px;}
-    .contact-form button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 18px; font-weight: bold; }
-    .contact-history { flex: 2; min-width: 400px; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .contact-form { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .contact-form textarea { width: 100%; height: 140px; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; resize: vertical; margin-bottom: 15px; line-height: 1.5;}
+    .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.2s;}
+    .contact-history { flex: 2; min-width: 400px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     
-    .msg-bubble { background: #f1f1f1; padding: 10px 15px; border-radius: 15px; border-top-left-radius: 0; margin-bottom: 5px; display: inline-block; max-width: 80%; }
-    .reply-bubble { background: #e3f2fd; padding: 10px 15px; border-radius: 15px; border-top-right-radius: 0; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold;}
-    .msg-time { font-size: 12px; color: #999; margin-bottom: 15px; clear: both;}
+    .msg-bubble { background: #f1f3f5; padding: 12px 18px; border-radius: 18px; border-top-left-radius: 4px; margin-bottom: 6px; display: inline-block; max-width: 80%; line-height: 1.5; color: #333;}
+    .reply-bubble { background: #e3f2fd; padding: 12px 18px; border-radius: 18px; border-top-right-radius: 4px; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold; line-height: 1.5;}
+    .msg-time { font-size: 13px; color: #999; margin-bottom: 18px; clear: both;}
 
-    #toast {
-      visibility: hidden;
-      min-width: 250px;
-      background-color: #323232;
-      color: #fff;
-      text-align: center;
-      border-radius: 8px;
-      padding: 16px 24px;
-      position: fixed;
-      z-index: 9999;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      font-size: 18px;
-      font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      opacity: 0;
-      transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
-    }
-    #toast.show {
-      visibility: visible;
-      opacity: 1;
-      bottom: 50px;
-    }
+    #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s, visibility 0.3s; letter-spacing: 1px;}
+    #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
 </head>
 <body>
@@ -109,27 +111,26 @@
 
   <div class="form-container" id="auth-section">
     <div id="login-form">
-      <h2 style="text-align: center;">登入</h2>
+      <h2 style="text-align: center; margin-top:0; color:#333;">登入</h2>
       <input type="text" id="login-username" placeholder="請輸入帳號">
       <input type="password" id="login-password" placeholder="請輸入密碼">
       <button onclick="doLogin()">登入系統</button>
-      <div id="login-loading" style="display:none; text-align:center; margin-top:10px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
-      <div style="text-align: center; margin-top: 15px; font-size: 14px; color: #0066cc; cursor: pointer;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div>
+      <div id="login-loading" style="display:none; text-align:center; margin-top:15px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
+      <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div>
     </div>
     <div id="register-form" style="display:none;">
-      <h2 style="text-align: center;">申請帳號</h2>
+      <h2 style="text-align: center; margin-top:0; color:#333;">申請帳號</h2>
       <input type="text" id="reg-pharmacy" placeholder="藥局名稱 (必填)">
       <input type="text" id="reg-contact" placeholder="聯絡資訊 (電話/Email)">
       <input type="text" id="reg-username" placeholder="設定帳號">
       <input type="password" id="reg-password" placeholder="設定密碼">
       <button onclick="doRegister()">送出申請</button>
-      <div style="text-align: center; margin-top: 15px; font-size: 14px; color: #0066cc; cursor: pointer;" onclick="document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block';">已有帳號？點此登入</div>
+      <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block';">已有帳號？點此登入</div>
     </div>
   </div>
 
   <div id="app-container">
     <div class="top-bar">
-      
       <div class="app-nav">
         <button id="nav-products" class="active" onclick="switchView('products')">
           <img src="./icon-list.png" alt="商品清單">
@@ -161,13 +162,15 @@
       <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋 (可輸入健保碼、藥名、成分、製造商)..." onkeyup="filterProducts()"></div>
       <div class="table-container">
         <table>
-          <thead><tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr></thead>
-          <tbody id="product-list"><tr><td colspan="8" style="text-align: center;">載入資料中，請稍候...</td></tr></tbody>
+          <thead>
+            <tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr>
+          </thead>
+          <tbody id="product-list"><tr><td colspan="8" style="text-align: center; padding: 30px; color:#666;">載入資料中，請稍候...</td></tr></tbody>
         </table>
       </div>
       <div id="front-pagination" class="pagination-container" style="display:none;">
          <button id="btn-prev-page" onclick="changeFrontPage(-1)">上一頁</button>
-         <span id="front-page-info" style="font-weight: bold; color: #555;">第 1 / 1 頁</span>
+         <span id="front-page-info" style="font-weight: bold; color: #555; font-size: 18px;">第 1 / 1 頁</span>
          <button id="btn-next-page" onclick="changeFrontPage(1)">下一頁</button>
       </div>
     </div>
@@ -176,7 +179,7 @@
       <div class="table-container">
         <table>
           <thead><tr><th>訂購時間</th><th>訂單編號</th><th>總金額</th><th>狀態</th></tr></thead>
-          <tbody id="order-list"><tr><td colspan="4" style="text-align: center;">尚未載入訂單...</td></tr></tbody>
+          <tbody id="order-list"><tr><td colspan="4" style="text-align: center; padding: 30px; color:#666;">尚未載入訂單...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -184,15 +187,15 @@
     <div id="view-contact" class="view-section">
       <div class="contact-layout">
         <div class="contact-form">
-          <h2 style="margin-top:0; color:#333;">聯絡客服</h2>
-          <p style="color:#666;">需要藥品或有問題嗎？</p>
+          <h2 style="margin-top:0; color:#2c3e50;">聯絡客服</h2>
+          <p style="color:#607d8b; margin-bottom: 20px;">需要藥品或有問題嗎？歡迎留言給我們</p>
           <textarea id="contact-message" placeholder="請在此輸入您的訊息..."></textarea>
           <button onclick="submitMessage()">📤 送出留言</button>
         </div>
         <div class="contact-history">
-          <h2 style="margin-top:0; color:#333;">歷史對話紀錄</h2>
-          <div id="my-message-list" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
-            <p style="text-align:center; color:#999;">讀取中...</p>
+          <h2 style="margin-top:0; color:#2c3e50;">歷史對話紀錄</h2>
+          <div id="my-message-list" style="max-height: 400px; overflow-y: auto; padding-right: 15px; margin-top: 15px;">
+            <p style="text-align:center; color:#999; padding: 20px;">讀取中...</p>
           </div>
         </div>
       </div>
@@ -201,23 +204,23 @@
 
   <div id="cart-modal">
     <div class="cart-content">
-      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; font-size: 24px;">您的購物車</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; font-size: 26px; color: #2c3e50;">🛒 您的購物車</h2>
       <div id="cart-items-container"></div>
-      <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 22px; font-weight: bold; margin-top: 20px; color: #f44336;">總金額：$0</div>
-      <textarea id="cart-remark" style="width:100%; margin-top:15px; padding:10px; border-radius: 4px; border: 1px solid #ccc;" rows="3" placeholder="有什麼想交代我們的嗎？請寫在這裡 (選填)..."></textarea>
-      <div style="display:flex; justify-content:space-between; margin-top:20px;">
-        <button style="padding:12px 25px; border:none; border-radius:4px; background:#9e9e9e; color:white; cursor:pointer; font-size:18px; font-weight:bold;" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
-        <button style="padding:12px 25px; border:none; border-radius:4px; background:#f44336; color:white; cursor:pointer; font-size:18px; font-weight:bold;" onclick="checkout()">確認結帳</button>
+      <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
+      <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; font-family: inherit; line-height:1.5;" rows="3" placeholder="📝 有什麼想交代我們的嗎？請寫在這裡 (選填)..."></textarea>
+      <div style="display:flex; justify-content:space-between; margin-top:25px;">
+        <button style="padding:12px 25px; border:none; border-radius:8px; background:#9e9e9e; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="document.getElementById('cart-modal').style.display='none'">繼續購物</button>
+        <button style="padding:12px 25px; border:none; border-radius:8px; background:#e53935; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.backgroundColor='#c62828'" onmouseout="this.style.backgroundColor='#e53935'" onclick="checkout()">確認結帳</button>
       </div>
     </div>
   </div>
 
   <div id="order-detail-modal">
     <div class="cart-content">
-      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; font-size: 24px;">📋 訂單完整明細</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; font-size: 26px; color: #2c3e50;">📋 訂單完整明細</h2>
       <div id="order-detail-container"></div>
-      <div style="display:flex; justify-content:center; margin-top:20px;">
-        <button style="padding:12px 25px; border:none; border-radius:4px; background:#9e9e9e; color:white; cursor:pointer; font-size:18px; font-weight:bold; width: 200px;" onclick="closeOrderDetail()">關閉視窗</button>
+      <div style="display:flex; justify-content:center; margin-top:25px;">
+        <button style="padding:12px 30px; border:none; border-radius:8px; background:#607d8b; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="closeOrderDetail()">關閉視窗</button>
       </div>
     </div>
   </div>
@@ -237,13 +240,11 @@
     function showToast(msg, isError = false) {
       const t = document.getElementById('toast');
       t.innerText = msg;
-      t.style.backgroundColor = isError ? '#f44336' : '#323232'; 
+      t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; 
       t.classList.add('show');
       
       clearTimeout(toastTimeout); 
-      toastTimeout = setTimeout(() => {
-        t.classList.remove('show');
-      }, 1500); 
+      toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 1500); 
     }
 
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
@@ -262,12 +263,12 @@
     async function callGasAPI(data, loadingElementId) {
       if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block';
       try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} 
-      catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); }
+      catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗，請檢查網路'); }
     }
 
     async function doLogin() {
       const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
-      if(!u || !p) return alert("輸入帳號密碼！");
+      if(!u || !p) return alert("請輸入帳號密碼！");
       const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading');
       if (res && res.success) {
         currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; cart = []; 
@@ -296,7 +297,7 @@
           allProducts = res.data; 
           filterProducts(); 
       } else {
-          document.getElementById('product-list').innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">載入失敗，請重新整理</td></tr>';
+          document.getElementById('product-list').innerHTML = '<tr><td colspan="8" style="text-align: center; color: #f44336; padding: 30px;">載入失敗，請重新整理網頁</td></tr>';
       }
     }
 
@@ -316,7 +317,7 @@
       const favs = getFavorites();
 
       if(currentFilteredProducts.length === 0) { 
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">無相關藥品，請嘗試其他關鍵字</td></tr>'; 
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">無相關藥品，請嘗試其他關鍵字</td></tr>'; 
           paginationBox.style.display = 'none';
           return; 
       }
@@ -329,18 +330,46 @@
 
       let htmlArray = [];
       pageData.forEach(p => {
-        let stk = parseInt(p.stock); let stH = ''; let actH = '';
+        let stk = parseInt(p.stock); 
+        let stH = ''; let qtyH = ''; let btnH = '';
+        
+        // 【優化】拆分數量欄與操作按鈕欄，防止排版擠壓
         if (isNaN(stk) || stk <= 0) { 
             stH = '<span class="out-of-stock">缺貨</span>'; 
-            actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
+            qtyH = '<span style="color:#ccc;">-</span>';
+            btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
         } else { 
             stH = '<span class="in-stock">供貨中</span>'; 
-            actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加入</button>`; 
+            qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; 
+            btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加車</button>`; 
         }
-        let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
-        let nhiPriceHtml = p.nhiPrice ? `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: $${p.nhiPrice}</div>` : `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: --</div>`;
         
-        htmlArray.push(`<tr><td><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span>${p.nhiCode||'-'}${nhiPriceHtml}</td><td><strong>${p.name||'-'}</strong><span style="font-size:12px;color:#666;display:block;">${p.ingredients||'-'}</span></td><td>${p.spec||'-'}</td><td>${p.manufacturer||'-'}</td><td><strong style="font-size:18px;">$${p.price||0}</strong></td><td>${stH}</td><td colspan="2">${actH}</td></tr>`);
+        let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
+        let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`;
+        
+        htmlArray.push(`
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center;">
+                <span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span>
+                <div>
+                  <div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>
+                  ${nhiPriceHtml}
+                </div>
+              </div>
+            </td>
+            <td style="min-width: 200px;">
+              <strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong>
+              <span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span>
+            </td>
+            <td style="white-space: nowrap;">${p.spec||'-'}</td>
+            <td style="min-width: 120px;">${p.manufacturer||'-'}</td>
+            <td class="price-text">$${p.price||0}</td>
+            <td>${stH}</td>
+            <td>${qtyH}</td>
+            <td>${btnH}</td>
+          </tr>
+        `);
       });
       tbody.innerHTML = htmlArray.join(''); 
 
@@ -361,10 +390,10 @@
     }
 
     async function loadMyMessages() {
-      const box = document.getElementById('my-message-list'); box.innerHTML = '<p style="text-align:center;">讀取中...</p>';
+      const box = document.getElementById('my-message-list'); box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">讀取中...</p>';
       const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username });
       if(res && res.success) {
-         if(res.data.length === 0) { box.innerHTML = '<p style="text-align:center; color:#999;">尚無對話紀錄</p>'; return; }
+         if(res.data.length === 0) { box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">尚無對話紀錄</p>'; return; }
          let html = '';
          [...res.data].reverse().forEach(m => {
             html += `<div><div class="msg-bubble">${m.content}</div></div>`;
@@ -379,10 +408,15 @@
     async function submitMessage() {
       const msg = document.getElementById('contact-message').value.trim(); if(!msg) return alert("請輸入內容");
       const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg });
-      if(res && res.success) { showToast(res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
+      if(res && res.success) { showToast("✅ " + res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
     }
 
-    async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.message); } }
+    async function subscribeRestock(pId, pName) { 
+      if(confirm(`訂閱【${pName}】到貨通知？`)) { 
+        const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); 
+        showToast(res.success ? "✅ " + res.message : "⚠️ " + res.message, !res.success); 
+      } 
+    }
     
     async function loadOrders() { 
         const tbody = document.getElementById('order-list'); 
@@ -391,7 +425,7 @@
             myOrders = res.data; 
             tbody.innerHTML = ''; 
             if(myOrders.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">目前沒有歷史訂單喔！</td></tr>'; 
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; 
                 return; 
             }
             myOrders.forEach(o => { 
@@ -403,8 +437,8 @@
                 tbody.innerHTML += `
                   <tr>
                     <td>${o.time}</td>
-                    <td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 8px; font-size:12px; margin-left:10px; border-radius:4px;" onclick="showOrderDetails('${o.orderId}')">📄 明細</button></td>
-                    <td><strong style="font-size:18px;">$${o.total}</strong></td>
+                    <td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 10px; font-size:14px; margin-left:12px; border-radius:6px; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td>
+                    <td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td>
                     <td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td>
                   </tr>`; 
             }); 
@@ -416,16 +450,16 @@
       if(!order) return;
       const container = document.getElementById('order-detail-container');
       const items = order.details.split('\n').filter(i => i.trim() !== '');
-      let html = `<p style="font-size:18px; color:#555;"><strong>訂單編號：</strong> ${order.orderId}</p>`;
-      html += `<p style="font-size:16px; color:#888;"><strong>訂購時間：</strong> ${order.time}</p>`;
-      html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
-      html += `<ol style="line-height: 1.8; font-size: 18px; padding-left: 20px; color:#333;">`;
-      items.forEach(item => { html += `<li>${item}</li>`; });
+      let html = `<p style="font-size:18px; color:#333;"><strong>訂單編號：</strong> ${order.orderId}</p>`;
+      html += `<p style="font-size:16px; color:#666;"><strong>訂購時間：</strong> ${order.time}</p>`;
+      html += `<hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;">`;
+      html += `<ol style="line-height: 1.8; font-size: 18px; padding-left: 25px; color:#2c3e50; font-weight:bold;">`;
+      items.forEach(item => { html += `<li style="margin-bottom:8px;">${item}</li>`; });
       html += `</ol>`;
-      html += `<hr style="border:0; border-top:1px solid #eee; margin:15px 0;">`;
-      html += `<div style="text-align:right; font-size: 22px; color:#f44336;"><strong>總金額：$${order.total}</strong></div>`;
+      html += `<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">`;
+      html += `<div style="text-align:right; font-size: 26px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`;
       if (order.remark) {
-         html += `<div style="margin-top:15px; padding:15px; background:#f9f9f9; border-radius:4px; font-size:16px; color:#555;"><strong>📝 備註事項：</strong><br>${order.remark}</div>`;
+         html += `<div style="margin-top:20px; padding:15px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:16px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`;
       }
       container.innerHTML = html;
       document.getElementById('order-detail-modal').style.display = 'flex';
@@ -449,10 +483,9 @@
         }
         
         document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
-        showToast(`✅ 已將商品加入購物車！`);
+        showToast(`✅ 已將 ${q} 筆商品加入購物車！`);
     }
 
-    // --- 【修改】購物車內可以即時修改數量 ---
     function openCart() { 
         const c = document.getElementById('cart-items-container'); 
         c.innerHTML=''; 
@@ -460,26 +493,26 @@
         let totalItems = 0;
         
         if (cart.length === 0) {
-            c.innerHTML = '<p style="text-align:center; font-size:18px; color:#666;">您的購物車是空的</p>';
+            c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>';
         } else {
             cart.forEach((i, x) => { 
                 t += i.price * i.qty; 
                 totalItems += i.qty;
                 c.innerHTML += `
-                  <div style="display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:15px 0; font-size:18px; align-items:center;">
+                  <div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;">
                     <div style="flex:1;">
-                      <strong style="display:block; margin-bottom:6px;">${i.name}</strong>
-                      <div style="font-size:15px;color:#666; display:flex; align-items:center; gap:8px;">
-                        <span>單價: $${i.price}</span>
-                        <span style="color:#ccc;">|</span>
+                      <strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong>
+                      <div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;">
+                        <span>單價: <strong>$${i.price}</strong></span>
+                        <span style="color:#e0e0e0;">|</span>
                         <span>數量:</span>
-                        <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:60px; text-align:center; border:1px solid #ccc; border-radius:4px; padding:4px; font-size:15px;">
-                        <span>${i.unit || ''}</span>
+                        <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;">
+                        <span style="font-weight:bold;">${i.unit || ''}</span>
                       </div>
                     </div>
-                    <div style="text-align:right; min-width:90px;">
-                      <div style="font-size:20px; font-weight:bold; color:#333; margin-bottom:8px;">$${i.price*i.qty}</div>
-                      <button style="background:#ff9800; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;" onclick="removeFromCart(${x})">🗑️ 刪除</button>
+                    <div style="text-align:right; min-width:100px;">
+                      <div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div>
+                      <button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onmouseover="this.style.backgroundColor='#f57c00'" onmouseout="this.style.backgroundColor='#ff9800'" onclick="removeFromCart(${x})">🗑️ 移除</button>
                     </div>
                   </div>`; 
             }); 
@@ -490,7 +523,6 @@
         document.getElementById('cart-modal').style.display = 'flex'; 
     }
 
-    // --- 【新增】更新購物車數量的邏輯 ---
     function updateCartQty(index, newQty) {
         let q = parseInt(newQty);
         let item = cart[index];
@@ -499,27 +531,34 @@
             showToast("⚠️ 數量最少為 1", true);
             q = 1;
         } else if (q > item.maxStock) {
-            showToast(`⚠️ 超過庫存上限！目前庫存剩餘: ${item.maxStock}`, true);
+            showToast(`⚠️ 超過庫存！目前僅剩: ${item.maxStock}`, true);
             q = item.maxStock;
         }
         
         item.qty = q;
-        openCart(); // 重新渲染購物車畫面與計算總額
+        openCart(); 
     }
 
-    // --- 【新增】刪除購物車商品 ---
     function removeFromCart(index) {
         cart.splice(index, 1);
-        openCart(); // 重新渲染
+        openCart(); 
         if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`;
     }
 
     async function checkout() { 
         if(cart.length===0) return; 
-        if(!confirm("確定送出？")) return; 
+        if(!confirm("確定要送出這筆訂單嗎？")) return; 
         const remark = document.getElementById('cart-remark').value; 
-        const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }); 
-        if(res.success){ showToast(res.message); cart=[]; document.getElementById('cart-modal').style.display='none'; switchView('orders'); document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; } 
+        const res = await callGasAPI({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), remark: remark }, 'login-loading'); 
+        if(res.success){ 
+          showToast("🎉 " + res.message); 
+          cart=[]; 
+          document.getElementById('cart-modal').style.display='none'; 
+          switchView('orders'); 
+          document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; 
+        } else {
+          showToast("❌ " + res.message, true);
+        }
     }
   </script>
 </body>
