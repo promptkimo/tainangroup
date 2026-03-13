@@ -27,15 +27,10 @@
       transition: all 0.3s ease; position: relative;
     }
     .app-nav button img { width: 45px; height: 45px; margin-bottom: 8px; transition: transform 0.3s ease; object-fit: contain;}
-    
-    /* 懸停時的生動浮動效果 */
     .app-nav button:hover { background: #f4f9f4; color: #2e7d32; transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .app-nav button:hover img { transform: scale(1.15); }
-    
-    /* 被選中(Active)時的樣式 */
     .app-nav button.active { background: #e8f5e9; color: #4CAF50; box-shadow: inset 0 0 0 2px #4CAF50; }
     
-    /* 紅點通知 Badge 調整位置 */
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
@@ -79,9 +74,37 @@
     .msg-bubble { background: #f1f1f1; padding: 10px 15px; border-radius: 15px; border-top-left-radius: 0; margin-bottom: 5px; display: inline-block; max-width: 80%; }
     .reply-bubble { background: #e3f2fd; padding: 10px 15px; border-radius: 15px; border-top-right-radius: 0; border: 1px solid #bbdefb; display: inline-block; max-width: 80%; float: right; color: #0d47a1; font-weight: bold;}
     .msg-time { font-size: 12px; color: #999; margin-bottom: 15px; clear: both;}
+
+    /* --- 【新增】自動消失提示框 (Toast) 樣式 --- */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #323232;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px 24px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
   </style>
 </head>
 <body>
+
+  <div id="toast"></div>
 
   <div class="header-container"><img src="./logo.jpg" alt="Logo"><div class="header-text"><h1>台南社區藥局藥品供應平台</h1><p>行政院衛生署補(捐)助科技發展計畫</p></div></div>
 
@@ -110,19 +133,19 @@
       
       <div class="app-nav">
         <button id="nav-products" class="active" onclick="switchView('products')">
-          <img src="./icon-list.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4680/4680261.png'" alt="商品清單">
+          <img src="./icon-list.png" alt="商品清單">
           <span class="nav-text">藥品清單</span>
         </button>
         <button id="nav-favorites" onclick="switchView('favorites')">
-          <img src="./icon-fav.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2907/2907553.png'" alt="我的最愛">
+          <img src="./icon-fav.png" alt="我的最愛">
           <span class="nav-text">我的最愛</span>
         </button>
         <button id="nav-orders" onclick="switchView('orders')">
-          <img src="./icon-order.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3500/3500833.png'" alt="查詢訂單">
+          <img src="./icon-order.png" alt="查詢訂單">
           <span class="nav-text">我的訂單</span>
         </button>
         <button id="nav-contact" onclick="switchView('contact')">
-           <img src="./icon-contact.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1067/1067555.png'" alt="聯絡客服">
+           <img src="./icon-contact.png" alt="聯絡客服">
            <span class="nav-text">聯絡客服</span>
            <span id="msg-badge" class="badge" style="display:none;">0</span>
         </button>
@@ -208,9 +231,22 @@
     let currentFilteredProducts = []; 
     let myOrders = []; 
     let currentMode = 'products'; 
-    
     let currentFrontPage = 1;
     const itemsPerPageFront = 50; 
+    let toastTimeout; // 宣告提示框的計時器
+
+    // --- 【新增】自動消失提示框功能 ---
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.backgroundColor = isError ? '#f44336' : '#323232'; // 錯誤用紅色，成功用深色
+      t.classList.add('show');
+      
+      clearTimeout(toastTimeout); // 清除上一個計時，避免頻繁點擊造成閃爍
+      toastTimeout = setTimeout(() => {
+        t.classList.remove('show');
+      }, 1500); // 1.5 秒後消失
+    }
 
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
     function toggleFavorite(id) { let f = getFavorites(); if (f.includes(id)) f = f.filter(i => i !== id); else f.push(id); localStorage.setItem('favs_' + currentUser.username, JSON.stringify(f)); filterProducts(); }
@@ -296,8 +332,13 @@
       let htmlArray = [];
       pageData.forEach(p => {
         let stk = parseInt(p.stock); let stH = ''; let actH = '';
-        if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } 
-        else { stH = '<span class="in-stock">供貨中</span>'; actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加入</button>`; }
+        if (isNaN(stk) || stk <= 0) { 
+            stH = '<span class="out-of-stock">缺貨</span>'; 
+            actH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
+        } else { 
+            stH = '<span class="in-stock">供貨中</span>'; 
+            actH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}"> <button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加入</button>`; 
+        }
         let hIcon = favs.includes(p.id) ? '❤️' : '🤍';
         let nhiPriceHtml = p.nhiPrice ? `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: $${p.nhiPrice}</div>` : `<div style="font-size: 15px; color: #e91e63; font-weight: bold; margin-top: 6px;">健保價: --</div>`;
         
@@ -343,7 +384,7 @@
       if(res && res.success) { alert(res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); }
     }
 
-    async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); alert(res.message); } }
+    async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.message); } }
     
     async function loadOrders() { 
         const tbody = document.getElementById('order-list'); 
@@ -395,18 +436,27 @@
 
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
+    // --- 【修改】將 alert 取代為 Toast 提示框 ---
     function addToCart(pId, pName, pPrice, max, pUnit) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); 
         if(q < 1) return; 
+        
         const ex = cart.find(i => i.id === pId); 
         if(ex) { 
-            if(ex.qty + q > max) return alert("超過庫存"); 
+            if(ex.qty + q > max) {
+                showToast("⚠️ 數量將超過庫存上限！", true);
+                return; 
+            }
             ex.qty += q; 
         } else {
             cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); 
         }
+        
+        // 更新購物車數量顯示
         document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
-        alert('已加入購物車'); 
+        
+        // 【成功提示】呼叫自動消失的 Toast
+        showToast(`✅ 已將 ${q} 筆商品加入購物車！`);
     }
 
     function openCart() { 
