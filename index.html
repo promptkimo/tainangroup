@@ -17,8 +17,11 @@
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
-    #app-container { display: none; width: 95%; max-width: 1400px; }
-    .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; flex-wrap: wrap; gap: 15px;}
+    /* --- 【版面微調】將總容器縮小，讓版面更集中 --- */
+    #app-container { display: none; width: 95%; max-width: 1200px; }
+    
+    /* --- 【大改版】強制導覽列與搜尋框的最大寬度為 900px 並置中，對齊佈告欄 --- */
+    .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin: 0 auto 25px auto; flex-wrap: wrap; gap: 15px; width: 100%; max-width: 900px; box-sizing: border-box; }
     
     .app-nav { display: flex; gap: 15px; align-items: center; }
     .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 20px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-radius: 12px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; }
@@ -37,11 +40,13 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    .search-container { width: 100%; margin-bottom: 15px; }
+    /* --- 【大改版】搜尋框寬度與佈告欄同寬 900px --- */
+    .search-container { width: 100%; max-width: 900px; margin: 0 auto 25px auto; box-sizing: border-box; }
     .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
     .search-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 8px rgba(76,175,80,0.2);}
     
-    .news-board { width: 100%; max-width: 900px; margin: 20px auto; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); font-family: "Microsoft JhengHei", sans-serif;}
+    /* 佈告欄樣式 */
+    .news-board { width: 100%; max-width: 900px; margin: 0 auto 25px auto; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); font-family: "Microsoft JhengHei", sans-serif;}
     .news-top { background-color: #4ba3b6; color: white; }
     .news-header { font-size: 22px; font-weight: bold; padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;}
     .news-list { list-style: none; padding: 0; margin: 0; }
@@ -61,9 +66,10 @@
     .news-bottom .news-date { color: #4ba3b6; }
     .news-bottom .news-title { color: #555; }
 
-    .search-hint { margin-top: 30px; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center;}
+    .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; max-width: 900px;}
 
-    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; max-height: 65vh;}
+    /* 表格容器置中對齊 */
+    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; max-height: 65vh; max-width: 1200px; margin: 0 auto; }
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
     th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 17px; white-space: nowrap;}
@@ -79,11 +85,19 @@
     .nhi-text { font-size: 14px; color: #e91e63; font-weight: bold; margin-top: 6px; white-space: nowrap;}
     .fav-icon { cursor: pointer; font-size: 22px; margin-right: 8px; user-select: none; transition: 0.2s;}
 
-    .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 12px; background: white; border-radius: 12px;}
+    /* 將分頁器也調整為 900px 寬度 */
+    .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 12px; background: white; border-radius: 12px; width: 100%; max-width: 900px; margin: 15px auto 0 auto; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
     .pagination-container button { padding: 10px 20px; font-size: 16px; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555;}
     
     #cart-modal, #order-detail-modal, #news-detail-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
+    
+    /* 聯絡客服版面置中 */
+    .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; width: 100%; max-width: 900px; margin: 0 auto; }
+    .contact-form { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 12px;}
+    .contact-form textarea { width: 100%; height: 140px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;}
+    .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;}
+    .contact-history { flex: 2; min-width: 400px; background: white; padding: 30px; border-radius: 12px;}
     
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
@@ -116,6 +130,7 @@
   </div>
 
   <div id="app-container">
+    
     <div class="top-bar">
       <div class="app-nav">
         <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
@@ -131,7 +146,10 @@
     </div>
 
     <div id="view-products" class="view-section active">
-      <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：請在此輸入藥品名稱或健保碼來開始選購..." onkeyup="filterProducts()"></div>
+      
+      <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 快速搜尋：請在此輸入藥品名稱或健保碼來開始選購..." onkeyup="filterProducts()">
+      </div>
       
       <div id="announcement-section">
          <div class="news-board news-top">
@@ -169,14 +187,15 @@
     <div id="view-orders" class="view-section">
       <div class="table-container"><table><thead><tr><th>訂購時間</th><th>訂單編號</th><th>總金額</th><th>狀態</th></tr></thead><tbody id="order-list"></tbody></table></div>
     </div>
+    
     <div id="view-contact" class="view-section">
-      <div style="display:flex; gap:20px;">
-        <div style="flex:1; background:white; padding:30px; border-radius:12px;">
+      <div class="contact-layout">
+        <div class="contact-form">
           <h2 style="margin-top:0;">聯絡客服</h2>
-          <textarea id="contact-message" style="width:100%; height:120px; padding:10px;" placeholder="留言給我們..."></textarea>
-          <button style="width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; font-size:18px;" onclick="submitMessage()">送出</button>
+          <textarea id="contact-message" placeholder="留言給我們..."></textarea>
+          <button onclick="submitMessage()">送出</button>
         </div>
-        <div style="flex:2; background:white; padding:30px; border-radius:12px;">
+        <div class="contact-history">
           <h2 style="margin-top:0;">歷史對話紀錄</h2>
           <div id="my-message-list" style="max-height:400px; overflow-y:auto;"></div>
         </div>
@@ -188,11 +207,8 @@
     <div class="cart-content" style="max-width: 800px;">
       <h2 id="news-detail-title" style="margin-top:0; color:#00838f; border-bottom:2px solid #b2ebf2; padding-bottom:15px; font-size: 26px; line-height: 1.4;">公告標題</h2>
       <div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div>
-      
       <div id="news-detail-content" style="font-size:18px; line-height:1.8; color:#333; white-space:pre-wrap; margin-bottom:30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">文章內容</div>
-      
       <div id="news-detail-attach-container" style="margin-bottom:30px; text-align:center;"></div>
-      
       <div style="display:flex; justify-content:center;">
         <button style="padding:12px 40px; border:none; border-radius:8px; background:#607d8b; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1" onclick="document.getElementById('news-detail-modal').style.display='none'">關閉視窗</button>
       </div>
@@ -226,7 +242,7 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     let currentUser = { username: '', pharmacyName: '' };
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; 
-    let allNewsData = []; // 【新增】存放所有公告資料，供點擊時顯示內容
+    let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 1500); }
@@ -246,18 +262,15 @@
 
     async function loadInitialData() {
       callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); } });
-      
-      // 【修改】將公告存入全域變數，並綁定點擊事件開啟內容
       callGasAPI({ action: 'getNews' }).then(res => {
          if (res && res.success) {
-            allNewsData = res.data; // 存起來
+            allNewsData = res.data; 
             const listTop = document.getElementById('news-list-top');
             const listBottom = document.getElementById('news-list-bottom');
             let topHtml = ''; let bottomHtml = '';
             
             res.data.forEach(n => {
                 let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : '';
-                // 點擊標題時，執行 openNewsDetail 函式
                 let titleHtml = `<span class="news-title" onclick="openNewsDetail('${n.id}')">${n.title}${attachIcon}</span>`;
                 let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`;
                 if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml;
@@ -269,7 +282,6 @@
       });
     }
 
-    // --- 【新增】開啟文章內容彈出視窗 ---
     function openNewsDetail(id) {
         const news = allNewsData.find(n => n.id === id);
         if(!news) return;
@@ -282,9 +294,8 @@
         if(news.fileUrl) {
             attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;" onmouseover="this.style.backgroundColor='#00838f'" onmouseout="this.style.backgroundColor='#00acc1'">📥 點此下載 / 檢視附件檔</a>`;
         } else {
-            attachContainer.innerHTML = ''; // 沒有附件就清空
+            attachContainer.innerHTML = ''; 
         }
-
         document.getElementById('news-detail-modal').style.display = 'flex';
     }
 
@@ -334,6 +345,7 @@
     
     async function loadOrders() { const tbody = document.getElementById('order-list'); const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); if (res && res.success) { myOrders = res.data; tbody.innerHTML = ''; if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; return; } myOrders.forEach(o => { let statusColor = ''; if(o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #ff9800;'; else if(o.status === '撿貨中') statusColor = 'color: #9c27b0;'; else statusColor = 'color: #4CAF50;'; tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 10px; font-size:14px; margin-left:12px; border-radius:6px;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; }); } }
     function showOrderDetails(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); let html = `<p style="font-size:18px; color:#333;"><strong>訂單編號：</strong> ${order.orderId}</p><p style="font-size:16px; color:#666;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;"><ol style="line-height: 1.8; font-size: 18px; padding-left: 25px; color:#2c3e50; font-weight:bold;">`; items.forEach(item => { html += `<li style="margin-bottom:8px;">${item}</li>`; }); html += `</ol><hr style="border:0; border-top:1px solid #eee; margin:20px 0;"><div style="text-align:right; font-size: 26px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; if (order.remark) { html += `<div style="margin-top:20px; padding:15px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:16px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } container.innerHTML = html; document.getElementById('order-detail-modal').style.display = 'flex'; }
+    function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
     function addToCart(pId, pName, pPrice, max, pUnit) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); } document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); }
     function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { cart.forEach((i, x) => { t += i.price * i.qty; totalItems += i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong><div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onmouseover="this.style.backgroundColor='#f57c00'" onmouseout="this.style.backgroundColor='#ff9800'" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; }
