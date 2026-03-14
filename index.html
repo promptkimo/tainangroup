@@ -138,37 +138,14 @@
 
     <div id="view-products" class="view-section active">
       <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：請在此輸入藥品名稱或健保碼來開始選購..." onkeyup="filterProducts()"></div>
-      
       <div id="announcement-section">
-         <div class="news-board news-top">
-            <div class="news-header">最新消息</div>
-            <ul class="news-list" id="news-list-top">
-               <li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li>
-            </ul>
-         </div>
-
-         <div class="news-board news-bottom">
-            <div class="news-header">醫藥快訊</div>
-            <ul class="news-list" id="news-list-bottom">
-               <li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li>
-            </ul>
-         </div>
-
+         <div class="news-board news-top"><div class="news-header">最新消息</div><ul class="news-list" id="news-list-top"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
+         <div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
          <div class="search-hint">👆 請使用上方的搜尋框，尋找您需要的藥品 👆</div>
       </div>
-
       <div id="products-table-wrapper" style="display:none;">
-          <div class="table-container">
-            <table>
-              <thead><tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr></thead>
-              <tbody id="product-list"><tr><td colspan="8" style="text-align: center; padding: 30px;">載入中...</td></tr></tbody>
-            </table>
-          </div>
-          <div id="front-pagination" class="pagination-container" style="display:none;">
-             <button id="btn-prev-page" onclick="changeFrontPage(-1)">上一頁</button>
-             <span id="front-page-info" style="font-weight: bold; color: #555; font-size: 18px;">第 1 / 1 頁</span>
-             <button id="btn-next-page" onclick="changeFrontPage(1)">下一頁</button>
-          </div>
+          <div class="table-container"><table><thead><tr><th>健保碼</th><th>藥名/成分</th><th>規格</th><th>製造商</th><th>賣價</th><th>狀態</th><th>數量</th><th>操作</th></tr></thead><tbody id="product-list"><tr><td colspan="8" style="text-align: center; padding: 30px;">載入中...</td></tr></tbody></table></div>
+          <div id="front-pagination" class="pagination-container" style="display:none;"><button id="btn-prev-page" onclick="changeFrontPage(-1)">上一頁</button><span id="front-page-info" style="font-weight: bold; color: #555; font-size: 18px;">第 1 / 1 頁</span><button id="btn-next-page" onclick="changeFrontPage(1)">下一頁</button></div>
       </div>
     </div>
 
@@ -239,7 +216,31 @@
 
     function filterProducts() { const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } annSection.style.display = 'none'; tableWrapper.style.display = 'block'; currentFilteredProducts = allProducts.filter(p => { if (currentMode === 'favorites' && !f.includes(p.id)) return false; return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q); }); currentFrontPage = 1; renderTable(); }
 
-    function renderTable() { const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; if(currentFrontPage > totalPages) currentFrontPage = totalPages; const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); let htmlArray = []; pageData.forEach(p => { let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; qtyH = '<span style="color:#ccc;">-</span>'; btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } else { stH = '<span class="in-stock">供貨中</span>'; qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}')">加車</button>`; } let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); }); tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; }
+    // --- 【修改】將健保代碼傳入 addToCart 函數 ---
+    function renderTable() { 
+      const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); 
+      if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } 
+      const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; 
+      if(currentFrontPage > totalPages) currentFrontPage = totalPages; 
+      const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); 
+      let htmlArray = []; 
+      pageData.forEach(p => { 
+        let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; 
+        if (isNaN(stk) || stk <= 0) { 
+            stH = '<span class="out-of-stock">缺貨</span>'; 
+            qtyH = '<span style="color:#ccc;">-</span>'; 
+            btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
+        } else { 
+            stH = '<span class="in-stock">供貨中</span>'; 
+            qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; 
+            // 【重要修改】將 p.nhiCode 傳進去
+            btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">加車</button>`; 
+        } 
+        let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); 
+      }); 
+      tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; 
+    }
+    
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
     async function checkNewMessages() { const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success && res.unreadCount > 0) { const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } }
@@ -247,7 +248,6 @@
     async function submitMessage() { const msg = document.getElementById('contact-message').value.trim(); if(!msg) return alert("請輸入內容"); const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }); if(res && res.success) { showToast("✅ " + res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); } }
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.success ? "✅ " + res.message : "⚠️ " + res.message, !res.success); } }
     
-    // --- 【修改】前台也支援顯示「待處理」狀態 ---
     async function loadOrders() { 
         const tbody = document.getElementById('order-list'); 
         const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); 
@@ -273,7 +273,21 @@
     function showOrderDetails(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); let html = `<p style="font-size:18px; color:#333;"><strong>訂單編號：</strong> ${order.orderId}</p><p style="font-size:16px; color:#666;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;"><ol style="line-height: 1.8; font-size: 18px; padding-left: 25px; color:#2c3e50; font-weight:bold;">`; items.forEach(item => { html += `<li style="margin-bottom:8px;">${item}</li>`; }); html += `</ol><hr style="border:0; border-top:1px solid #eee; margin:20px 0;"><div style="text-align:right; font-size: 26px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; if (order.remark) { html += `<div style="margin-top:20px; padding:15px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:16px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } container.innerHTML = html; document.getElementById('order-detail-modal').style.display = 'flex'; }
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
-    function addToCart(pId, pName, pPrice, max, pUnit) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit}); } document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); }
+    // --- 【修改】接收健保代碼 pNhi ---
+    function addToCart(pId, pName, pPrice, max, pUnit, pNhi) { 
+      const q = parseInt(document.getElementById(`qty-${pId}`).value); 
+      if(q < 1) return; 
+      const ex = cart.find(i => i.id === pId); 
+      if(ex) { 
+          if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } 
+          ex.qty += q; 
+      } else { 
+          cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit, nhiCode: pNhi}); 
+      } 
+      document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; 
+      showToast(`✅ 已將 ${q} 筆商品加入購物車！`); 
+    }
+
     function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { cart.forEach((i, x) => { t += i.price * i.qty; totalItems += i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong><div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; }
     function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 超過庫存！目前僅剩: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; openCart(); }
     function removeFromCart(index) { cart.splice(index, 1); openCart(); if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; }
