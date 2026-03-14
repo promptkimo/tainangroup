@@ -22,13 +22,13 @@
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
     /* 系統主畫面區 */
-    #app-container { display: none; width: 95%; max-width: 1150px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
+    #app-container { display: none; width: 95%; max-width: 1200px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
     
-    /* --- 選單固定吸頂區 --- */
-    .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; }
+    /* --- 【選單固定吸頂區】 --- */
+    .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
     
-    .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; margin-top: 10px;}
+    .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; }
     .view-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -70,46 +70,61 @@
 
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
-    /* --- 解放表格，資料自然伸展 --- */
+    /* --- 【完美表格佈局】使用 table-layout: fixed 強制將表格鎖定在畫面內 --- */
     .table-container { 
-        overflow-x: auto; 
         background: white; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
         border-radius: 12px; 
         width: 100%; 
         box-sizing: border-box; 
+        overflow: hidden; /* 隱藏溢出，防止任何橫向捲軸 */
     }
-    .table-container::-webkit-scrollbar { height: 14px; }
-    .table-container::-webkit-scrollbar-track { background: #f4f7f6; border-radius: 4px; }
-    .table-container::-webkit-scrollbar-thumb { background: #cfcfcf; border-radius: 8px; border: 3px solid #f4f7f6; }
 
-    table { width: 100%; border-collapse: collapse; font-size: 16px; }
-    th { background-color: #4CAF50; color: white; padding: 16px 18px; text-align: left; font-size: 17px; white-space: nowrap; vertical-align: middle;}
-    td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; }
+    /* 拔除標題列固定，徹底解決擋畫面的問題 */
+    th { background-color: #4CAF50; color: white; padding: 14px 10px; text-align: left; font-size: 16px; white-space: nowrap;}
+    td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     tr:hover { background-color: #f9fbf9; }
     
-    .price-text { font-size: 18px; font-weight: bold; color: #333; white-space: nowrap;}
-    .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; white-space: nowrap;}
+    /* --- 【文字過長自動省略 (...) 】 --- */
+    .truncate-text { 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        display: block; 
+        width: 100%;
+    }
+    .prod-name { font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; }
+    .prod-ing { font-size: 13px; color: #607d8b; }
     
-    /* --- 【純圖示化】右側操作按鈕區 --- */
-    .action-cell { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+    .price-text { font-size: 18px; font-weight: bold; color: #333;}
+    .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; display: block;}
     
-    .status-badge-front { padding: 6px 10px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-right: 5px; white-space: nowrap;}
+    /* --- 【完美對齊的按鈕區】使用 Grid 網格，確保缺貨與供貨按鈕絕對不偏移 --- */
+    .action-grid {
+        display: grid;
+        grid-template-columns: 65px 70px 42px 42px; /* 分別為: 狀態標籤、數量框、主按鈕、最愛按鈕 */
+        gap: 6px;
+        align-items: center;
+        justify-content: end;
+    }
+    
+    .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; letter-spacing: 0.5px;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
     .status-out { background: #ffebee; color: #d32f2f; }
     
-    .qty-wrapper { display: flex; align-items: center; font-size: 16px; color: #333; margin-right: 5px;}
-    .qty-input { width: 55px; height: 38px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 16px; outline: none; color:#333; font-weight:bold; box-sizing: border-box; padding:0;}
-    .qty-input:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); }
+    .qty-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; }
+    .qty-input { width: 44px; height: 34px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 15px; outline: none; color:#333; font-weight:bold; margin-right: 4px; box-sizing: border-box; padding:0;}
+    .qty-input:focus { border-color: #4CAF50; }
     
     /* 純圖示方形按鈕 */
     .icon-only-btn { 
-        background: white; border: 1px solid #ccc; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; 
+        background: white; border: 1px solid #ccc; border-radius: 8px; width: 42px; height: 42px; cursor: pointer; 
         display: inline-flex; align-items: center; justify-content: center; padding: 0;
         transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
     }
     .icon-only-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .icon-only-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s;}
+    .icon-only-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s;}
     
     .btn-addcart { color: #ff9800; border-color: #ff9800; }
     .btn-addcart:hover { background: #fff3e0; }
@@ -160,7 +175,7 @@
   <div id="toast"></div>
 
   <div id="login-screen">
-      <div class="header-container" style="justify-content: center; margin-bottom: 25px;">
+      <div class="header-container">
           <img src="./logo.jpg" alt="Logo">
           <div class="header-text">
               <h1>台南社區藥局藥品供應平台</h1>
@@ -190,15 +205,14 @@
 
   <div id="app-container">
     
-    <div class="header-container" style="justify-content: flex-start;">
-      <img src="./logo.jpg" alt="Logo">
-      <div class="header-text">
-        <h1 style="font-size:24px;">台南社區藥局藥品供應平台</h1>
-        <p style="font-size:15px;">行政院衛生署補(捐)助科技發展計畫</p>
-      </div>
-    </div>
-
     <div class="sticky-nav-wrapper">
+        <div class="header-container" style="justify-content: flex-start; margin-bottom: 10px;">
+          <img src="./logo.jpg" alt="Logo" style="width: 100px;">
+          <div class="header-text">
+            <h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1>
+            <p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p>
+          </div>
+        </div>
         <div class="top-bar">
           <div class="app-nav">
             <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
@@ -228,16 +242,16 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width:110px;">健保碼</th>
-                  <th>藥名/成分</th>
-                  <th style="width:90px;">規格</th>
-                  <th style="width:120px;">製造商</th>
-                  <th style="width:90px;">單價</th>
-                  <th style="text-align: right; min-width: 250px;">操作區</th>
+                  <th style="width: 90px;">健保碼</th>
+                  <th style="width: auto;">藥名/成分</th>
+                  <th style="width: 90px;">規格</th>
+                  <th style="width: 120px;">製造商</th>
+                  <th style="width: 80px;">單價</th>
+                  <th style="width: 240px; text-align: right;">狀態與操作</th>
                 </tr>
               </thead>
               <tbody id="product-list">
-                <tr><td colspan="6" style="text-align: center; padding: 30px;">載入中...</td></tr>
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">載入中...</td></tr>
               </tbody>
             </table>
           </div>
@@ -323,9 +337,14 @@
     });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
-    function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
     
-    // 最愛功能確保為字串比對
+    // 【修復】嚴格轉換儲存與讀取的型別，確保我的最愛功能正常
+    function getFavorites() { 
+        const f = localStorage.getItem('favs_' + currentUser.username); 
+        if(!f) return [];
+        return JSON.parse(f).map(String); 
+    }
+    
     function toggleFavorite(id) { 
         id = String(id);
         let f = getFavorites(); 
@@ -335,12 +354,16 @@
         filterProducts(); 
     }
 
+    // 【修復】確保切換到我的最愛時，表格能正確顯示出來
     function switchView(viewName) { 
         document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
         
         document.getElementById(`nav-${viewName}`).classList.add('active'); 
-        document.getElementById(`view-${viewName}`).classList.add('active');
+        
+        // 如果是我的最愛，其實底層要打開的是 products 區塊
+        let targetView = viewName === 'favorites' ? 'products' : viewName;
+        document.getElementById(`view-${targetView}`).classList.add('active');
 
         if(viewName === 'products' || viewName === 'favorites') { 
             currentMode = viewName; filterProducts(); 
@@ -386,14 +409,15 @@
         renderTable(); 
     }
 
-    // --- 【純圖示化按鈕區】 ---
+    // --- 【修復】加入文字隱藏，並完美對齊操作區 ---
     function renderTable() { 
         const tbody = document.getElementById('product-list'); 
         const paginationBox = document.getElementById('front-pagination'); 
         const favs = getFavorites(); 
         
         if(currentFilteredProducts.length === 0) { 
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; 
+            let msg = currentMode === 'favorites' ? '您的最愛清單目前空空如也喔！' : '找不到符合的藥品喔！';
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">${msg}</td></tr>`; 
             paginationBox.style.display = 'none'; return; 
         } 
         
@@ -413,25 +437,31 @@
             let isFav = favs.includes(String(p.id));
             let favClass = isFav ? 'active' : '';
             let favTitle = isFav ? '移除最愛' : '加入最愛';
+            
+            let unitText = p.unit ? p.unit.replace('/', '') : '盒'; // 移除斜線
+            
+            let favBtnHtml = `<button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>`;
 
+            // 採用 CSS Grid 完美對齊區塊，保證不跑版
             if (isNaN(stk) || stk <= 0) { 
                 actionHtml = `
-                    <div class="action-cell">
-                        <span class="status-badge-front status-out">缺貨中</span>
-                        <button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>
-                        <button class="icon-only-btn btn-notify" onclick="subscribeRestock('${p.id}', '${p.name}')" title="訂閱到貨通知">${svgNotify}</button>
+                    <div class="action-grid">
+                        <div class="status-badge-front status-out">缺貨中</div>
+                        <div class="qty-wrapper"><span style="color:#ccc;">-</span></div>
+                        <div><button class="icon-only-btn btn-notify" onclick="subscribeRestock('${p.id}', '${p.name}')" title="訂閱到貨通知">${svgNotify}</button></div>
+                        <div>${favBtnHtml}</div>
                     </div>
                 `;
             } else { 
                 actionHtml = `
-                    <div class="action-cell">
-                        <span class="status-badge-front status-in">供貨中</span>
+                    <div class="action-grid">
+                        <div class="status-badge-front status-in">供貨中</div>
                         <div class="qty-wrapper">
                             <input type="number" min="1" max="${stk}" value="1" class="qty-input" id="qty-${p.id}">
-                            <span style="font-size:15px; font-weight:bold; color:#888; margin-left:4px;">${p.unit||'盒'}</span>
+                            <span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span>
                         </div>
-                        <button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')" title="加入購物車">${svgCart}</button>
-                        <button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>
+                        <div><button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')" title="加入購物車">${svgCart}</button></div>
+                        <div>${favBtnHtml}</div>
                     </div>
                 `;
             } 
@@ -440,9 +470,12 @@
             
             htmlArray.push(`<tr>
                 <td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</td>
-                <td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td>
+                <td>
+                    <div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div>
+                    <div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div>
+                </td>
                 <td style="white-space: nowrap;">${p.spec||'-'}</td>
-                <td style="min-width: 120px;">${p.manufacturer||'-'}</td>
+                <td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td>
                 <td class="price-text">$${p.price||0}</td>
                 <td>${actionHtml}</td>
             </tr>`); 
