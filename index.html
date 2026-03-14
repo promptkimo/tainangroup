@@ -87,23 +87,25 @@
     
     .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; }
     .contact-form { flex: 1; min-width: 320px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
-    .contact-form textarea { width: 100%; height: 160px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size:16px; font-family:inherit;}
+    .contact-form textarea { width: 100%; height: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size:16px; font-family:inherit;}
     .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;}
     .contact-history { flex: 2; min-width: 450px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
     
-    /* --- 【大升級】客服留言對話框樣式 --- */
-    .chat-thread { margin-bottom: 30px; display: flex; flex-direction: column; }
-    .chat-user-bubble { background-color: #4a86e8; color: white; padding: 20px; border-radius: 16px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    .chat-user-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 8px; }
+    /* --- 【大升級】綠色與白色主題的客服對話卡片 --- */
+    .chat-thread { margin-bottom: 25px; display: flex; flex-direction: column; }
+    
+    /* 使用者的綠色泡泡 */
+    .chat-user-bubble { background-color: #4CAF50; color: white; padding: 15px 20px; border-radius: 16px 16px 0 16px; position: relative; box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2); align-self: flex-end; max-width: 85%; }
     .chat-user-text { font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
     
-    .chat-reply-wrapper { display: flex; margin-top: 20px; align-items: flex-start; padding-left: 15px; }
-    .chat-reply-icon { font-size: 26px; margin-right: 15px; margin-top: 8px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .chat-reply-bubble { background-color: #fff200; color: #333; padding: 20px; border-radius: 16px; flex: 1; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    .chat-reply-bubble::before { content: ''; position: absolute; top: 20px; left: -12px; border-width: 12px 12px 12px 0; border-style: solid; border-color: transparent #fff200 transparent transparent; }
-    .chat-reply-title { color: #757575; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
+    /* 客服的白色回覆泡泡 */
+    .chat-reply-wrapper { display: flex; margin-top: 10px; align-items: flex-start; }
+    .chat-reply-icon { font-size: 28px; margin-right: 10px; margin-top: 2px; }
+    .chat-reply-bubble { background-color: #ffffff; color: #333; padding: 15px 20px; border-radius: 0 16px 16px 16px; flex: 1; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e8f5e9; }
+    .chat-reply-title { color: #4CAF50; font-size: 14px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #e8f5e9; padding-bottom: 5px;}
     
-    .chat-time-bottom { text-align: right; color: #78909c; font-size: 13px; margin-top: 8px; padding-right: 10px; font-weight: bold;}
+    /* 時間標示 */
+    .chat-time { text-align: right; color: #9e9e9e; font-size: 12px; margin-top: 5px; margin-bottom: 5px; padding-right: 5px;}
 
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
@@ -171,17 +173,8 @@
       <div class="contact-layout">
         <div class="contact-form">
             <h2 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">聯絡客服</h2>
-            <div style="margin-bottom: 15px;">
-                <label style="display:block; font-weight:bold; margin-bottom:5px; color:#555;">問題分類：</label>
-                <select id="contact-category" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
-                    <option value="缺貨/商品資訊查詢相關問題">缺貨/商品資訊查詢相關問題</option>
-                    <option value="修改/取消訂單相關問題">修改/取消訂單相關問題</option>
-                    <option value="帳號/登入相關問題">帳號/登入相關問題</option>
-                    <option value="其他問題">其他問題</option>
-                </select>
-            </div>
-            <textarea id="contact-message" placeholder="請詳細描述您的問題..."></textarea>
-            <button onclick="submitMessage()" style="margin-top:10px;">📤 送出提問</button>
+            <textarea id="contact-message" placeholder="有任何問題，請直接在此輸入留言..."></textarea>
+            <button onclick="submitMessage()" style="margin-top:10px;">📤 送出留言</button>
         </div>
         
         <div class="contact-history">
@@ -264,7 +257,7 @@
     function renderTable() { const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; if(currentFrontPage > totalPages) currentFrontPage = totalPages; const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); let htmlArray = []; pageData.forEach(p => { let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; qtyH = '<span style="color:#ccc;">-</span>'; btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } else { stH = '<span class="in-stock">供貨中</span>'; qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">加車</button>`; } let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); }); tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; }
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
-    // --- 【大升級】客服對話渲染邏輯 ---
+    // --- 【大改版】客服系統渲染 (綠白主題) ---
     async function checkNewMessages() { const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success && res.unreadCount > 0) { const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } }
     
     async function loadMyMessages() { 
@@ -274,30 +267,23 @@
         
         if(res && res.success) { 
             if(res.data.length === 0) { 
-                box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">尚無對話紀錄，如有問題請在左側發問</p>'; 
+                box.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">尚無對話紀錄，請直接在左側留言發問。</p>'; 
                 return; 
             } 
             
             let html = ''; 
             [...res.data].reverse().forEach(m => { 
-                // 解析自訂的分類標籤 [分類] 內容
-                let title = "一般提問";
-                let mainContent = m.content;
-                const match = m.content.match(/^\[(.*?)\]\s*(.*)$/s); 
-                if (match) {
-                    title = match[1];
-                    mainContent = match[2];
-                }
+                // 為了相容舊資料，如果舊資料有帶有 [分類] 的字樣，就把它濾掉不顯示
+                let cleanContent = m.content.replace(/^\[.*?\]\n?/, '');
 
-                // 若有回覆，產生黃色氣泡
                 let replyHtml = '';
                 if(m.reply) {
                     replyHtml = `
                     <div class="chat-reply-wrapper">
-                        <div class="chat-reply-icon">💬</div>
+                        <div class="chat-reply-icon">👨‍⚕️</div>
                         <div class="chat-reply-bubble">
-                            <div class="chat-reply-title">回覆：${title}</div>
-                            <div style="font-size:16px; line-height:1.6; white-space:pre-wrap; font-weight:bold;">${m.reply}</div>
+                            <div class="chat-reply-title">客服回覆：</div>
+                            <div style="font-size:16px; line-height:1.6; white-space:pre-wrap; color:#2e7d32; font-weight:bold;">${m.reply}</div>
                         </div>
                     </div>`;
                 }
@@ -305,11 +291,10 @@
                 html += `
                 <div class="chat-thread">
                     <div class="chat-user-bubble">
-                        <div class="chat-user-title">${title}</div>
-                        <div class="chat-user-text">${mainContent}</div>
-                        ${replyHtml}
+                        <div class="chat-user-text">${cleanContent}</div>
                     </div>
-                    <div class="chat-time-bottom">您的留言時間：${m.time}</div>
+                    <div class="chat-time">${m.time}</div>
+                    ${replyHtml}
                 </div>`;
             }); 
             
@@ -322,16 +307,11 @@
         } 
     }
     
-    // 【修改】送出時加入分類標籤
     async function submitMessage() { 
-        const cat = document.getElementById('contact-category').value;
         const msg = document.getElementById('contact-message').value.trim(); 
         if(!msg) return alert("請輸入留言內容"); 
         
-        // 將分類組合進內容中傳給後端
-        const fullMessage = `[${cat}]\n${msg}`;
-
-        const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: fullMessage }); 
+        const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }); 
         if(res && res.success) { 
             showToast("✅ " + res.message); 
             document.getElementById('contact-message').value = ''; 
