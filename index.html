@@ -83,14 +83,28 @@
     .pagination-container button { padding: 10px 20px; font-size: 16px; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555;}
     
     #cart-modal, #order-detail-modal, #news-detail-modal, #edit-order-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 650px; max-height: 85vh; overflow-y: auto; }
+    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
     
-    .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; width: 100%; max-width: 900px; margin: 0 auto; }
-    .contact-form { flex: 1; min-width: 300px; background: white; padding: 30px; border-radius: 12px;}
-    .contact-form textarea { width: 100%; height: 140px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;}
+    .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; }
+    .contact-form { flex: 1; min-width: 320px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
+    .contact-form textarea { width: 100%; height: 160px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size:16px; font-family:inherit;}
     .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;}
-    .contact-history { flex: 2; min-width: 400px; background: white; padding: 30px; border-radius: 12px;}
+    .contact-history { flex: 2; min-width: 450px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
     
+    /* --- 【大升級】客服留言對話框樣式 --- */
+    .chat-thread { margin-bottom: 30px; display: flex; flex-direction: column; }
+    .chat-user-bubble { background-color: #4a86e8; color: white; padding: 20px; border-radius: 16px; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .chat-user-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 8px; }
+    .chat-user-text { font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
+    
+    .chat-reply-wrapper { display: flex; margin-top: 20px; align-items: flex-start; padding-left: 15px; }
+    .chat-reply-icon { font-size: 26px; margin-right: 15px; margin-top: 8px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .chat-reply-bubble { background-color: #fff200; color: #333; padding: 20px; border-radius: 16px; flex: 1; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    .chat-reply-bubble::before { content: ''; position: absolute; top: 20px; left: -12px; border-width: 12px 12px 12px 0; border-style: solid; border-color: transparent #fff200 transparent transparent; }
+    .chat-reply-title { color: #757575; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
+    
+    .chat-time-bottom { text-align: right; color: #78909c; font-size: 13px; margin-top: 8px; padding-right: 10px; font-weight: bold;}
+
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
   </style>
@@ -155,8 +169,25 @@
     
     <div id="view-contact" class="view-section">
       <div class="contact-layout">
-        <div class="contact-form"><h2 style="margin-top:0;">聯絡客服</h2><textarea id="contact-message" placeholder="留言給我們..."></textarea><button onclick="submitMessage()">送出</button></div>
-        <div class="contact-history"><h2 style="margin-top:0;">歷史對話紀錄</h2><div id="my-message-list" style="max-height:400px; overflow-y:auto;"></div></div>
+        <div class="contact-form">
+            <h2 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">聯絡客服</h2>
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; font-weight:bold; margin-bottom:5px; color:#555;">問題分類：</label>
+                <select id="contact-category" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+                    <option value="缺貨/商品資訊查詢相關問題">缺貨/商品資訊查詢相關問題</option>
+                    <option value="修改/取消訂單相關問題">修改/取消訂單相關問題</option>
+                    <option value="帳號/登入相關問題">帳號/登入相關問題</option>
+                    <option value="其他問題">其他問題</option>
+                </select>
+            </div>
+            <textarea id="contact-message" placeholder="請詳細描述您的問題..."></textarea>
+            <button onclick="submitMessage()" style="margin-top:10px;">📤 送出提問</button>
+        </div>
+        
+        <div class="contact-history">
+            <h2 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">歷史對話紀錄</h2>
+            <div id="my-message-list" style="max-height:500px; overflow-y:auto; padding-right:10px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -210,7 +241,6 @@
     let currentUser = { username: '', pharmacyName: '' };
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
-    
     let editingCart = []; let editingOrderId = '';
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 1500); }
@@ -231,219 +261,97 @@
 
     function filterProducts() { const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } annSection.style.display = 'none'; tableWrapper.style.display = 'block'; currentFilteredProducts = allProducts.filter(p => { if (currentMode === 'favorites' && !f.includes(p.id)) return false; return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q); }); currentFrontPage = 1; renderTable(); }
 
-    function renderTable() { 
-      const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); 
-      if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } 
-      const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; 
-      if(currentFrontPage > totalPages) currentFrontPage = totalPages; 
-      const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); 
-      let htmlArray = []; 
-      pageData.forEach(p => { 
-        let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; 
-        if (isNaN(stk) || stk <= 0) { 
-            stH = '<span class="out-of-stock">缺貨</span>'; 
-            qtyH = '<span style="color:#ccc;">-</span>'; 
-            btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; 
-        } else { 
-            stH = '<span class="in-stock">供貨中</span>'; 
-            qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; 
-            btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">加車</button>`; 
-        } 
-        let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); 
-      }); 
-      tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; 
-    }
+    function renderTable() { const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; if(currentFrontPage > totalPages) currentFrontPage = totalPages; const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); let htmlArray = []; pageData.forEach(p => { let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; qtyH = '<span style="color:#ccc;">-</span>'; btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } else { stH = '<span class="in-stock">供貨中</span>'; qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">加車</button>`; } let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); }); tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; }
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
+    // --- 【大升級】客服對話渲染邏輯 ---
     async function checkNewMessages() { const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success && res.unreadCount > 0) { const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } }
-    async function loadMyMessages() { const box = document.getElementById('my-message-list'); box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">讀取中...</p>'; const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success) { if(res.data.length === 0) { box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">尚無對話紀錄</p>'; return; } let html = ''; [...res.data].reverse().forEach(m => { html += `<div><div class="msg-bubble">${m.content}</div></div>`; if(m.reply) html += `<div><div class="reply-bubble">👨‍⚕️ 客服回覆：<br>${m.reply}</div></div>`; html += `<div class="msg-time">${m.time}</div>`; }); box.innerHTML = html; box.scrollTop = box.scrollHeight; if(res.unreadCount > 0) { document.getElementById('msg-badge').style.display = 'none'; callGasAPI({ action: 'markMessagesRead', username: currentUser.username }); } } }
-    async function submitMessage() { const msg = document.getElementById('contact-message').value.trim(); if(!msg) return alert("請輸入內容"); const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }); if(res && res.success) { showToast("✅ " + res.message); document.getElementById('contact-message').value = ''; loadMyMessages(); } }
+    
+    async function loadMyMessages() { 
+        const box = document.getElementById('my-message-list'); 
+        box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">讀取中...</p>'; 
+        const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); 
+        
+        if(res && res.success) { 
+            if(res.data.length === 0) { 
+                box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">尚無對話紀錄，如有問題請在左側發問</p>'; 
+                return; 
+            } 
+            
+            let html = ''; 
+            [...res.data].reverse().forEach(m => { 
+                // 解析自訂的分類標籤 [分類] 內容
+                let title = "一般提問";
+                let mainContent = m.content;
+                const match = m.content.match(/^\[(.*?)\]\s*(.*)$/s); 
+                if (match) {
+                    title = match[1];
+                    mainContent = match[2];
+                }
+
+                // 若有回覆，產生黃色氣泡
+                let replyHtml = '';
+                if(m.reply) {
+                    replyHtml = `
+                    <div class="chat-reply-wrapper">
+                        <div class="chat-reply-icon">💬</div>
+                        <div class="chat-reply-bubble">
+                            <div class="chat-reply-title">回覆：${title}</div>
+                            <div style="font-size:16px; line-height:1.6; white-space:pre-wrap; font-weight:bold;">${m.reply}</div>
+                        </div>
+                    </div>`;
+                }
+
+                html += `
+                <div class="chat-thread">
+                    <div class="chat-user-bubble">
+                        <div class="chat-user-title">${title}</div>
+                        <div class="chat-user-text">${mainContent}</div>
+                        ${replyHtml}
+                    </div>
+                    <div class="chat-time-bottom">您的留言時間：${m.time}</div>
+                </div>`;
+            }); 
+            
+            box.innerHTML = html; 
+            box.scrollTop = box.scrollHeight; 
+            if(res.unreadCount > 0) { 
+                document.getElementById('msg-badge').style.display = 'none'; 
+                callGasAPI({ action: 'markMessagesRead', username: currentUser.username }); 
+            } 
+        } 
+    }
+    
+    // 【修改】送出時加入分類標籤
+    async function submitMessage() { 
+        const cat = document.getElementById('contact-category').value;
+        const msg = document.getElementById('contact-message').value.trim(); 
+        if(!msg) return alert("請輸入留言內容"); 
+        
+        // 將分類組合進內容中傳給後端
+        const fullMessage = `[${cat}]\n${msg}`;
+
+        const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: fullMessage }); 
+        if(res && res.success) { 
+            showToast("✅ " + res.message); 
+            document.getElementById('contact-message').value = ''; 
+            loadMyMessages(); 
+        } 
+    }
+    
     async function subscribeRestock(pId, pName) { if(confirm(`訂閱【${pName}】到貨通知？`)) { const res = await callGasAPI({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); showToast(res.success ? "✅ " + res.message : "⚠️ " + res.message, !res.success); } }
     
-    async function loadOrders() { 
-        const tbody = document.getElementById('order-list'); 
-        const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); 
-        if (res && res.success) { 
-            myOrders = res.data; 
-            tbody.innerHTML = ''; 
-            if(myOrders.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; 
-                return; 
-            }
-            myOrders.forEach(o => { 
-                let statusColor = '';
-                if(o.status === '待處理' || o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #f57c00;'; 
-                else if(o.status === '撿貨中') statusColor = 'color: #8e24aa;'; 
-                else if(o.status === '已完成') statusColor = 'color: #2e7d32;'; 
-                else statusColor = 'color: #333;';
-                
-                tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 10px; font-size:14px; margin-left:12px; border-radius:6px;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; 
-            }); 
-        } 
-    }
+    async function loadOrders() { const tbody = document.getElementById('order-list'); const res = await callGasAPI({ action: 'getOrders', username: currentUser.username }); if (res && res.success) { myOrders = res.data; tbody.innerHTML = ''; if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; return; } myOrders.forEach(o => { let statusColor = ''; if(o.status === '待處理' || o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #f57c00;'; else if(o.status === '撿貨中') statusColor = 'color: #8e24aa;'; else if(o.status === '已完成') statusColor = 'color: #2e7d32;'; else statusColor = 'color: #333;'; tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="order-btn" style="background:#607d8b; padding:4px 10px; font-size:14px; margin-left:12px; border-radius:6px;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; }); } }
 
-    // --- 【修改】前台訂單明細排版與字體優化 ---
-    function showOrderDetails(orderId) { 
-        const order = myOrders.find(o => o.orderId === orderId); 
-        if(!order) return; 
-        const container = document.getElementById('order-detail-container'); 
-        const items = order.details.split('\n').filter(i => i.trim() !== ''); 
-        
-        let html = `<p style="font-size:15px; color:#333; margin: 4px 0;"><strong>訂單編號：</strong> ${order.orderId}</p><p style="font-size:14px; color:#666; margin: 4px 0;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">`; 
-        html += `<ul style="list-style:none; padding:0; margin:0;">`;
-        
-        items.forEach((itemStr, index) => { 
-            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/); 
-            if(match) {
-               const nhi = match[1] || ''; 
-               const name = match[2].trim(); 
-               const qty = parseInt(match[3]); 
-               const unit = match[4].trim(); 
-               const price = parseFloat(match[5]); 
-               const subtotal = qty * price;
-               let nhiTag = nhi ? `[${nhi}] ` : '';
-
-               html += `
-               <li style="margin-bottom:8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px;">
-                  <div style="font-weight:bold; color:#2c3e50; font-size:15px; line-height:1.4;">${index + 1}. ${nhiTag}${name}</div>
-                  <div style="color:#e65100; font-size:14px; font-weight:bold; margin-top:2px; padding-left:18px;">$${price}元 x ${qty} ${unit} = ${subtotal} 元</div>
-               </li>`;
-            } else {
-               html += `<li style="margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #f0f0f0; font-size:15px;">${index + 1}. ${itemStr}</li>`; 
-            }
-        }); 
-        
-        html += `</ul><hr style="border:0; border-top:1px solid #eee; margin:15px 0;"><div style="text-align:right; font-size: 24px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; 
-        
-        if (order.remark) { 
-           html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; 
-        } 
-        container.innerHTML = html; 
-
-        const actionsContainer = document.getElementById('order-detail-actions');
-        if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') {
-            actionsContainer.innerHTML = `
-              <button style="padding:10px 18px; border:none; border-radius:6px; background:#e53935; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 取消訂單</button>
-              <button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 修改數量</button>
-              <button style="padding:10px 18px; border:none; border-radius:6px; background:#9e9e9e; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="closeOrderDetail()">關閉視窗</button>
-            `;
-        } else {
-            actionsContainer.innerHTML = `<button style="padding:10px 30px; border:none; border-radius:6px; background:#607d8b; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="closeOrderDetail()">關閉視窗</button>`;
-        }
-
-        document.getElementById('order-detail-modal').style.display = 'flex'; 
-    }
-
+    function showOrderDetails(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); let html = `<p style="font-size:15px; color:#333; margin: 4px 0;"><strong>訂單編號：</strong> ${order.orderId}</p><p style="font-size:14px; color:#666; margin: 4px 0;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">`; html += `<ul style="list-style:none; padding:0; margin:0;">`; items.forEach((itemStr, index) => { const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/); if(match) { const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); const subtotal = qty * price; let nhiTag = nhi ? `[${nhi}] ` : ''; html += `<li style="margin-bottom:8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px;"><div style="font-weight:bold; color:#2c3e50; font-size:15px; line-height:1.4;">${index + 1}. ${nhiTag}${name}</div><div style="color:#e65100; font-size:14px; font-weight:bold; margin-top:2px; padding-left:18px;">$${price}元 x ${qty} ${unit} = ${subtotal} 元</div></li>`; } else { html += `<li style="margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #f0f0f0; font-size:15px;">${index + 1}. ${itemStr}</li>`; } }); html += `</ul><hr style="border:0; border-top:1px solid #eee; margin:15px 0;"><div style="text-align:right; font-size: 24px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } container.innerHTML = html; const actionsContainer = document.getElementById('order-detail-actions'); if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { actionsContainer.innerHTML = `<button style="padding:10px 18px; border:none; border-radius:6px; background:#e53935; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 取消訂單</button><button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 修改數量</button><button style="padding:10px 18px; border:none; border-radius:6px; background:#9e9e9e; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="closeOrderDetail()">關閉視窗</button>`; } else { actionsContainer.innerHTML = `<button style="padding:10px 30px; border:none; border-radius:6px; background:#607d8b; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="closeOrderDetail()">關閉視窗</button>`; } document.getElementById('order-detail-modal').style.display = 'flex'; }
     function closeOrderDetail() { document.getElementById('order-detail-modal').style.display = 'none'; }
     
-    async function deleteMyOrder(orderId) {
-        if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return;
-        const res = await callGasAPI({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}, 'login-loading');
-        if(res && res.success) {
-            showToast(res.message);
-            closeOrderDetail();
-            loadOrders();
-        } else {
-            showToast(res.message || "取消失敗", true);
-        }
-    }
-
-    function openEditOrder(orderId) {
-        const order = myOrders.find(o => o.orderId === orderId);
-        if(!order) return;
-        editingOrderId = orderId;
-        editingCart = [];
-
-        const items = order.details.split('\n').filter(i => i.trim() !== '');
-        items.forEach((itemStr) => {
-            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/);
-            if (match) {
-                const nhi = match[1] || '';
-                const name = match[2].trim();
-                const qty = parseInt(match[3]);
-                const unit = match[4].trim();
-                const price = parseFloat(match[5]);
-                
-                let prod = allProducts.find(p => p.name === name);
-                let max = prod ? prod.stock : 999; 
-                editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: max});
-            }
-        });
-
-        closeOrderDetail(); 
-        renderEditOrderCart(); 
-    }
-
-    function renderEditOrderCart() {
-        const c = document.getElementById('edit-cart-items-container');
-        c.innerHTML='';
-        let t = 0;
-        if (editingCart.length === 0) {
-            c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>';
-        } else {
-            editingCart.forEach((i, x) => {
-                t += i.price * i.qty;
-                c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:12px 0; font-size:15px; align-items:center;">
-                  <div style="flex:1;">
-                    <strong style="display:block; margin-bottom:4px; color:#2c3e50; font-size:15px;">${i.name}</strong>
-                    <div style="color:#607d8b; display:flex; align-items:center; gap:8px; font-size:14px;">
-                      <span>單價: $${i.price}</span> | <span>數量:</span>
-                      <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" style="width:55px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:4px;">
-                      <span>${i.unit || ''}</span>
-                    </div>
-                  </div>
-                  <div style="text-align:right; min-width:80px;">
-                    <div style="font-size:16px; font-weight:bold; color:#d32f2f; margin-bottom:8px;">$${i.price*i.qty}</div>
-                    <button style="background:#e53935; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:13px;" onclick="removeEditCartItem(${x})">🗑️ 移除</button>
-                  </div>
-                </div>`;
-            });
-        }
-        document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`;
-        document.getElementById('edit-order-modal').style.display = 'flex';
-    }
-
-    function updateEditCartQty(index, newQty) {
-        let q = parseInt(newQty);
-        if (isNaN(q) || q < 1) q = 1;
-        if (q > editingCart[index].maxStock) {
-            showToast(`⚠️ 超過庫存！目前僅剩: ${editingCart[index].maxStock}`, true);
-            q = editingCart[index].maxStock;
-        }
-        editingCart[index].qty = q;
-        renderEditOrderCart();
-    }
-
-    function removeEditCartItem(index) {
-        editingCart.splice(index, 1);
-        renderEditOrderCart();
-    }
-
-    async function saveEditedOrder() {
-        if(editingCart.length === 0) {
-            alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「取消訂單」按鈕。");
-            return;
-        }
-        if(!confirm("確定要儲存修改後的訂單數量嗎？")) return;
-        let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0);
-
-        const res = await callGasAPI({
-            action: 'updateMyOrder',
-            username: currentUser.username,
-            orderId: editingOrderId,
-            cart: editingCart,
-            total: total
-        }, 'login-loading');
-
-        if(res && res.success) {
-            showToast("✅ " + res.message);
-            document.getElementById('edit-order-modal').style.display = 'none';
-            loadOrders(); // 更新畫面
-        } else {
-            showToast("❌ " + res.message, true);
-        }
-    }
-
+    async function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; const res = await callGasAPI({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}, 'login-loading'); if(res && res.success) { showToast(res.message); closeOrderDetail(); loadOrders(); } else { showToast(res.message || "取消失敗", true); } }
+    function openEditOrder(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; editingOrderId = orderId; editingCart = []; const items = order.details.split('\n').filter(i => i.trim() !== ''); items.forEach((itemStr) => { const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/); if (match) { const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: max}); } }); closeOrderDetail(); renderEditOrderCart(); }
+    function renderEditOrderCart() { const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; } else { editingCart.forEach((i, x) => { t += i.price * i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:12px 0; font-size:15px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:4px; color:#2c3e50; font-size:15px;">${i.name}</strong><div style="color:#607d8b; display:flex; align-items:center; gap:8px; font-size:14px;"><span>單價: $${i.price}</span> | <span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" style="width:55px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:4px;"><span>${i.unit || ''}</span></div></div><div style="text-align:right; min-width:80px;"><div style="font-size:16px; font-weight:bold; color:#d32f2f; margin-bottom:8px;">$${i.price*i.qty}</div><button style="background:#e53935; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:13px;" onclick="removeEditCartItem(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; document.getElementById('edit-order-modal').style.display = 'flex'; }
+    function updateEditCartQty(index, newQty) { let q = parseInt(newQty); if (isNaN(q) || q < 1) q = 1; if (q > editingCart[index].maxStock) { showToast(`⚠️ 超過庫存！目前僅剩: ${editingCart[index].maxStock}`, true); q = editingCart[index].maxStock; } editingCart[index].qty = q; renderEditOrderCart(); }
+    function removeEditCartItem(index) { editingCart.splice(index, 1); renderEditOrderCart(); }
+    async function saveEditedOrder() { if(editingCart.length === 0) { alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「取消訂單」按鈕。"); return; } if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); const res = await callGasAPI({ action: 'updateMyOrder', username: currentUser.username, orderId: editingOrderId, cart: editingCart, total: total }, 'login-loading'); if(res && res.success) { showToast("✅ " + res.message); document.getElementById('edit-order-modal').style.display = 'none'; loadOrders(); } else { showToast("❌ " + res.message, true); } }
 
     function addToCart(pId, pName, pPrice, max, pUnit, pNhi) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit, nhiCode: pNhi}); } document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); }
     function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { cart.forEach((i, x) => { t += i.price * i.qty; totalItems += i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong><div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; }
