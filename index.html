@@ -24,7 +24,7 @@
     /* 系統主畫面區 */
     #app-container { display: none; width: 95%; max-width: 1150px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
     
-    /* --- 【選單固定吸頂區】只有這個會固定在最上方 --- */
+    /* --- 選單固定吸頂區 --- */
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; }
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
     
@@ -70,7 +70,7 @@
 
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
-    /* --- 【解放表格】不再限制高度，讓資料自然伸展 --- */
+    /* --- 解放表格，資料自然伸展 --- */
     .table-container { 
         overflow-x: auto; 
         background: white; 
@@ -91,24 +91,25 @@
     .price-text { font-size: 18px; font-weight: bold; color: #333; white-space: nowrap;}
     .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; white-space: nowrap;}
     
-    /* --- 右側操作按鈕區 --- */
+    /* --- 【純圖示化】右側操作按鈕區 --- */
     .action-cell { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
     
-    .status-badge-front { padding: 6px 10px; border-radius: 6px; font-size: 15px; font-weight: bold; margin-right: 10px; white-space: nowrap;}
+    .status-badge-front { padding: 6px 10px; border-radius: 6px; font-size: 14px; font-weight: bold; margin-right: 5px; white-space: nowrap;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
     .status-out { background: #ffebee; color: #d32f2f; }
     
     .qty-wrapper { display: flex; align-items: center; font-size: 16px; color: #333; margin-right: 5px;}
-    .qty-input { width: 55px; height: 38px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 16px; outline: none; margin-right: 5px; color:#333; font-weight:bold; box-sizing: border-box; padding:0;}
+    .qty-input { width: 55px; height: 38px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 16px; outline: none; color:#333; font-weight:bold; box-sizing: border-box; padding:0;}
     .qty-input:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); }
     
-    .action-btn { 
-        background: white; border: 1px solid #ccc; border-radius: 6px; height: 38px; padding: 0 12px; cursor: pointer; 
-        display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-        font-size: 14px; font-weight: bold; color: #555; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: nowrap;
+    /* 純圖示方形按鈕 */
+    .icon-only-btn { 
+        background: white; border: 1px solid #ccc; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; 
+        display: inline-flex; align-items: center; justify-content: center; padding: 0;
+        transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
     }
-    .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .action-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .icon-only-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .icon-only-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s;}
     
     .btn-addcart { color: #ff9800; border-color: #ff9800; }
     .btn-addcart:hover { background: #fff3e0; }
@@ -232,7 +233,7 @@
                   <th style="width:90px;">規格</th>
                   <th style="width:120px;">製造商</th>
                   <th style="width:90px;">單價</th>
-                  <th style="text-align: right; min-width: 320px;">操作區</th>
+                  <th style="text-align: right; min-width: 250px;">操作區</th>
                 </tr>
               </thead>
               <tbody id="product-list">
@@ -324,7 +325,7 @@
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); return f ? JSON.parse(f) : []; }
     
-    // 【修復】最愛功能型別轉換，確保不會消失
+    // 最愛功能確保為字串比對
     function toggleFavorite(id) { 
         id = String(id);
         let f = getFavorites(); 
@@ -377,7 +378,6 @@
         tableWrapper.style.display = 'block'; 
         
         currentFilteredProducts = allProducts.filter(p => { 
-            // 【修復】強制型別轉換，避免數字與字串比對錯誤導致最愛失效
             if (currentMode === 'favorites' && !f.includes(String(p.id))) return false; 
             return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q); 
         }); 
@@ -386,7 +386,7 @@
         renderTable(); 
     }
 
-    // --- 【全新排版】超明顯的按鈕區設計 ---
+    // --- 【純圖示化按鈕區】 ---
     function renderTable() { 
         const tbody = document.getElementById('product-list'); 
         const paginationBox = document.getElementById('front-pagination'); 
@@ -410,17 +410,16 @@
             let stk = parseInt(p.stock); 
             let actionHtml = ''; 
             
-            // 【修復】強制型別轉換，確保愛心按鈕能正確亮起
             let isFav = favs.includes(String(p.id));
             let favClass = isFav ? 'active' : '';
-            let favText = isFav ? '❤️ 已加最愛' : '🤍 最愛';
+            let favTitle = isFav ? '移除最愛' : '加入最愛';
 
             if (isNaN(stk) || stk <= 0) { 
                 actionHtml = `
                     <div class="action-cell">
                         <span class="status-badge-front status-out">缺貨中</span>
-                        <button class="action-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')">${svgHeart} <span>${favText}</span></button>
-                        <button class="action-btn btn-notify" onclick="subscribeRestock('${p.id}', '${p.name}')">${svgNotify} <span>通知</span></button>
+                        <button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>
+                        <button class="icon-only-btn btn-notify" onclick="subscribeRestock('${p.id}', '${p.name}')" title="訂閱到貨通知">${svgNotify}</button>
                     </div>
                 `;
             } else { 
@@ -429,10 +428,10 @@
                         <span class="status-badge-front status-in">供貨中</span>
                         <div class="qty-wrapper">
                             <input type="number" min="1" max="${stk}" value="1" class="qty-input" id="qty-${p.id}">
-                            <span style="font-size:15px; font-weight:bold; color:#888;">/${p.unit||'盒'}</span>
+                            <span style="font-size:15px; font-weight:bold; color:#888; margin-left:4px;">${p.unit||'盒'}</span>
                         </div>
-                        <button class="action-btn btn-addcart" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">${svgCart} <span>加車</span></button>
-                        <button class="action-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')">${svgHeart} <span>${favText}</span></button>
+                        <button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')" title="加入購物車">${svgCart}</button>
+                        <button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>
                     </div>
                 `;
             } 
