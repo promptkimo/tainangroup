@@ -70,40 +70,32 @@
 
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
-    /* --- 【完美表格佈局】使用 table-layout: fixed 強制將表格鎖定在畫面內 --- */
+    /* --- 表格區 --- */
     .table-container { 
         background: white; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
         border-radius: 12px; 
         width: 100%; 
         box-sizing: border-box; 
-        overflow: hidden; /* 隱藏溢出，防止任何橫向捲軸 */
+        overflow-x: auto;
     }
 
     table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; }
-    /* 拔除標題列固定，徹底解決擋畫面的問題 */
     th { background-color: #4CAF50; color: white; padding: 14px 10px; text-align: left; font-size: 16px; white-space: nowrap;}
     td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     tr:hover { background-color: #f9fbf9; }
     
-    /* --- 【文字過長自動省略 (...) 】 --- */
-    .truncate-text { 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        display: block; 
-        width: 100%;
-    }
+    .truncate-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; }
     .prod-name { font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; }
     .prod-ing { font-size: 13px; color: #607d8b; }
     
     .price-text { font-size: 18px; font-weight: bold; color: #333;}
     .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; display: block;}
     
-    /* --- 【完美對齊的按鈕區】使用 Grid 網格，確保缺貨與供貨按鈕絕對不偏移 --- */
+    /* --- 右側操作區 Grid 排版 --- */
     .action-grid {
         display: grid;
-        grid-template-columns: 65px 70px 42px 42px; /* 分別為: 狀態標籤、數量框、主按鈕、最愛按鈕 */
+        grid-template-columns: 65px 70px 42px 42px; 
         gap: 6px;
         align-items: center;
         justify-content: end;
@@ -175,7 +167,7 @@
   <div id="toast"></div>
 
   <div id="login-screen">
-      <div class="header-container">
+      <div class="header-container" style="justify-content: center; margin-bottom: 25px;">
           <img src="./logo.jpg" alt="Logo">
           <div class="header-text">
               <h1>台南社區藥局藥品供應平台</h1>
@@ -205,14 +197,15 @@
 
   <div id="app-container">
     
+    <div class="header-container" style="justify-content: flex-start;">
+      <img src="./logo.jpg" alt="Logo" style="width: 100px;">
+      <div class="header-text">
+        <h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1>
+        <p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p>
+      </div>
+    </div>
+
     <div class="sticky-nav-wrapper">
-        <div class="header-container" style="justify-content: flex-start; margin-bottom: 10px;">
-          <img src="./logo.jpg" alt="Logo" style="width: 100px;">
-          <div class="header-text">
-            <h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1>
-            <p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p>
-          </div>
-        </div>
         <div class="top-bar">
           <div class="app-nav">
             <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
@@ -338,7 +331,6 @@
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
     
-    // 【修復】嚴格轉換儲存與讀取的型別，確保我的最愛功能正常
     function getFavorites() { 
         const f = localStorage.getItem('favs_' + currentUser.username); 
         if(!f) return [];
@@ -354,14 +346,12 @@
         filterProducts(); 
     }
 
-    // 【修復】確保切換到我的最愛時，表格能正確顯示出來
     function switchView(viewName) { 
         document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
         
         document.getElementById(`nav-${viewName}`).classList.add('active'); 
         
-        // 如果是我的最愛，其實底層要打開的是 products 區塊
         let targetView = viewName === 'favorites' ? 'products' : viewName;
         document.getElementById(`view-${targetView}`).classList.add('active');
 
@@ -409,7 +399,6 @@
         renderTable(); 
     }
 
-    // --- 【修復】加入文字隱藏，並完美對齊操作區 ---
     function renderTable() { 
         const tbody = document.getElementById('product-list'); 
         const paginationBox = document.getElementById('front-pagination'); 
@@ -438,11 +427,9 @@
             let favClass = isFav ? 'active' : '';
             let favTitle = isFav ? '移除最愛' : '加入最愛';
             
-            let unitText = p.unit ? p.unit.replace('/', '') : '盒'; // 移除斜線
-            
+            let unitText = p.unit ? p.unit.replace('/', '') : '盒'; 
             let favBtnHtml = `<button class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>`;
 
-            // 採用 CSS Grid 完美對齊區塊，保證不跑版
             if (isNaN(stk) || stk <= 0) { 
                 actionHtml = `
                     <div class="action-grid">
@@ -584,15 +571,100 @@
     
     function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
-    function openEditOrder(orderId) { const order = myOrders.find(o => o.orderId === orderId); if(!order) return; editingOrderId = orderId; editingCart = []; const items = order.details.split('\n').filter(i => i.trim() !== ''); items.forEach((itemStr) => { const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/); if (match) { const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: max}); } }); document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); }
-    function renderEditOrderCart() { const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; } else { editingCart.forEach((i, x) => { t += i.price * i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:12px 0; font-size:15px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:4px; color:#2c3e50; font-size:15px;">${i.name}</strong><div style="color:#607d8b; display:flex; align-items:center; gap:8px; font-size:14px;"><span>單價: $${i.price}</span> | <span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" style="width:55px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:4px;"><span>${i.unit || ''}</span></div></div><div style="text-align:right; min-width:80px;"><div style="font-size:16px; font-weight:bold; color:#d32f2f; margin-bottom:8px;">$${i.price*i.qty}</div><button style="background:#e53935; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:13px;" onclick="removeEditCartItem(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; document.getElementById('edit-order-modal').style.display = 'flex'; }
+    // --- 【修改訂單畫面加入編號與健保碼】 ---
+    function openEditOrder(orderId) { 
+        const order = myOrders.find(o => o.orderId === orderId); 
+        if(!order) return; 
+        editingOrderId = orderId; 
+        editingCart = []; 
+        const items = order.details.split('\n').filter(i => i.trim() !== ''); 
+        items.forEach((itemStr) => { 
+            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)$/); 
+            if (match) { 
+                const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); 
+                let prod = allProducts.find(p => p.name === name); 
+                let max = prod ? prod.stock : 999; 
+                editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: max}); 
+            } 
+        }); 
+        document.getElementById('order-detail-modal').style.display='none'; 
+        renderEditOrderCart(); 
+    }
+    
+    function renderEditOrderCart() { 
+        const c = document.getElementById('edit-cart-items-container'); 
+        c.innerHTML=''; 
+        let t = 0; 
+        if (editingCart.length === 0) { 
+            c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; 
+        } else { 
+            editingCart.forEach((i, x) => { 
+                t += i.price * i.qty; 
+                let nhiTag = i.nhiCode ? `<span style="color:#888; font-size:14px; font-weight:normal; margin-right:4px;">[${i.nhiCode}]</span>` : '';
+                c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:12px 0; font-size:15px; align-items:center;">
+                    <div style="flex:1;">
+                        <strong style="display:block; margin-bottom:4px; color:#2c3e50; font-size:16px;">${x + 1}. ${nhiTag}${i.name}</strong>
+                        <div style="color:#607d8b; display:flex; align-items:center; gap:8px; font-size:14px;">
+                            <span>單價: $${i.price}</span> | <span>數量:</span>
+                            <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" style="width:55px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:4px;">
+                            <span>${i.unit || ''}</span>
+                        </div>
+                    </div>
+                    <div style="text-align:right; min-width:80px;">
+                        <div style="font-size:16px; font-weight:bold; color:#d32f2f; margin-bottom:8px;">$${i.price*i.qty}</div>
+                        <button style="background:#e53935; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:13px;" onclick="removeEditCartItem(${x})">🗑️ 移除</button>
+                    </div>
+                </div>`; 
+            }); 
+        } 
+        document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; 
+        document.getElementById('edit-order-modal').style.display = 'flex'; 
+    }
+    
     function updateEditCartQty(index, newQty) { let q = parseInt(newQty); if (isNaN(q) || q < 1) q = 1; if (q > editingCart[index].maxStock) { showToast(`⚠️ 超過庫存！目前僅剩: ${editingCart[index].maxStock}`, true); q = editingCart[index].maxStock; } editingCart[index].qty = q; renderEditOrderCart(); }
     function removeEditCartItem(index) { editingCart.splice(index, 1); renderEditOrderCart(); }
     
     function saveEditedOrder() { if(editingCart.length === 0) { alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「取消訂單」按鈕。"); return; } if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); let details = editingCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})`; }).join('\n'); document.getElementById('edit-order-modal').style.display = 'none'; const orderIndex = myOrders.findIndex(o => o.orderId === editingOrderId); if(orderIndex !== -1) { myOrders[orderIndex].total = total; myOrders[orderIndex].details = details; renderFrontOrders(); } showToast("✅ 修改已儲存"); callGasAPISilent({ action: 'updateMyOrder', username: currentUser.username, orderId: editingOrderId, cart: editingCart, total: total }); }
 
     function addToCart(pId, pName, pPrice, max, pUnit, pNhi) { const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; const ex = cart.find(i => i.id === pId); if(ex) { if(ex.qty + q > max) { showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: max, unit: pUnit, nhiCode: pNhi}); } document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); }
-    function openCart() { const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { cart.forEach((i, x) => { t += i.price * i.qty; totalItems += i.qty; c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50;">${i.name}</strong><div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; }); } document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; }
+    
+    // --- 【購物車加入編號與健保碼】 ---
+    function openCart() { 
+        const c = document.getElementById('cart-items-container'); 
+        c.innerHTML=''; 
+        let t = 0; 
+        let totalItems = 0; 
+        if (cart.length === 0) { 
+            c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; 
+        } else { 
+            cart.forEach((i, x) => { 
+                t += i.price * i.qty; 
+                totalItems += i.qty; 
+                
+                // 健保碼標籤
+                let nhiTag = i.nhiCode ? `<span style="color:#888; font-size:15px; font-weight:normal; margin-right:5px;">[${i.nhiCode}]</span>` : '';
+                
+                c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;">
+                    <div style="flex:1;">
+                        <strong style="display:block; margin-bottom:8px; color:#2c3e50; font-size: 18px;">${x + 1}. ${nhiTag}${i.name}</strong>
+                        <div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px;">
+                            <span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span>
+                            <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;">
+                            <span style="font-weight:bold;">${i.unit || ''}</span>
+                        </div>
+                    </div>
+                    <div style="text-align:right; min-width:100px;">
+                        <div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div>
+                        <button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onclick="removeFromCart(${x})">🗑️ 移除</button>
+                    </div>
+                </div>`; 
+            }); 
+        } 
+        document.getElementById('cart-total-display').innerText = `總金額：$${t}`; 
+        document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; 
+        document.getElementById('cart-modal').style.display = 'flex'; 
+    }
+    
     function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 超過庫存！目前僅剩: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; openCart(); }
     function removeFromCart(index) { cart.splice(index, 1); openCart(); if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; }
     
