@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow: hidden; /* 防止整個網頁出現捲軸 */ }
     
-    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; background: #f4f7f6; }
+    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; background: #f4f7f6; position: absolute; top:0; left:0; z-index: 5000;}
     .header-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
     .header-container img { width: 140px; height: auto; }
     .header-text { text-align: left; }
@@ -19,10 +19,11 @@
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
-    #app-container { display: none; width: 95%; max-width: 1100px; flex-direction: column; gap: 20px; margin: 0 auto; padding-top: 20px; padding-bottom: 40px;}
-    .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin: 0;}
-    .view-section { display: none; width: 100%; margin: 0; }
-    .view-section.active { display: block; }
+    /* --- 系統主畫面區 --- */
+    #app-container { display: none; width: 95%; max-width: 1100px; flex-direction: column; gap: 15px; margin: 0 auto; padding-top: 15px; height: 100vh; box-sizing: border-box; }
+    .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin: 0; flex-shrink: 0;}
+    .view-section { display: none; width: 100%; margin: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .view-section.active { display: flex; }
 
     .app-nav { display: flex; gap: 15px; align-items: center; }
     .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 20px; font-size: 16px; border: none; background: transparent; cursor: pointer; border-radius: 12px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; }
@@ -38,11 +39,11 @@
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
     .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
     
-    .search-container { width: 100%; box-sizing: border-box; margin: 0 0 20px 0; }
+    .search-container { width: 100%; box-sizing: border-box; margin: 0 0 15px 0; flex-shrink: 0;}
     .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
     .search-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 8px rgba(76,175,80,0.2);}
     
-    .news-board { width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin: 0 0 20px 0; }
+    .news-board { width: 100%; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin: 0 0 20px 0; flex-shrink: 0;}
     .news-top { background-color: #4ba3b6; color: white; }
     .news-header { font-size: 22px; font-weight: bold; padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.3); letter-spacing: 1px;}
     .news-list { list-style: none; padding: 0; margin: 0; }
@@ -64,7 +65,16 @@
 
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
-    .table-container { overflow-x: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; max-height: 65vh; width: 100%; box-sizing: border-box; }
+    /* --- 【核心修復】動態高度吃滿剩餘空間，不再讓主視窗捲動 --- */
+    #products-table-wrapper { display: none; flex-direction: column; flex: 1; min-height: 0; padding-bottom: 20px;}
+    .table-container { overflow: auto; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; width: 100%; box-sizing: border-box; flex: 1; min-height: 0; }
+    
+    /* 加入專屬捲軸樣式，讓滑鼠更好抓 */
+    .table-container::-webkit-scrollbar { height: 16px; width: 16px; }
+    .table-container::-webkit-scrollbar-track { background: #f4f7f6; border-radius: 4px; }
+    .table-container::-webkit-scrollbar-thumb { background: #cfcfcf; border-radius: 8px; border: 4px solid #f4f7f6; }
+    .table-container::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
     table { width: 100%; border-collapse: collapse; font-size: 16px; }
     th, td { padding: 16px 18px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     th { background-color: #4CAF50; color: white; position: sticky; top: 0; z-index: 10; font-size: 17px; white-space: nowrap;}
@@ -75,7 +85,6 @@
     .price-text { font-size: 18px; font-weight: bold; color: #333; white-space: nowrap;}
     .nhi-text { font-size: 14px; color: #e91e63; font-weight: bold; margin-top: 6px; white-space: nowrap;}
     
-    /* --- 【全新設計】操作按鈕區塊樣式 --- */
     .action-group { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
     .icon-btn { background: transparent; border: 1px solid #ddd; border-radius: 6px; width: 38px; height: 38px; cursor: pointer; font-size: 18px; transition: 0.2s; display: flex; align-items: center; justify-content: center; padding: 0; user-select: none;}
     .icon-btn:hover { background: #f0f0f0; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -85,15 +94,15 @@
     .order-input { width: 60px; text-align: center; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; height: 38px; box-sizing: border-box; padding: 0;}
     .order-input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
 
-    .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 12px; background: white; border-radius: 12px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; margin-top: 5px;}
+    .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 12px; background: white; border-radius: 12px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; margin-top: 15px; flex-shrink: 0;}
     .pagination-container button { padding: 10px 20px; font-size: 16px; border: 1px solid #ddd; background: white; border-radius: 6px; font-weight: bold; color: #555;}
     
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
     
     /* 聊天室 */
-    .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0; }
-    .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); z-index: 10; display: flex; align-items: center; justify-content: space-between;}
+    .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; border: 1px solid #e0e0e0; margin: 0 0 20px 0; }
+    .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); z-index: 10; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
     .chat-header p { margin: 0; color: #78909c; font-size: 14px; margin-top: 4px; }
     .chat-history-area { flex: 1; padding: 20px 25px; overflow-y: auto; background-color: #e8f5e9; scroll-behavior: smooth; }
@@ -106,7 +115,7 @@
     .chat-reply-content { display: flex; flex-direction: column; align-items: flex-start; max-width: 75%; }
     .chat-reply-bubble { background-color: #ffffff; color: #333; padding: 14px 18px; border-radius: 0 18px 18px 18px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-size: 16px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;}
     .chat-time-reply { color: #888; font-size: 12px; margin-top: 4px; padding-left: 5px; }
-    .chat-input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: flex-end; gap: 12px; }
+    .chat-input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: flex-end; gap: 12px; flex-shrink: 0;}
     .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; font-family: inherit; outline: none; line-height: 1.5; transition: 0.3s; background: #f9f9f9;}
     .chat-input-area textarea:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); background: white;}
     .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; white-space: nowrap; height: 50px; transition: 0.2s;}
@@ -144,7 +153,7 @@
   </div>
 
   <div id="app-container">
-    <div class="header-container" style="margin-top: 10px;">
+    <div class="header-container" style="flex-shrink: 0;">
       <img src="./logo.jpg" alt="Logo">
       <div class="header-text">
         <h1>台南社區藥局藥品供應平台</h1>
@@ -173,7 +182,7 @@
          <div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
          <div class="search-hint">👆 請使用上方的搜尋框，尋找您需要的藥品 👆</div>
       </div>
-      <div id="products-table-wrapper" style="display:none;">
+      <div id="products-table-wrapper">
           <div class="table-container">
             <table>
               <thead>
@@ -197,7 +206,7 @@
     </div>
 
     <div id="view-orders" class="view-section">
-      <div class="table-container"><table><thead><tr><th>訂購時間</th><th>訂單編號</th><th>總金額</th><th>處理狀態</th></tr></thead><tbody id="order-list"></tbody></table></div>
+      <div class="table-container" style="padding-bottom: 20px;"><table><thead><tr><th>訂購時間</th><th>訂單編號</th><th>總金額</th><th>處理狀態</th></tr></thead><tbody id="order-list"></tbody></table></div>
     </div>
     
     <div id="view-contact" class="view-section">
@@ -216,7 +225,7 @@
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
-    <div class="cart-content" style="max-width: 800px;">
+    <div class="cart-content" style="max-width: 800px;" onclick="event.stopPropagation()">
       <h2 id="news-detail-title" style="margin-top:0; color:#00838f; border-bottom:2px solid #b2ebf2; padding-bottom:15px; font-size: 26px; line-height: 1.4;">公告標題</h2>
       <div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div>
       <div id="news-detail-content" style="font-size:18px; line-height:1.8; color:#333; white-space:pre-wrap; margin-bottom:30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">文章內容</div>
@@ -225,7 +234,7 @@
   </div>
 
   <div id="cart-modal" class="modal-overlay">
-    <div class="cart-content">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; font-size: 26px;">🛒 您的購物車</h2>
       <div id="cart-items-container"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
@@ -237,7 +246,7 @@
   </div>
 
   <div id="order-detail-modal" class="modal-overlay">
-    <div class="cart-content">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 12px; margin-bottom: 15px; font-size: 24px;">📋 訂單完整明細</h2>
       <div id="order-detail-container"></div>
       <div style="display:flex; justify-content:center; margin-top:20px; gap: 15px;" id="order-detail-actions"></div>
@@ -245,7 +254,7 @@
   </div>
 
   <div id="edit-order-modal" class="modal-overlay">
-    <div class="cart-content">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
       <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊移除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
       <div id="edit-cart-items-container"></div>
@@ -286,9 +295,8 @@
     async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
     function logout() { location.reload(); }
 
-    function filterProducts() { const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } annSection.style.display = 'none'; tableWrapper.style.display = 'block'; currentFilteredProducts = allProducts.filter(p => { if (currentMode === 'favorites' && !f.includes(p.id)) return false; return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q); }); currentFrontPage = 1; renderTable(); }
+    function filterProducts() { const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } annSection.style.display = 'none'; tableWrapper.style.display = 'flex'; currentFilteredProducts = allProducts.filter(p => { if (currentMode === 'favorites' && !f.includes(p.id)) return false; return (p.nhiCode||'').toLowerCase().includes(q) || (p.name||'').toLowerCase().includes(q) || (p.ingredients||'').toLowerCase().includes(q) || (p.manufacturer||'').toLowerCase().includes(q); }); currentFrontPage = 1; renderTable(); }
 
-    // --- 【修改】前台藥品列表渲染，合併操作按鈕 ---
     function renderTable() { 
         const tbody = document.getElementById('product-list'); 
         const paginationBox = document.getElementById('front-pagination'); 
@@ -309,18 +317,15 @@
             let stH = ''; 
             let actionHtml = ''; 
             
-            // 判斷是否為最愛
             let isFav = favs.includes(p.id);
             let hIcon = isFav ? '❤️' : '🤍'; 
             let favTitle = isFav ? '移除最愛' : '加入最愛';
 
-            // SVG 圖示
             let cartIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`;
             let notifyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`;
 
             if (isNaN(stk) || stk <= 0) { 
                 stH = '<span class="out-of-stock">缺貨</span>'; 
-                // 缺貨時，顯示： [加入最愛] [到貨通知]
                 actionHtml = `
                     <div class="action-group">
                         <button class="icon-btn fav-btn" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${hIcon}</button>
@@ -329,7 +334,6 @@
                 `;
             } else { 
                 stH = '<span class="in-stock">供貨中</span>'; 
-                // 供貨中時，顯示： [數量輸入] [購物車] [加入最愛]
                 actionHtml = `
                     <div class="action-group">
                         <input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">
