@@ -85,27 +85,34 @@
     #cart-modal, #order-detail-modal, #news-detail-modal, #edit-order-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; }
     
-    .contact-layout { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; width: 100%; max-width: 1000px; margin: 0 auto; }
-    .contact-form { flex: 1; min-width: 320px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
-    .contact-form textarea { width: 100%; height: 200px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-size:16px; font-family:inherit;}
-    .contact-form button { width: 100%; padding: 14px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;}
-    .contact-history { flex: 2; min-width: 450px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);}
+    /* --- 【全新 LINE 風格】聊天室介面 --- */
+    .chat-app-container { width: 100%; max-width: 800px; margin: 0 auto; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; }
+    .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02); z-index: 10; display: flex; align-items: center; justify-content: space-between;}
+    .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
+    .chat-header p { margin: 0; color: #78909c; font-size: 14px; margin-top: 4px; }
     
-    /* --- 【大升級】綠色與白色主題的客服對話卡片 --- */
-    .chat-thread { margin-bottom: 25px; display: flex; flex-direction: column; }
+    .chat-history-area { flex: 1; padding: 20px 25px; overflow-y: auto; background-color: #e8f5e9; /* 淺綠底色 */ scroll-behavior: smooth; }
     
-    /* 使用者的綠色泡泡 */
-    .chat-user-bubble { background-color: #4CAF50; color: white; padding: 15px 20px; border-radius: 16px 16px 0 16px; position: relative; box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2); align-self: flex-end; max-width: 85%; }
-    .chat-user-text { font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
+    .chat-thread { display: flex; flex-direction: column; width: 100%; margin-bottom: 25px; }
     
-    /* 客服的白色回覆泡泡 */
-    .chat-reply-wrapper { display: flex; margin-top: 10px; align-items: flex-start; }
-    .chat-reply-icon { font-size: 28px; margin-right: 10px; margin-top: 2px; }
-    .chat-reply-bubble { background-color: #ffffff; color: #333; padding: 15px 20px; border-radius: 0 16px 16px 16px; flex: 1; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e8f5e9; }
-    .chat-reply-title { color: #4CAF50; font-size: 14px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid #e8f5e9; padding-bottom: 5px;}
-    
-    /* 時間標示 */
-    .chat-time { text-align: right; color: #9e9e9e; font-size: 12px; margin-top: 5px; margin-bottom: 5px; padding-right: 5px;}
+    /* 客戶發問 (右側綠底白字) */
+    .chat-user-wrapper { display: flex; flex-direction: column; align-items: flex-end; width: 100%; margin-bottom: 5px; }
+    .chat-user-bubble { background-color: #4CAF50; color: white; padding: 12px 18px; border-radius: 18px 18px 0 18px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 75%; font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+    .chat-time-user { color: #888; font-size: 12px; margin-top: 4px; padding-right: 5px; }
+
+    /* 客服回覆 (左側白底黑字) */
+    .chat-reply-wrapper { display: flex; margin-top: 5px; align-items: flex-start; width: 100%; }
+    .chat-reply-icon { font-size: 32px; margin-right: 12px; margin-top: 4px; }
+    .chat-reply-content { display: flex; flex-direction: column; align-items: flex-start; max-width: 75%; }
+    .chat-reply-bubble { background-color: #ffffff; color: #333; padding: 14px 18px; border-radius: 0 18px 18px 18px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;}
+    .chat-reply-title { color: #4CAF50; font-size: 13px; margin-bottom: 6px; font-weight: bold; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; display: block;}
+    .chat-time-reply { color: #888; font-size: 12px; margin-top: 4px; padding-left: 5px; }
+
+    .chat-input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: flex-end; gap: 12px; }
+    .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; font-family: inherit; outline: none; line-height: 1.5; transition: 0.3s; background: #f9f9f9;}
+    .chat-input-area textarea:focus { border-color: #4CAF50; box-shadow: 0 0 5px rgba(76,175,80,0.3); background: white;}
+    .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; white-space: nowrap; height: 50px; transition: 0.2s;}
+    .chat-input-area button:hover { background: #388e3c; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3); }
 
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; }
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
@@ -170,17 +177,24 @@
     </div>
     
     <div id="view-contact" class="view-section">
-      <div class="contact-layout">
-        <div class="contact-form">
-            <h2 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">聯絡客服</h2>
-            <textarea id="contact-message" placeholder="有任何問題，請直接在此輸入留言..."></textarea>
-            <button onclick="submitMessage()" style="margin-top:10px;">📤 送出留言</button>
+      <div class="chat-app-container">
+        
+        <div class="chat-header">
+            <div>
+                <h2>💬 客服中心</h2>
+                <p>有任何問題請在下方輸入，管理員會盡快回覆您。</p>
+            </div>
+            <button onclick="loadMyMessages()" style="background:transparent; border:1px solid #ccc; border-radius:6px; padding:6px 12px; cursor:pointer; font-weight:bold; color:#555;">🔄 更新訊息</button>
         </div>
         
-        <div class="contact-history">
-            <h2 style="margin-top:0; color:#2c3e50; border-bottom:2px solid #eee; padding-bottom:10px;">歷史對話紀錄</h2>
-            <div id="my-message-list" style="max-height:500px; overflow-y:auto; padding-right:10px;"></div>
+        <div id="my-message-list" class="chat-history-area">
+            </div>
+        
+        <div class="chat-input-area">
+            <textarea id="contact-message" placeholder="輸入您的問題... (按 Enter 可直接送出，Shift + Enter 可換行)" rows="2" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitMessage(); }"></textarea>
+            <button onclick="submitMessage()">發送 📤</button>
         </div>
+
       </div>
     </div>
   </div>
@@ -257,23 +271,23 @@
     function renderTable() { const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); if(currentFilteredProducts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">找不到符合的藥品喔！</td></tr>'; paginationBox.style.display = 'none'; return; } const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; if(currentFrontPage > totalPages) currentFrontPage = totalPages; const pageData = currentFilteredProducts.slice((currentFrontPage - 1) * itemsPerPageFront, currentFrontPage * itemsPerPageFront); let htmlArray = []; pageData.forEach(p => { let stk = parseInt(p.stock); let stH = ''; let qtyH = ''; let btnH = ''; if (isNaN(stk) || stk <= 0) { stH = '<span class="out-of-stock">缺貨</span>'; qtyH = '<span style="color:#ccc;">-</span>'; btnH = `<button class="order-btn notify-btn" onclick="subscribeRestock('${p.id}', '${p.name}')">🔔 通知</button>`; } else { stH = '<span class="in-stock">供貨中</span>'; qtyH = `<input type="number" min="1" max="${stk}" value="1" class="order-input" id="qty-${p.id}">`; btnH = `<button class="order-btn" onclick="addToCart('${p.id}', '${p.name}', ${p.price}, ${stk}, '${p.unit || ''}', '${p.nhiCode || ''}')">加車</button>`; } let hIcon = favs.includes(p.id) ? '❤️' : '🤍'; let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; htmlArray.push(`<tr><td><div style="display:flex; align-items:center;"><span class="fav-icon" onclick="toggleFavorite('${p.id}')">${hIcon}</span><div><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</div></div></td><td style="min-width: 200px;"><strong style="font-size:18px; color:#2c3e50;">${p.name||'-'}</strong><span style="font-size:14px;color:#607d8b;display:block; line-height:1.4; margin-top:4px;">${p.ingredients||'-'}</span></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td style="min-width: 120px;">${p.manufacturer||'-'}</td><td class="price-text">$${p.price||0}</td><td>${stH}</td><td>${qtyH}</td><td>${btnH}</td></tr>`); }); tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); document.querySelector('.table-container').scrollTop = 0; }
     function changeFrontPage(delta) { currentFrontPage += delta; renderTable(); }
 
-    // --- 【大改版】客服系統渲染 (綠白主題) ---
+    // --- 【全新升級】對話框渲染引擎 ---
     async function checkNewMessages() { const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); if(res && res.success && res.unreadCount > 0) { const badge = document.getElementById('msg-badge'); badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } }
     
     async function loadMyMessages() { 
         const box = document.getElementById('my-message-list'); 
-        box.innerHTML = '<p style="text-align:center; color:#999; padding:20px;">讀取中...</p>'; 
+        box.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">讀取中...</p>'; 
         const res = await callGasAPI({ action: 'getMyMessages', username: currentUser.username }); 
         
         if(res && res.success) { 
             if(res.data.length === 0) { 
-                box.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">尚無對話紀錄，請直接在左側留言發問。</p>'; 
+                box.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">尚無對話紀錄，請在下方輸入您的問題。</p>'; 
                 return; 
             } 
             
             let html = ''; 
             [...res.data].reverse().forEach(m => { 
-                // 為了相容舊資料，如果舊資料有帶有 [分類] 的字樣，就把它濾掉不顯示
+                // 過濾掉可能殘留的舊 [分類標籤] 以保持畫面乾淨
                 let cleanContent = m.content.replace(/^\[.*?\]\n?/, '');
 
                 let replyHtml = '';
@@ -281,25 +295,32 @@
                     replyHtml = `
                     <div class="chat-reply-wrapper">
                         <div class="chat-reply-icon">👨‍⚕️</div>
-                        <div class="chat-reply-bubble">
-                            <div class="chat-reply-title">客服回覆：</div>
-                            <div style="font-size:16px; line-height:1.6; white-space:pre-wrap; color:#2e7d32; font-weight:bold;">${m.reply}</div>
+                        <div class="chat-reply-content">
+                            <div class="chat-reply-bubble">
+                                <span class="chat-reply-title">管理員</span>
+                                ${m.reply}
+                            </div>
+                            <div class="chat-time-reply">已回覆</div>
                         </div>
                     </div>`;
                 }
 
                 html += `
                 <div class="chat-thread">
-                    <div class="chat-user-bubble">
-                        <div class="chat-user-text">${cleanContent}</div>
+                    <div class="chat-user-wrapper">
+                        <div class="chat-user-bubble">
+                            <div class="chat-user-text">${cleanContent}</div>
+                        </div>
+                        <div class="chat-time-user">${m.time}</div>
                     </div>
-                    <div class="chat-time">${m.time}</div>
                     ${replyHtml}
                 </div>`;
             }); 
             
             box.innerHTML = html; 
-            box.scrollTop = box.scrollHeight; 
+            // 動畫滾動到底部
+            box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+            
             if(res.unreadCount > 0) { 
                 document.getElementById('msg-badge').style.display = 'none'; 
                 callGasAPI({ action: 'markMessagesRead', username: currentUser.username }); 
@@ -309,11 +330,20 @@
     
     async function submitMessage() { 
         const msg = document.getElementById('contact-message').value.trim(); 
-        if(!msg) return alert("請輸入留言內容"); 
+        if(!msg) return alert("請輸入留言內容！"); 
         
+        // 暫時將按鈕文字改為傳送中
+        const btn = document.querySelector('.chat-input-area button');
+        const oldText = btn.innerText;
+        btn.innerText = "傳送中...";
+        btn.disabled = true;
+
         const res = await callGasAPI({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }); 
+        
+        btn.innerText = oldText;
+        btn.disabled = false;
+
         if(res && res.success) { 
-            showToast("✅ " + res.message); 
             document.getElementById('contact-message').value = ''; 
             loadMyMessages(); 
         } 
