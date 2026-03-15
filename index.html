@@ -6,22 +6,23 @@
   <title>台南社區藥局藥品供應平台</title>
   <style>
     /* --- 基礎網頁排版 --- */
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; overflow-x: hidden; }
     
     #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
     
-    .header-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 15px; }
-    .header-container img { width: 140px; height: auto; }
-    .header-text { text-align: left; }
-    .header-text h1 { color: #2c3e50; margin: 0 0 5px 0; font-size: 32px; letter-spacing: 1px;}
-    .header-text p { color: #607d8b; font-size: 18px; margin: 0; font-weight: bold; }
+    /* --- 【防擠壓裝甲】保護標題不被切斷變成直的 --- */
+    .header-container { display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+    .header-container img { width: 120px; height: auto; flex-shrink: 0; }
+    .header-text { text-align: left; flex-shrink: 0; min-width: max-content; }
+    .header-text h1 { color: #2c3e50; margin: 0 0 5px 0; font-size: 28px; letter-spacing: 1px; white-space: nowrap; }
+    .header-text p { color: #607d8b; font-size: 16px; margin: 0; font-weight: bold; white-space: nowrap; }
     
     .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); width: 320px; }
     .form-container input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: 0.3s;}
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
-    #app-container { display: none; width: 95%; max-width: 1200px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
+    #app-container { display: none; width: 96%; max-width: 1300px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
     
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
@@ -30,18 +31,18 @@
     .view-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .app-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap;}
-    .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 15px; font-size: 15px; border: none; background: transparent; cursor: pointer; border-radius: 10px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; }
-    .app-nav button img { width: 36px; height: 36px; margin-bottom: 5px; transition: transform 0.3s ease; object-fit: contain;}
+    .app-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-start;}
+    .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 12px; font-size: 14px; border: none; background: transparent; cursor: pointer; border-radius: 10px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; white-space: nowrap; flex-shrink: 0;}
+    .app-nav button img { width: 34px; height: 34px; margin-bottom: 5px; transition: transform 0.3s ease; object-fit: contain;}
     .app-nav button:hover { background: #f4f9f4; color: #2e7d32; }
     .app-nav button.active { background: #e8f5e9; color: #4CAF50; box-shadow: inset 0 0 0 2px #4CAF50; }
     
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
-    .top-bar-actions { display: flex; align-items: center; gap: 15px; }
-    .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; }
-    .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
+    .top-bar-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex-shrink: 0;}
+    .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; white-space: nowrap;}
+    .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; white-space: nowrap;}
     
     .search-container { width: 100%; box-sizing: border-box; margin-bottom: 20px; }
     .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
@@ -69,7 +70,7 @@
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
     .table-container { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; width: 100%; box-sizing: border-box; overflow-x: auto;}
-    table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; }
+    table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; min-width: 1000px;}
     th { background-color: #4CAF50; color: white; padding: 14px 10px; text-align: left; font-size: 16px; white-space: nowrap;}
     td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     tr:hover { background-color: #f9fbf9; }
@@ -169,8 +170,8 @@
 
   <div id="app-container">
     
-    <div class="header-container" style="justify-content: flex-start;">
-      <img src="./logo.jpg" alt="Logo" style="width: 100px;">
+    <div class="header-container">
+      <img src="./logo.jpg" alt="Logo">
       <div class="header-text">
         <h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1>
         <p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p>
@@ -448,7 +449,6 @@
 
     function openNewsDetail(id) { const news = allNewsData.find(n => n.id === id); if(!news) return; document.getElementById('news-detail-title').innerText = news.title; document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; const attachContainer = document.getElementById('news-detail-attach-container'); if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } document.getElementById('news-detail-modal').style.display = 'flex'; }
 
-    // --- 【升級】管理員權限判定 (Admin Guard SSO) ---
     async function doLogin() { 
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
@@ -458,17 +458,16 @@
         if (res && res.success) { 
             currentUser.username = u; 
             currentUser.pharmacyName = res.pharmacyName; 
-            currentUser.role = res.role || ''; // 記錄權限
+            currentUser.role = res.role || ''; 
             
             cart = []; 
             document.getElementById('login-screen').style.display = 'none'; 
-            document.getElementById('app-container').style.display = 'flex'; 
+            document.getElementById('app-container').style.display = 'block'; 
             document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
-            // 💡 權限檢查：如果是管理員或是 prompt (備用後門)，顯示後台直達車按鈕，並發放通行證
             if (currentUser.role === '管理員' || u === 'prompt') {
                 document.getElementById('nav-admin').style.display = 'flex';
-                localStorage.setItem('admin_token', 'verified'); // 發放管理員直達通行證
+                localStorage.setItem('admin_token', 'verified');
             } else {
                 document.getElementById('nav-admin').style.display = 'none';
                 localStorage.removeItem('admin_token');
@@ -482,7 +481,6 @@
         }
     }
     
-    // 【新增】一鍵直達後台
     function goToAdmin() {
         window.open('./Admin.html', '_blank');
     }
@@ -490,7 +488,7 @@
     async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
     
     function logout() { 
-        localStorage.removeItem('admin_token'); // 登出時銷毀通行證
+        localStorage.removeItem('admin_token'); 
         location.reload(); 
     }
 
