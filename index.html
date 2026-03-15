@@ -10,7 +10,7 @@
     
     #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
     
-    /* --- 【防擠壓裝甲】保護標題不被切斷變成直的 --- */
+    /* --- 防擠壓裝甲 --- */
     .header-container { display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
     .header-container img { width: 120px; height: auto; flex-shrink: 0; }
     .header-text { text-align: left; flex-shrink: 0; min-width: max-content; }
@@ -317,8 +317,11 @@
   </div>
 
   <script>
+    // 💡 此處設定為您的 GAS 發布網址
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
+    
     let currentUser = { username: '', pharmacyName: '', role: '' };
+    let currentPassword = ''; // 紀錄當前密碼供 SSO 使用
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
     let editingCart = []; let editingOrderId = '';
@@ -459,6 +462,7 @@
             currentUser.username = u; 
             currentUser.pharmacyName = res.pharmacyName; 
             currentUser.role = res.role || ''; 
+            currentPassword = p; // 記憶密碼供跨網域 SSO 傳輸使用
             
             cart = []; 
             document.getElementById('login-screen').style.display = 'none'; 
@@ -467,10 +471,8 @@
             
             if (currentUser.role === '管理員' || u === 'prompt') {
                 document.getElementById('nav-admin').style.display = 'flex';
-                localStorage.setItem('admin_token', 'verified');
             } else {
                 document.getElementById('nav-admin').style.display = 'none';
-                localStorage.removeItem('admin_token');
             }
             
             switchView('products'); 
@@ -481,14 +483,16 @@
         }
     }
     
+    // 【修改】將帳密經過動態加密，直接飛過網域開啟後台 SSO
     function goToAdmin() {
-        window.open('./Admin.html', '_blank');
+        const encodedP = btoa(encodeURIComponent(currentPassword)); // Base64 加密密碼
+        const ssoUrl = GAS_URL + '?u=' + encodeURIComponent(currentUser.username) + '&p=' + encodedP;
+        window.open(ssoUrl, '_blank');
     }
 
     async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
     
     function logout() { 
-        localStorage.removeItem('admin_token'); 
         location.reload(); 
     }
 
