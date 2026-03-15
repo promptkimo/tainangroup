@@ -21,10 +21,8 @@
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
-    /* 系統主畫面區 */
     #app-container { display: none; width: 95%; max-width: 1200px; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; }
     
-    /* --- 選單固定吸頂區 --- */
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
     
@@ -38,7 +36,6 @@
     .app-nav button:hover { background: #f4f9f4; color: #2e7d32; }
     .app-nav button.active { background: #e8f5e9; color: #4CAF50; box-shadow: inset 0 0 0 2px #4CAF50; }
     
-    /* 紅點提醒 Badge */
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
@@ -71,16 +68,7 @@
 
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
 
-    /* --- 表格區 --- */
-    .table-container { 
-        background: white; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-        border-radius: 12px; 
-        width: 100%; 
-        box-sizing: border-box; 
-        overflow-x: auto;
-    }
-
+    .table-container { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; width: 100%; box-sizing: border-box; overflow-x: auto;}
     table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; }
     th { background-color: #4CAF50; color: white; padding: 14px 10px; text-align: left; font-size: 16px; white-space: nowrap;}
     td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
@@ -93,15 +81,7 @@
     .price-text { font-size: 18px; font-weight: bold; color: #333;}
     .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; display: block;}
     
-    /* --- 右側操作區 Grid 排版 --- */
-    .action-grid {
-        display: grid;
-        grid-template-columns: 65px 70px 42px 42px; 
-        gap: 6px;
-        align-items: center;
-        justify-content: end;
-    }
-    
+    .action-grid { display: grid; grid-template-columns: 65px 70px 42px 42px; gap: 6px; align-items: center; justify-content: end; }
     .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; letter-spacing: 0.5px;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
     .status-out { background: #ffebee; color: #d32f2f; }
@@ -110,23 +90,16 @@
     .qty-input { width: 44px; height: 34px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 15px; outline: none; color:#333; font-weight:bold; margin-right: 4px; box-sizing: border-box; padding:0;}
     .qty-input:focus { border-color: #4CAF50; }
     
-    /* 純圖示方形按鈕 */
-    .icon-only-btn { 
-        background: white; border: 1px solid #ccc; border-radius: 8px; width: 42px; height: 42px; cursor: pointer; 
-        display: inline-flex; align-items: center; justify-content: center; padding: 0;
-        transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-    }
+    .icon-only-btn { background: white; border: 1px solid #ccc; border-radius: 8px; width: 42px; height: 42px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .icon-only-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .icon-only-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s;}
     
     .btn-addcart { color: #ff9800; border-color: #ff9800; }
     .btn-addcart:hover { background: #fff3e0; }
-    
     .btn-fav { color: #e91e63; border-color: #e91e63; }
     .btn-fav.active { background: #e91e63; color: white; }
     .btn-fav.active svg { fill: white; stroke: white; }
     .btn-fav:hover:not(.active) { background: #fce4ec; }
-    
     .btn-notify { color: #2196F3; border-color: #2196F3; }
     .btn-notify:hover { background: #e3f2fd; }
 
@@ -135,11 +108,9 @@
     .pagination-container button:hover:not(:disabled) { background: #e8f5e9; color: #2e7d32;}
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
     
-    /* 彈出視窗 */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
     
-    /* 聊天室 */
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -158,7 +129,6 @@
     .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; transition: 0.3s; background: #f9f9f9;}
     .chat-input-area textarea:focus { border-color: #4CAF50; background: white;}
     .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px; transition: 0.2s;}
-    .chat-input-area button:hover { background: #388e3c; }
 
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
@@ -215,7 +185,8 @@
             <button id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
             <button id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服"> <span class="nav-text">聯絡客服</span> <span id="msg-badge" class="badge" style="display:none;">0</span></button>
             <button id="nav-restock" onclick="switchView('restock')"><img src="./icon-restock.png" alt="通知"> <span class="nav-text">貨到通知</span> <span id="restock-badge" class="badge" style="display:none;">0</span></button>
-            <button id="nav-admin" style="display:none;" onclick="window.open('./Admin.html', '_blank')"><img src="./icon-admin.png" alt="管理後台"> <span class="nav-text">管理後台</span></button>
+            
+            <button id="nav-admin" style="display:none;" onclick="goToAdmin()"><img src="./icon-admin.png" alt="管理後台"> <span class="nav-text" style="color:#f57c00;">管理後台</span></button>
           </div>
           <div class="top-bar-actions">
             <span id="welcome-message" style="color:#2e7d32;">歡迎</span>
@@ -346,18 +317,15 @@
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
-    let currentUser = { username: '', pharmacyName: '' };
+    let currentUser = { username: '', pharmacyName: '', role: '' };
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
     let editingCart = []; let editingOrderId = '';
     
-    // 智慧紅點狀態控制
     let hasViewedRestock = false;
 
     window.addEventListener('click', function(e) {
-      if (e.target.classList.contains('modal-overlay')) {
-        e.target.style.display = 'none';
-      }
+      if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
     });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
@@ -392,7 +360,7 @@
                 localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs));
             }
             showToast("✅ 已為您登記追蹤通知"); 
-            hasViewedRestock = false; // 允許下次有貨時亮燈
+            hasViewedRestock = false; 
             callGasAPISilent({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); 
             checkRestockStatus();
             filterProducts();
@@ -410,7 +378,6 @@
         filterProducts();
     }
 
-    // 【升級】智慧切換頁面機制 (包含紅點消除)
     function switchView(viewName) { 
         document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
@@ -420,7 +387,6 @@
         let targetView = viewName === 'favorites' ? 'products' : viewName;
         document.getElementById(`view-${targetView}`).classList.add('active');
 
-        // 如果點進貨到通知，隱藏紅點並標記已讀
         if (viewName === 'restock') {
             hasViewedRestock = true;
             document.getElementById('restock-badge').style.display = 'none';
@@ -464,7 +430,6 @@
         }); 
     }
 
-    // 【升級】智慧判斷是否跳出紅點
     function checkRestockStatus() {
         let subs = getSubscriptions();
         let arrivedCount = 0;
@@ -473,7 +438,6 @@
             if(prod && parseInt(prod.stock) > 0) arrivedCount++;
         });
         const badge = document.getElementById('restock-badge');
-        // 只有在「有貨」且「還沒看過」的時候才顯示紅點
         if(arrivedCount > 0 && !hasViewedRestock) {
             badge.innerText = arrivedCount;
             badge.style.display = 'inline-block';
@@ -484,26 +448,30 @@
 
     function openNewsDetail(id) { const news = allNewsData.find(n => n.id === id); if(!news) return; document.getElementById('news-detail-title').innerText = news.title; document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; const attachContainer = document.getElementById('news-detail-attach-container'); if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } document.getElementById('news-detail-modal').style.display = 'flex'; }
 
-    // 【升級】管理員權限判定 (Admin Guard)
+    // --- 【升級】管理員權限判定 (Admin Guard SSO) ---
     async function doLogin() { 
-        const u = document.getElementById('login-username').value; 
-        const p = document.getElementById('login-password').value; 
+        const u = document.getElementById('login-username').value.trim(); 
+        const p = document.getElementById('login-password').value.trim(); 
         if(!u || !p) return alert("請輸入帳號密碼！"); 
         
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
         if (res && res.success) { 
             currentUser.username = u; 
             currentUser.pharmacyName = res.pharmacyName; 
+            currentUser.role = res.role || ''; // 記錄權限
+            
             cart = []; 
             document.getElementById('login-screen').style.display = 'none'; 
-            document.getElementById('app-container').style.display = 'block'; 
+            document.getElementById('app-container').style.display = 'flex'; 
             document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
-            // 💡 只有 prompt 帳號登入時，才會顯示「管理後台」按鈕
-            if (u === 'prompt') {
+            // 💡 權限檢查：如果是管理員或是 prompt (備用後門)，顯示後台直達車按鈕，並發放通行證
+            if (currentUser.role === '管理員' || u === 'prompt') {
                 document.getElementById('nav-admin').style.display = 'flex';
+                localStorage.setItem('admin_token', 'verified'); // 發放管理員直達通行證
             } else {
                 document.getElementById('nav-admin').style.display = 'none';
+                localStorage.removeItem('admin_token');
             }
             
             switchView('products'); 
@@ -514,8 +482,17 @@
         }
     }
     
+    // 【新增】一鍵直達後台
+    function goToAdmin() {
+        window.open('./Admin.html', '_blank');
+    }
+
     async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
-    function logout() { location.reload(); }
+    
+    function logout() { 
+        localStorage.removeItem('admin_token'); // 登出時銷毀通行證
+        location.reload(); 
+    }
 
     function filterProducts() { 
         const q = document.getElementById('search-input').value.toLowerCase().trim(); 
@@ -626,7 +603,6 @@
         document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
     }
 
-    // 【升級】貨到通知列表文字統為「缺貨中」/「供貨中」
     function renderRestockList() {
         const tbody = document.getElementById('restock-list');
         let subs = getSubscriptions();
