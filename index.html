@@ -157,7 +157,8 @@
     .chat-input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: flex-end; gap: 12px; }
     .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; transition: 0.3s; background: #f9f9f9;}
     .chat-input-area textarea:focus { border-color: #4CAF50; background: white;}
-    .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px;}
+    .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px; transition: 0.2s;}
+    .chat-input-area button:hover { background: #388e3c; }
 
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
@@ -214,6 +215,7 @@
             <button id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
             <button id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服"> <span class="nav-text">聯絡客服</span> <span id="msg-badge" class="badge" style="display:none;">0</span></button>
             <button id="nav-restock" onclick="switchView('restock')"><img src="./icon-restock.png" alt="通知"> <span class="nav-text">貨到通知</span> <span id="restock-badge" class="badge" style="display:none;">0</span></button>
+            <button id="nav-admin" style="display:none;" onclick="window.open('./Admin.html', '_blank')"><img src="./icon-admin.png" alt="管理後台"> <span class="nav-text">管理後台</span></button>
           </div>
           <div class="top-bar-actions">
             <span id="welcome-message" style="color:#2e7d32;">歡迎</span>
@@ -348,6 +350,9 @@
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
     let editingCart = []; let editingOrderId = '';
+    
+    // 智慧紅點狀態控制
+    let hasViewedRestock = false;
 
     window.addEventListener('click', function(e) {
       if (e.target.classList.contains('modal-overlay')) {
@@ -387,6 +392,7 @@
                 localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs));
             }
             showToast("✅ 已為您登記追蹤通知"); 
+            hasViewedRestock = false; // 允許下次有貨時亮燈
             callGasAPISilent({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); 
             checkRestockStatus();
             filterProducts();
@@ -404,6 +410,7 @@
         filterProducts();
     }
 
+    // 【升級】智慧切換頁面機制 (包含紅點消除)
     function switchView(viewName) { 
         document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
@@ -413,14 +420,19 @@
         let targetView = viewName === 'favorites' ? 'products' : viewName;
         document.getElementById(`view-${targetView}`).classList.add('active');
 
+        // 如果點進貨到通知，隱藏紅點並標記已讀
+        if (viewName === 'restock') {
+            hasViewedRestock = true;
+            document.getElementById('restock-badge').style.display = 'none';
+            renderRestockList();
+        }
+
         if(viewName === 'products' || viewName === 'favorites') { 
             currentMode = viewName; filterProducts(); 
         } else if (viewName === 'orders') { 
             loadOrders(); 
         } else if (viewName === 'contact') { 
             loadMyMessages(); 
-        } else if (viewName === 'restock') {
-            renderRestockList();
         }
     }
 
@@ -452,6 +464,7 @@
         }); 
     }
 
+    // 【升級】智慧判斷是否跳出紅點
     function checkRestockStatus() {
         let subs = getSubscriptions();
         let arrivedCount = 0;
@@ -460,7 +473,8 @@
             if(prod && parseInt(prod.stock) > 0) arrivedCount++;
         });
         const badge = document.getElementById('restock-badge');
-        if(arrivedCount > 0) {
+        // 只有在「有貨」且「還沒看過」的時候才顯示紅點
+        if(arrivedCount > 0 && !hasViewedRestock) {
             badge.innerText = arrivedCount;
             badge.style.display = 'inline-block';
         } else {
@@ -470,7 +484,36 @@
 
     function openNewsDetail(id) { const news = allNewsData.find(n => n.id === id); if(!news) return; document.getElementById('news-detail-title').innerText = news.title; document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; const attachContainer = document.getElementById('news-detail-attach-container'); if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } document.getElementById('news-detail-modal').style.display = 'flex'; }
 
-    async function doLogin() { const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value; if(!u || !p) return alert("請輸入帳號密碼！"); const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); if (res && res.success) { currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; cart = []; document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; switchView('products'); loadInitialData(); checkNewMessages(); } else alert(res.message); }
+    // 【升級】管理員權限判定 (Admin Guard)
+    async function doLogin() { 
+        const u = document.getElementById('login-username').value; 
+        const p = document.getElementById('login-password').value; 
+        if(!u || !p) return alert("請輸入帳號密碼！"); 
+        
+        const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
+        if (res && res.success) { 
+            currentUser.username = u; 
+            currentUser.pharmacyName = res.pharmacyName; 
+            cart = []; 
+            document.getElementById('login-screen').style.display = 'none'; 
+            document.getElementById('app-container').style.display = 'block'; 
+            document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
+            
+            // 💡 只有 prompt 帳號登入時，才會顯示「管理後台」按鈕
+            if (u === 'prompt') {
+                document.getElementById('nav-admin').style.display = 'flex';
+            } else {
+                document.getElementById('nav-admin').style.display = 'none';
+            }
+            
+            switchView('products'); 
+            loadInitialData(); 
+            checkNewMessages(); 
+        } else {
+            alert(res.message); 
+        }
+    }
+    
     async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
     function logout() { location.reload(); }
 
@@ -583,6 +626,7 @@
         document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
     }
 
+    // 【升級】貨到通知列表文字統為「缺貨中」/「供貨中」
     function renderRestockList() {
         const tbody = document.getElementById('restock-list');
         let subs = getSubscriptions();
@@ -614,7 +658,7 @@
                 let unitText = p.unit ? p.unit.replace('/', '') : '盒';
                 actionHtml = `
                     <div class="action-grid" style="grid-template-columns: 85px 70px 42px 42px;">
-                        <div class="status-badge-front status-in">貨已到！</div>
+                        <div class="status-badge-front status-in">供貨中</div>
                         <div class="qty-wrapper">
                             <input type="number" min="1" max="${stk}" value="1" class="qty-input" id="qty-res-${p.id}">
                         </div>
