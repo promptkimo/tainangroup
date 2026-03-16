@@ -86,23 +86,7 @@
     .pagination-container button:hover:not(:disabled) { background: #e8f5e9; color: #2e7d32;}
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
-    
-    /* ⭐ 購物車卡片 UI 設計 (更新廠牌樣式) */
-    .cart-item { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 12px; transition: 0.2s;}
-    .cart-item:hover { border-color: #4CAF50; box-shadow: 0 4px 8px rgba(76,175,80,0.15);}
-    .cart-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .cart-item-title { font-size: 18px; font-weight: bold; color: #2c3e50; line-height: 1.4; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
-    .cart-nhi { font-size: 13px; background: #eceff1; color: #546e7a; padding: 2px 6px; border-radius: 4px; border: 1px solid #cfd8dc;}
-    .cart-mfg { font-size: 13px; color: #607d8b; background: #eceff1; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: normal; border: 1px solid #cfd8dc; white-space: nowrap; }
-    .cart-item-bottom { display: flex; justify-content: space-between; align-items: center; background: #f9fbf9; padding: 12px; border-radius: 8px; border: 1px solid #f0f0f0; }
-    .cart-price-block { display: flex; align-items: center; gap: 15px; font-size: 15px; color: #555; font-weight: bold;}
-    .cart-qty-input { width: 65px; text-align: center; border: 2px solid #ccc; border-radius: 6px; padding: 6px; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s;}
-    .cart-qty-input:focus { border-color: #4CAF50; }
-    .cart-subtotal { font-size: 20px; font-weight: bold; color: #d32f2f; }
-    .cart-del-btn { background: #ffebee; color: #d32f2f; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; display: flex; align-items: center; gap: 4px;}
-    .cart-del-btn:hover { background: #ffcdd2; transform: translateY(-1px);}
-
+    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 85vh; overflow-y: auto; position: relative;}
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -123,6 +107,19 @@
     .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px; transition: 0.2s;}
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+
+    /* ⭐ 購物車全新表格 UI 設計 */
+    .cart-table-wrapper { width: 100%; overflow-x: auto; margin-top: 15px; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
+    .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; border-right: 1px solid #62a3cc; }
+    .cart-table th:last-child { border-right: none; }
+    .cart-table td { padding: 14px 10px; border: 1px solid #b3d4fc; vertical-align: middle; color: #333; }
+    .cart-table tbody tr:nth-child(even) { background-color: #f7fbff; }
+    .cart-table tbody tr:hover { background-color: #e3f0f9; }
+    .cart-qty-input { width: 60px; padding: 6px; border: 1px solid #b0bec5; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s; }
+    .cart-qty-input:focus { border-color: #3b8ebf; box-shadow: 0 0 5px rgba(59,142,191,0.4); }
+    .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
+    .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
   </style>
 </head>
 <body>
@@ -272,8 +269,8 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px;">🛒 您的購物車</h2>
-      <div id="cart-items-container" style="padding: 5px;"></div>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
+      <div id="cart-items-container"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
@@ -292,9 +289,9 @@
 
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
-      <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊移除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
-      <div id="edit-cart-items-container" style="padding: 5px;"></div>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#2c3e50;">📝 修改訂單數量</h2>
+      <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
+      <div id="edit-cart-items-container"></div>
       <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
         <button style="padding:12px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="saveEditedOrder()">儲存變更</button>
@@ -320,7 +317,7 @@
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
     function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
-    // ⭐ 購物車本地記憶機制 (無縫存取)
+    // ⭐ 購物車本地記憶機制
     function saveCart() {
         if(currentUser.username) {
             localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
@@ -432,7 +429,6 @@
         if (res && res.success) { 
             currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
             
-            // ⭐ 讀取本地端記憶的購物車
             let savedCart = localStorage.getItem('cart_' + currentUser.username);
             cart = savedCart ? JSON.parse(savedCart) : [];
             saveCart(); 
@@ -603,36 +599,41 @@
                 const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); const mfg = match[6] ? match[6].trim() : '';
                 let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; 
                 let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
-                editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg}); 
+                
+                // 為了讓舊訂單也能在表格中顯示健保價，我們去 allProducts 裡抓
+                let nhiPriceStr = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
+                editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
             } 
         }); 
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
-    // ⭐ 更新修改訂單購物車的排版，加上 1. 2. 3. 順序
+    // ⭐ 套用專業表格排版的修改訂單介面
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
-        if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; } else { 
+        if (editingCart.length === 0) { 
+            c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">訂單已無任何商品</p>'; 
+        } else { 
+            let html = `<div class="cart-table-wrapper"><table class="cart-table">
+                <thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
+
             editingCart.forEach((i, x) => { 
-                t += i.price * i.qty; let nhiTag = i.nhiCode ? `<span class="cart-nhi">[${i.nhiCode}]</span>` : ''; 
-                let mfgTag = i.mfg ? `<span class="cart-mfg">廠牌: ${i.mfg}</span>` : '';
-                c.innerHTML += `
-                <div class="cart-item">
-                    <div class="cart-item-top">
-                        <div style="flex:1;">
-                            <div class="cart-item-title">${x + 1}. ${nhiTag}${i.name}${mfgTag}</div>
-                        </div>
-                        <button class="cart-del-btn" onclick="removeEditCartItem(${x})">🗑️ 移除</button>
-                    </div>
-                    <div class="cart-item-bottom">
-                        <div class="cart-price-block">
-                            <span>單價: <strong>$${i.price}</strong></span>
-                            <span>數量: <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"> ${i.unit || ''}</span>
-                        </div>
-                        <div class="cart-subtotal">$${i.price * i.qty}</div>
-                    </div>
-                </div>`; 
+                t += i.price * i.qty; 
+                let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
+                let mfgText = i.mfg ? ` [${i.mfg}]` : '';
+                
+                html += `<tr>
+                    <td style="text-align:center;">${x + 1}</td>
+                    <td><div style="font-weight:bold; color:#1976d2; font-size:14px;">${nhiText}</div>${i.nhiPriceStr || ''}</td>
+                    <td><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${i.name}${mfgText}</div></td>
+                    <td style="text-align:center;">$${i.price} / ${i.unit || '盒'}</td>
+                    <td style="text-align:center;"><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"></td>
+                    <td style="text-align:right; font-weight:bold; color:#d32f2f;">$${i.price * i.qty}</td>
+                    <td style="text-align:center;"><a class="cart-del-icon" onclick="removeEditCartItem(${x})" title="刪除">❌</a></td>
+                </tr>`; 
             }); 
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
         } 
         document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; document.getElementById('edit-order-modal').style.display = 'flex'; 
     }
@@ -686,33 +687,61 @@
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
-    // ⭐ 更新購物車排版，加上 1. 2. 3. 順序，並將廠牌融入標題列
+    // ⭐ 套用專業表格排版的購物車
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
         if (cart.length === 0) { 
             c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; 
         } else { 
+            let html = `<div class="cart-table-wrapper"><table class="cart-table">
+                <thead>
+                    <tr>
+                        <th style="width:50px;">項次</th>
+                        <th style="width:140px; text-align:left;">健保資訊</th>
+                        <th style="text-align:left;">品名</th>
+                        <th style="width:120px;">單價 / 單位</th>
+                        <th style="width:100px;">數量</th>
+                        <th style="width:100px;">小計</th>
+                        <th style="width:60px;">刪除</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
             cart.forEach((i, x) => { 
                 t += i.price * i.qty; totalItems += i.qty; 
-                let nhiTag = i.nhiCode ? `<span class="cart-nhi">[${i.nhiCode}]</span>` : '';
-                let mfgTag = i.mfg ? `<span class="cart-mfg">廠牌: ${i.mfg}</span>` : '';
-                c.innerHTML += `
-                <div class="cart-item">
-                    <div class="cart-item-top">
-                        <div style="flex:1;">
-                            <div class="cart-item-title">${x + 1}. ${nhiTag}${i.name}${mfgTag}</div>
-                        </div>
-                        <button class="cart-del-btn" onclick="removeFromCart(${x})">🗑️ 移除</button>
-                    </div>
-                    <div class="cart-item-bottom">
-                        <div class="cart-price-block">
-                            <span>單價: <strong>$${i.price}</strong></span>
-                            <span>數量: <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input"> ${i.unit || ''}</span>
-                        </div>
-                        <div class="cart-subtotal">$${i.price * i.qty}</div>
-                    </div>
-                </div>`; 
+                let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
+                
+                // 去找這筆藥品現在的健保價
+                let prod = allProducts.find(p => String(p.id) === String(i.id));
+                let nhiPriceText = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
+                
+                let mfgText = i.mfg ? ` [${i.mfg}]` : '';
+                
+                html += `<tr>
+                    <td style="text-align:center;">${x + 1}</td>
+                    <td>
+                        <div style="font-weight:bold; color:#1976d2; font-size:14px;">${nhiText}</div>
+                        ${nhiPriceText}
+                    </td>
+                    <td>
+                        <div style="font-weight:bold; color:#2c3e50; font-size:16px;">${i.name}${mfgText}</div>
+                    </td>
+                    <td style="text-align:center;">
+                        $${i.price} / ${i.unit || '盒'}
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input">
+                    </td>
+                    <td style="text-align:right; font-weight:bold; color:#d32f2f;">
+                        $${i.price * i.qty}
+                    </td>
+                    <td style="text-align:center;">
+                        <a class="cart-del-icon" onclick="removeFromCart(${x})" title="刪除">❌</a>
+                    </td>
+                </tr>`;
             }); 
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
