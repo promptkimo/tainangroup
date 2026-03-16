@@ -87,6 +87,22 @@
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
+    
+    /* ⭐ 購物車卡片 UI 設計 */
+    .cart-item { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 12px; transition: 0.2s;}
+    .cart-item:hover { border-color: #4CAF50; box-shadow: 0 4px 8px rgba(76,175,80,0.15);}
+    .cart-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .cart-item-title { font-size: 18px; font-weight: bold; color: #2c3e50; line-height: 1.4; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
+    .cart-nhi { font-size: 13px; background: #eceff1; color: #546e7a; padding: 2px 6px; border-radius: 4px; border: 1px solid #cfd8dc;}
+    .cart-mfg { font-size: 13px; color: #78909c; display: block; margin-top: 4px; }
+    .cart-item-bottom { display: flex; justify-content: space-between; align-items: center; background: #f9fbf9; padding: 12px; border-radius: 8px; border: 1px solid #f0f0f0; }
+    .cart-price-block { display: flex; align-items: center; gap: 15px; font-size: 15px; color: #555; font-weight: bold;}
+    .cart-qty-input { width: 65px; text-align: center; border: 2px solid #ccc; border-radius: 6px; padding: 6px; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s;}
+    .cart-qty-input:focus { border-color: #4CAF50; }
+    .cart-subtotal { font-size: 20px; font-weight: bold; color: #d32f2f; }
+    .cart-del-btn { background: #ffebee; color: #d32f2f; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.2s; display: flex; align-items: center; gap: 4px;}
+    .cart-del-btn:hover { background: #ffcdd2; transform: translateY(-1px);}
+
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -256,8 +272,8 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; font-size: 26px;">🛒 您的購物車</h2>
-      <div id="cart-items-container"></div>
+      <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px;">🛒 您的購物車</h2>
+      <div id="cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
@@ -276,9 +292,9 @@
 
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
       <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊移除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
-      <div id="edit-cart-items-container"></div>
+      <div id="edit-cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
         <button style="padding:12px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="saveEditedOrder()">儲存變更</button>
@@ -287,10 +303,10 @@
   </div>
 
   <script>
-    // 💡 記得將這裡改成您專屬的 GAS 網址！
+    // 💡 記得將這裡改成您自己專屬的 GAS 網址！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
-    let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
+    let currentUser = { username: '', pharmacyName: '', role: '' };
     let currentPassword = ''; 
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
@@ -355,6 +371,17 @@
     async function callGasAPI(data, loadingElementId) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block'; try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); } }
     async function callGasAPISilent(data) { try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); return await res.json(); } catch(e) { return {success: false, message: '網路連線異常'}; } }
 
+    // ⭐ 解碼跳窗
+    function openNewsDetail(id) { 
+        const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; 
+        document.getElementById('news-detail-title').innerText = news.title; 
+        document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; 
+        document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; 
+        const attachContainer = document.getElementById('news-detail-attach-container'); 
+        if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } 
+        document.getElementById('news-detail-modal').style.display = 'flex'; 
+    }
+
     async function loadInitialData() { 
         callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); checkRestockStatus(); } }); 
         callGasAPI({ action: 'getNews' }).then(res => { 
@@ -365,6 +392,7 @@
                 
                 res.data.forEach(n => { 
                     let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : ''; 
+                    // ⭐ 使用安全的方式綁定點擊事件 (避免引號衝突)
                     let titleHtml = `<span class="news-title" onclick="openNewsDetail('${n.id}')">${escapeHTML(n.title)}${attachIcon}</span>`; 
                     let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`; 
                     if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml; 
@@ -394,8 +422,6 @@
         else { badge.style.display = 'none'; }
     }
 
-    function openNewsDetail(id) { const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; document.getElementById('news-detail-title').innerText = news.title; document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; const attachContainer = document.getElementById('news-detail-attach-container'); if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } document.getElementById('news-detail-modal').style.display = 'flex'; }
-
     async function doLogin() { 
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
@@ -403,12 +429,12 @@
         
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
         if (res && res.success) { 
-            currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
+            currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentPassword = p; 
             
             // ⭐ 讀取本地端記憶的購物車
             let savedCart = localStorage.getItem('cart_' + currentUser.username);
             cart = savedCart ? JSON.parse(savedCart) : [];
-            saveCart();
+            saveCart(); // 更新按鈕數字
             
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
@@ -495,10 +521,10 @@
             let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
             if (isNaN(stk) || stk <= 0) {
-                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 42px;"><div class="status-badge-front status-out">缺貨中</div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
+                actionHtml = `<div class="action-grid"><div class="status-badge-front status-out">缺貨中</div><div class="qty-wrapper"><span style="color:#ccc;">-</span></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
             } else {
                 let unitText = p.unit ? p.unit.replace('/', '') : '盒';
-                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 70px 42px 42px;"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
+                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
             }
             htmlArray.push(`<tr><td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td class="price-text">$${p.price||0}</td><td style="font-weight:bold; font-size:18px; color:${(stk>0)?'#2e7d32':'#d32f2f'};">${(stk>0)?stk:'0'}</td><td>${actionHtml}</td></tr>`);
         });
@@ -582,13 +608,30 @@
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
+    // ⭐ 套用美化的卡片式購物車介面
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
         if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; } else { 
             editingCart.forEach((i, x) => { 
-                t += i.price * i.qty; let nhiTag = i.nhiCode ? `<span style="color:#888; font-size:14px; font-weight:normal; margin-right:4px;">[${i.nhiCode}]</span>` : ''; 
-                let mfgTag = i.mfg ? `<span style="color:#78909c; font-size:13px; margin-left:6px;">(廠牌: ${i.mfg})</span>` : '';
-                c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:12px 0; font-size:15px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:4px; color:#2c3e50; font-size:16px;">${x + 1}. ${nhiTag}${i.name}${mfgTag}</strong><div style="color:#607d8b; display:flex; align-items:center; gap:8px; font-size:14px;"><span>單價: $${i.price}</span> | <span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" style="width:55px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:4px;"><span>${i.unit || ''}</span></div></div><div style="text-align:right; min-width:80px;"><div style="font-size:16px; font-weight:bold; color:#d32f2f; margin-bottom:8px;">$${i.price*i.qty}</div><button style="background:#e53935; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:13px;" onclick="removeEditCartItem(${x})">🗑️ 移除</button></div></div>`; 
+                t += i.price * i.qty; let nhiTag = i.nhiCode ? `<span class="cart-nhi">[${i.nhiCode}]</span>` : ''; 
+                let mfgTag = i.mfg ? `<span class="cart-mfg">廠牌: ${i.mfg}</span>` : '';
+                c.innerHTML += `
+                <div class="cart-item">
+                    <div class="cart-item-top">
+                        <div style="flex:1;">
+                            <div class="cart-item-title">${nhiTag}${i.name}</div>
+                            ${mfgTag}
+                        </div>
+                        <button class="cart-del-btn" onclick="removeEditCartItem(${x})">🗑️ 移除</button>
+                    </div>
+                    <div class="cart-item-bottom">
+                        <div class="cart-price-block">
+                            <span>單價: <strong>$${i.price}</strong></span>
+                            <span>數量: <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"> ${i.unit || ''}</span>
+                        </div>
+                        <div class="cart-subtotal">$${i.price * i.qty}</div>
+                    </div>
+                </div>`; 
             }); 
         } 
         document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; document.getElementById('edit-order-modal').style.display = 'flex'; 
@@ -613,6 +656,7 @@
     function addToCart(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; 
         const ex = cart.find(i => i.id === pId); 
+        
         if(ex) { 
             if(ex.qty + q > maxInput) { 
                 if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true);
@@ -642,17 +686,38 @@
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
+    // ⭐ 套用美化的卡片式購物車介面
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
-        if (cart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; } else { 
+        if (cart.length === 0) { 
+            c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; 
+        } else { 
             cart.forEach((i, x) => { 
-                t += i.price * i.qty; totalItems += i.qty; let nhiTag = i.nhiCode ? `<span style="color:#888; font-size:15px; font-weight:normal; margin-right:5px;">[${i.nhiCode}]</span>` : '';
-                let mfgTag = i.mfg ? `<div style="font-size:13px; color:#78909c; margin-top:2px;">廠牌: ${i.mfg}</div>` : '';
-                c.innerHTML += `<div style="display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;padding:20px 0; font-size:18px; align-items:center;"><div style="flex:1;"><strong style="display:block; margin-bottom:8px; color:#2c3e50; font-size: 18px;">${x + 1}. ${nhiTag}${i.name}</strong>${mfgTag}<div style="font-size:16px;color:#607d8b; display:flex; align-items:center; gap:10px; margin-top:6px;"><span>單價: <strong>$${i.price}</strong></span><span style="color:#e0e0e0;">|</span><span>數量:</span><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" style="width:70px; text-align:center; border:2px solid #ddd; border-radius:6px; padding:6px; font-size:16px; font-weight:bold; color:#333;"><span style="font-weight:bold;">${i.unit || ''}</span></div></div><div style="text-align:right; min-width:100px;"><div style="font-size:24px; font-weight:bold; color:#d32f2f; margin-bottom:12px;">$${i.price*i.qty}</div><button style="background:#ff9800; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:14px; font-weight:bold; transition:0.2s;" onclick="removeFromCart(${x})">🗑️ 移除</button></div></div>`; 
+                t += i.price * i.qty; totalItems += i.qty; 
+                let nhiTag = i.nhiCode ? `<span class="cart-nhi">[${i.nhiCode}]</span>` : '';
+                let mfgTag = i.mfg ? `<span class="cart-mfg">廠牌: ${i.mfg}</span>` : '';
+                c.innerHTML += `
+                <div class="cart-item">
+                    <div class="cart-item-top">
+                        <div style="flex:1;">
+                            <div class="cart-item-title">${nhiTag}${i.name}</div>
+                            ${mfgTag}
+                        </div>
+                        <button class="cart-del-btn" onclick="removeFromCart(${x})">🗑️ 移除</button>
+                    </div>
+                    <div class="cart-item-bottom">
+                        <div class="cart-price-block">
+                            <span>單價: <strong>$${i.price}</strong></span>
+                            <span>數量: <input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input"> ${i.unit || ''}</span>
+                        </div>
+                        <div class="cart-subtotal">$${i.price * i.qty}</div>
+                    </div>
+                </div>`; 
             }); 
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
+    
     function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 數量超過限制！最多: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; saveCart(); openCart(); }
     function removeFromCart(index) { cart.splice(index, 1); saveCart(); openCart(); }
     
@@ -664,7 +729,7 @@
         
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
-        callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, cart: currentCart, total: total, remark: remark }).then(res => { 
+        callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: currentCart, total: total, remark: remark }).then(res => { 
             if(res && res.success){ 
                 cart=[]; saveCart(); switchView('orders'); 
                 myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: currentCart.map(i=>{let prefix = i.nhiCode ? `[${i.nhiCode}] ` : ''; let mfgStr = i.mfg ? ` [廠牌:${i.mfg}]` : ''; return `${prefix}${i.name} x ${i.qty}${mfgStr}`}).join('\n'), total: total, status: '新訂單', remark: remark });
