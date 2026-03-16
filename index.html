@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
   <style>
-    /* ⭐ 加入全域防破版鎖定，確保字體放大不會超出螢幕 */
-    html, body { overflow-x: hidden; max-width: 100vw; }
+    /* ⭐ 全局防破版鎖定，將 100vw 改為 100% 避免 Zoom 放大時撐破螢幕 */
+    html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
     
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
-    #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
+    #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
     .header-container { display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
     .header-container img { width: 120px; height: auto; flex-shrink: 0; }
     .header-text { text-align: left; flex-shrink: 0; min-width: max-content; }
@@ -19,7 +19,9 @@
     .form-container input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: 0.3s;}
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
+    
     #app-container { display: none; width: 98%; max-width: 100%; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; box-sizing: border-box; }
+    
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
     .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; }
@@ -111,6 +113,7 @@
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
+    /* 購物車全新表格 UI 設計 */
     .cart-table-wrapper { width: 100%; overflow-x: auto; margin-top: 15px; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
     .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; border-right: 1px solid #62a3cc; }
@@ -123,7 +126,7 @@
     .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
     .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
 
-    /* ⭐ 懸浮字體縮放控制器 (移至右上角、半透明) */
+    /* ⭐ 懸浮字體縮放控制器 (固定於右上角，半透明) */
     .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; transition: 0.3s; }
     .zoom-control:hover { opacity: 1; }
     .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
@@ -285,7 +288,7 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
       <div id="cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
@@ -306,7 +309,7 @@
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
-      <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊移除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
+      <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
       <div id="edit-cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
@@ -545,10 +548,10 @@
             let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
             if (isNaN(stk) || stk <= 0) {
-                actionHtml = `<div class="action-grid"><div class="status-badge-front status-out">缺貨中</div><div class="qty-wrapper"><span style="color:#ccc;">-</span></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
+                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 42px;"><div class="status-badge-front status-out">缺貨中</div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
             } else {
                 let unitText = p.unit ? p.unit.replace('/', '') : '盒';
-                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
+                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 70px 42px 42px;"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
             }
             htmlArray.push(`<tr><td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td class="price-text">$${p.price||0}</td><td style="font-weight:bold; font-size:18px; color:${(stk>0)?'#2e7d32':'#d32f2f'};">${(stk>0)?stk:'0'}</td><td>${actionHtml}</td></tr>`);
         });
@@ -633,7 +636,6 @@
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
-    // ⭐ 修改訂單 - 套用專業表格排版 (無狀態/保存欄位)
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
         if (editingCart.length === 0) { 
@@ -712,7 +714,6 @@
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
-    // ⭐ 新增訂單購物車 - 套用專業表格排版 (無狀態/保存欄位)
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
         if (cart.length === 0) { 
@@ -738,7 +739,8 @@
                 
                 let prod = allProducts.find(p => String(p.id) === String(i.id));
                 let nhiPriceText = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
-                let mfgText = i.mfg ? ` <span style="color:#607d8b; font-size:14px; margin-left:6px;">[${i.mfg}]</span>` : '';
+                
+                let mfgText = i.mfg ? ` [${i.mfg}]` : '';
                 
                 html += `<tr>
                     <td style="text-align:center;">${x + 1}</td>
