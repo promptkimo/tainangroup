@@ -86,7 +86,7 @@
     .pagination-container button:hover:not(:disabled) { background: #e8f5e9; color: #2e7d32;}
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 85vh; overflow-y: auto; position: relative;}
+    .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -120,11 +120,24 @@
     .cart-qty-input:focus { border-color: #3b8ebf; box-shadow: 0 0 5px rgba(59,142,191,0.4); }
     .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
     .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
+
+    /* ⭐ 懸浮字體縮放控制器 */
+    .zoom-control { position: fixed; bottom: 20px; left: 20px; background: #fff; border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; }
+    .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
+    .zoom-btn:hover { background: #e8f5e9; }
+    .zoom-text { color: #555; font-size: 15px; font-weight: bold; margin: 0 5px; user-select: none; }
   </style>
 </head>
 <body>
 
   <div id="toast"></div>
+
+  <div class="zoom-control">
+    <button class="zoom-btn" onclick="changeZoom(-0.1)" title="縮小文字">A-</button>
+    <span class="zoom-text">字體</span>
+    <button class="zoom-btn" onclick="changeZoom(0.1)" title="放大文字">A+</button>
+    <button class="zoom-btn" style="font-size: 14px;" onclick="resetZoom()" title="還原預設大小">預設</button>
+  </div>
 
   <div id="login-screen">
       <div class="header-container" style="justify-content: center; margin-bottom: 25px;">
@@ -270,7 +283,7 @@
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
-      <div id="cart-items-container"></div>
+      <div id="cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
@@ -289,9 +302,9 @@
 
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#2c3e50;">📝 修改訂單數量</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
       <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
-      <div id="edit-cart-items-container"></div>
+      <div id="edit-cart-items-container" style="padding: 5px;"></div>
       <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
         <button style="padding:12px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="saveEditedOrder()">儲存變更</button>
@@ -310,6 +323,19 @@
     let editingCart = []; let editingOrderId = '';
     let hasViewedRestock = false;
 
+    // ⭐ 網頁縮放功能 (RWD Zoom)
+    let currentZoom = parseFloat(localStorage.getItem('app_zoom')) || 1;
+    function applyZoom() { document.body.style.zoom = currentZoom; }
+    function changeZoom(delta) { 
+        currentZoom += delta; 
+        if (currentZoom < 0.7) currentZoom = 0.7; 
+        if (currentZoom > 1.5) currentZoom = 1.5; 
+        localStorage.setItem('app_zoom', currentZoom); 
+        applyZoom(); 
+    }
+    function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
+    applyZoom(); // 網頁載入時立刻執行
+
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
@@ -317,7 +343,6 @@
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
     function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
-    // ⭐ 購物車本地記憶機制
     function saveCart() {
         if(currentUser.username) {
             localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
@@ -518,10 +543,10 @@
             let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
             if (isNaN(stk) || stk <= 0) {
-                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 42px;"><div class="status-badge-front status-out">缺貨中</div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
+                actionHtml = `<div class="action-grid"><div class="status-badge-front status-out">缺貨中</div><div class="qty-wrapper"><span style="color:#ccc;">-</span></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
             } else {
                 let unitText = p.unit ? p.unit.replace('/', '') : '盒';
-                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 70px 42px 42px;"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
+                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
             }
             htmlArray.push(`<tr><td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td class="price-text">$${p.price||0}</td><td style="font-weight:bold; font-size:18px; color:${(stk>0)?'#2e7d32':'#d32f2f'};">${(stk>0)?stk:'0'}</td><td>${actionHtml}</td></tr>`);
         });
@@ -600,7 +625,6 @@
                 let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; 
                 let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
                 
-                // 為了讓舊訂單也能在表格中顯示健保價，我們去 allProducts 裡抓
                 let nhiPriceStr = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
                 editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
             } 
@@ -608,7 +632,6 @@
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
-    // ⭐ 套用專業表格排版的修改訂單介面
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
         if (editingCart.length === 0) { 
@@ -711,7 +734,6 @@
                 t += i.price * i.qty; totalItems += i.qty; 
                 let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
                 
-                // 去找這筆藥品現在的健保價
                 let prod = allProducts.find(p => String(p.id) === String(i.id));
                 let nhiPriceText = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
                 
