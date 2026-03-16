@@ -287,7 +287,7 @@
   </div>
 
   <script>
-    // 💡 記得將這裡改成您自己專屬的 GAS 網址！
+    // 💡 記得將這裡改成您專屬的 GAS 網址！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
     let currentUser = { username: '', pharmacyName: '', role: '' };
@@ -303,11 +303,18 @@
     
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
 
+    // --- ⭐ 新增：購物車記憶儲存函數 ---
+    function saveCart() {
+        if(currentUser.username) {
+            localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
+        }
+        document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`;
+    }
+
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); if(!f) return []; return JSON.parse(f).map(String); }
     function toggleFavorite(id) { id = String(id); let f = getFavorites(); if (f.includes(id)) f = f.filter(i => i !== id); else f.push(id); localStorage.setItem('favs_' + currentUser.username, JSON.stringify(f)); filterProducts(); }
 
     function getSubscriptions() { const s = localStorage.getItem('subs_' + currentUser.username); if(!s) return []; return JSON.parse(s).map(String); }
-    
     function subscribeRestock(pId, pName) { 
         if(confirm(`確定要訂閱追蹤【${pName}】嗎？\n(當後台補貨時，最上方標籤會跳出紅色數字提醒您)`)) { 
             pId = String(pId); let subs = getSubscriptions();
@@ -317,7 +324,6 @@
             checkRestockStatus(); filterProducts();
         } 
     }
-
     function removeSubscription(pId, showMsg = true) { pId = String(pId); let subs = getSubscriptions(); subs = subs.filter(id => id !== pId); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs)); if(showMsg) showToast("✅ 已取消追蹤"); renderRestockList(); checkRestockStatus(); filterProducts(); }
 
     function switchView(viewName) { 
@@ -354,6 +360,7 @@
                 allNewsData = res.data; 
                 const listTop = document.getElementById('news-list-top'); const listBottom = document.getElementById('news-list-bottom'); 
                 let topHtml = ''; let bottomHtml = ''; 
+                
                 res.data.forEach(n => { 
                     let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : ''; 
                     let titleHtml = `<span class="news-title" onclick="openNewsDetail('${n.id}')">${n.title}${attachIcon}</span>`; 
@@ -395,7 +402,12 @@
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
         if (res && res.success) { 
             currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentPassword = p; 
-            cart = []; 
+            
+            // ⭐ 讀取本地端記憶的購物車
+            let savedCart = localStorage.getItem('cart_' + currentUser.username);
+            cart = savedCart ? JSON.parse(savedCart) : [];
+            saveCart(); // 更新按鈕數字
+            
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
             if (currentUser.role === '管理員' || u === 'prompt') { document.getElementById('nav-admin').style.display = 'flex'; localStorage.setItem('admin_token', 'verified'); } 
@@ -447,7 +459,6 @@
             let limitAlert = (p.dailyLimit > 0) ? `<div style="color:#d32f2f; font-size:13px; font-weight:bold; margin-top:4px;">⚠️ 每人每日限購: ${p.dailyLimit}</div>` : '';
             let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
             
-            // 安全處理單引號
             let safeName = String(p.name||'').replace(/'/g, "\\'");
             let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
@@ -516,7 +527,21 @@
         callGasAPISilent({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }).then(res => { if(res && res.success) { loadMyMessages(true); } else { showToast('訊息發送失敗', true); } });
     }
     
-    // ⭐ 更新解析邏輯 (匹配新加入的廠牌)
+    function renderFrontOrders() {
+        const tbody = document.getElementById('order-list'); tbody.innerHTML = ''; 
+        if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; return; }
+        myOrders.forEach(o => { 
+            let statusColor = ''; if(o.status === '待處理' || o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #f57c00;'; else if(o.status === '撿貨中') statusColor = 'color: #8e24aa;'; else if(o.status === '已完成') statusColor = 'color: #2e7d32;'; else statusColor = 'color: #333;';
+            tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="action-btn" style="padding:4px 10px; font-size:14px; margin-left:12px; background:#607d8b; color:white; border:none;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; 
+        });
+    }
+
+    async function loadOrders(isSilent = false) { 
+        if(!isSilent) document.getElementById('order-list').innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666;">資料載入中...</td></tr>';
+        const res = await callGasAPISilent({ action: 'getOrders', username: currentUser.username }); 
+        if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
+    }
+
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); 
@@ -537,21 +562,6 @@
         const actionsContainer = document.getElementById('order-detail-actions'); 
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { actionsContainer.innerHTML = `<button style="padding:10px 18px; border:none; border-radius:6px; background:#e53935; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 取消訂單</button><button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 修改數量</button>`; } else { actionsContainer.innerHTML = ``; } 
         document.getElementById('order-detail-modal').style.display = 'flex'; 
-    }
-    
-    function renderFrontOrders() {
-        const tbody = document.getElementById('order-list'); tbody.innerHTML = ''; 
-        if(myOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666; font-size:18px;">目前沒有歷史訂單喔！</td></tr>'; return; }
-        myOrders.forEach(o => { 
-            let statusColor = ''; if(o.status === '待處理' || o.status === '處理中' || o.status === '新訂單') statusColor = 'color: #f57c00;'; else if(o.status === '撿貨中') statusColor = 'color: #8e24aa;'; else if(o.status === '已完成') statusColor = 'color: #2e7d32;'; else statusColor = 'color: #333;';
-            tbody.innerHTML += `<tr><td>${o.time}</td><td>${o.orderId} <button class="action-btn" style="padding:4px 10px; font-size:14px; margin-left:12px; background:#607d8b; color:white; border:none;" onclick="showOrderDetails('${o.orderId}')">📄 查看明細</button></td><td><strong style="font-size:20px; color:#333;">$${o.total}</strong></td><td style="${statusColor} font-weight:bold; font-size:16px;">${o.status}</td></tr>`; 
-        });
-    }
-
-    async function loadOrders(isSilent = false) { 
-        if(!isSilent) document.getElementById('order-list').innerHTML = '<tr><td colspan="4" style="text-align: center; padding:40px; color:#666;">資料載入中...</td></tr>';
-        const res = await callGasAPISilent({ action: 'getOrders', username: currentUser.username }); 
-        if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
     
     function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
@@ -591,16 +601,18 @@
         let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); 
         let details = editingCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; }).join('\n'); 
         document.getElementById('edit-order-modal').style.display = 'none'; 
+        
         callGasAPISilent({ action: 'updateMyOrder', username: currentUser.username, orderId: editingOrderId, cart: editingCart, total: total }).then(res => {
             if(res && res.success) { const orderIndex = myOrders.findIndex(o => o.orderId === editingOrderId); if(orderIndex !== -1) { myOrders[orderIndex].total = total; myOrders[orderIndex].details = details; renderFrontOrders(); } showToast("✅ 修改已儲存"); } 
             else { showToast("❌ 修改失敗：" + (res ? res.message : '連線異常'), true); }
         });
     }
 
-    // ⭐ 加入購物車時帶入廠牌 (mfg)
+    // ⭐ 購物車資料包含廠牌，並且同步儲存到 localStorage
     function addToCart(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; 
         const ex = cart.find(i => i.id === pId); 
+        
         if(ex) { 
             if(ex.qty + q > maxInput) { 
                 if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true);
@@ -611,7 +623,7 @@
         } else { 
             cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); 
         } 
-        document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); 
+        saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); 
     }
     
     function addToCartFromRestock(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) {
@@ -627,7 +639,7 @@
         } else { 
             cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); 
         } 
-        document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`; showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
+        saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
     function openCart() { 
@@ -641,19 +653,21 @@
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
-    function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 數量超過限制！最多: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; openCart(); }
-    function removeFromCart(index) { cart.splice(index, 1); openCart(); if(cart.length === 0) document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; }
+    
+    function updateCartQty(index, newQty) { let q = parseInt(newQty); let item = cart[index]; if (isNaN(q) || q < 1) { showToast("⚠️ 數量最少為 1", true); q = 1; } else if (q > item.maxStock) { showToast(`⚠️ 數量超過限制！最多: ${item.maxStock}`, true); q = item.maxStock; } item.qty = q; saveCart(); openCart(); }
+    function removeFromCart(index) { cart.splice(index, 1); saveCart(); openCart(); }
     
     function checkout() { 
         if(cart.length===0) return; 
         if(!confirm("確定要送出這筆訂單嗎？")) return; 
         const remark = document.getElementById('cart-remark').value; const currentCart = [...cart]; const total = cart.reduce((a,b)=>a+(b.price*b.qty),0);
         document.getElementById('cart-modal').style.display='none'; 
+        
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
         callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: currentCart, total: total, remark: remark }).then(res => { 
             if(res && res.success){ 
-                cart=[]; document.getElementById('cart-btn').innerText = `🛒 購物車 (0)`; switchView('orders'); 
+                cart=[]; saveCart(); switchView('orders'); 
                 myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: currentCart.map(i=>{let prefix = i.nhiCode ? `[${i.nhiCode}] ` : ''; let mfgStr = i.mfg ? ` [廠牌:${i.mfg}]` : ''; return `${prefix}${i.name} x ${i.qty}${mfgStr}`}).join('\n'), total: total, status: '新訂單', remark: remark });
                 renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！");
             } else { 
