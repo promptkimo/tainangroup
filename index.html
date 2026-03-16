@@ -88,13 +88,13 @@
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; position: relative;}
     
-    /* ⭐ 購物車卡片 UI 設計 */
+    /* ⭐ 購物車卡片 UI 設計 (更新廠牌樣式) */
     .cart-item { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 12px; transition: 0.2s;}
     .cart-item:hover { border-color: #4CAF50; box-shadow: 0 4px 8px rgba(76,175,80,0.15);}
     .cart-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
     .cart-item-title { font-size: 18px; font-weight: bold; color: #2c3e50; line-height: 1.4; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
     .cart-nhi { font-size: 13px; background: #eceff1; color: #546e7a; padding: 2px 6px; border-radius: 4px; border: 1px solid #cfd8dc;}
-    .cart-mfg { font-size: 13px; color: #78909c; display: block; margin-top: 4px; }
+    .cart-mfg { font-size: 13px; color: #607d8b; background: #eceff1; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: normal; border: 1px solid #cfd8dc; white-space: nowrap; }
     .cart-item-bottom { display: flex; justify-content: space-between; align-items: center; background: #f9fbf9; padding: 12px; border-radius: 8px; border: 1px solid #f0f0f0; }
     .cart-price-block { display: flex; align-items: center; gap: 15px; font-size: 15px; color: #555; font-weight: bold;}
     .cart-qty-input { width: 65px; text-align: center; border: 2px solid #ccc; border-radius: 6px; padding: 6px; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s;}
@@ -303,10 +303,10 @@
   </div>
 
   <script>
-    // 💡 記得將這裡改成您自己專屬的 GAS 網址！
+    // 💡 記得將這裡改成您專屬的 GAS 網址！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
-    let currentUser = { username: '', pharmacyName: '', role: '' };
+    let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
     let currentPassword = ''; 
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
@@ -318,8 +318,9 @@
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
     
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
+    function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
-    // ⭐ 購物車本地記憶機制
+    // ⭐ 購物車本地記憶機制 (無縫存取)
     function saveCart() {
         if(currentUser.username) {
             localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
@@ -371,8 +372,8 @@
     async function callGasAPI(data, loadingElementId) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block'; try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); } }
     async function callGasAPISilent(data) { try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); return await res.json(); } catch(e) { return {success: false, message: '網路連線異常'}; } }
 
-    // ⭐ 解碼跳窗
-    function openNewsDetail(id) { 
+    function openNewsDetail(encId) { 
+        let id = decodeURIComponent(encId);
         const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; 
         document.getElementById('news-detail-title').innerText = news.title; 
         document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; 
@@ -392,8 +393,8 @@
                 
                 res.data.forEach(n => { 
                     let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : ''; 
-                    // ⭐ 使用安全的方式綁定點擊事件 (避免引號衝突)
-                    let titleHtml = `<span class="news-title" onclick="openNewsDetail('${n.id}')">${escapeHTML(n.title)}${attachIcon}</span>`; 
+                    let safeId = safeEncode(n.id);
+                    let titleHtml = `<span class="news-title" onclick="openNewsDetail('${safeId}')">${escapeHTML(n.title)}${attachIcon}</span>`; 
                     let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`; 
                     if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml; 
                 }); 
@@ -429,12 +430,12 @@
         
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
         if (res && res.success) { 
-            currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentPassword = p; 
+            currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
             
             // ⭐ 讀取本地端記憶的購物車
             let savedCart = localStorage.getItem('cart_' + currentUser.username);
             cart = savedCart ? JSON.parse(savedCart) : [];
-            saveCart(); // 更新按鈕數字
+            saveCart(); 
             
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
@@ -521,10 +522,10 @@
             let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
             if (isNaN(stk) || stk <= 0) {
-                actionHtml = `<div class="action-grid"><div class="status-badge-front status-out">缺貨中</div><div class="qty-wrapper"><span style="color:#ccc;">-</span></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
+                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 42px;"><div class="status-badge-front status-out">缺貨中</div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>`;
             } else {
                 let unitText = p.unit ? p.unit.replace('/', '') : '盒';
-                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
+                actionHtml = `<div class="action-grid" style="grid-template-columns: 85px 70px 42px 42px;"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-res-${p.id}"></div><div><button class="icon-only-btn btn-addcart" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div><button class="icon-only-btn" style="color:#e53935;" onclick="removeSubscription('${p.id}')" title="取消追蹤">${svgDelete}</button></div></div>${limitAlert}`;
             }
             htmlArray.push(`<tr><td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td class="price-text">$${p.price||0}</td><td style="font-weight:bold; font-size:18px; color:${(stk>0)?'#2e7d32':'#d32f2f'};">${(stk>0)?stk:'0'}</td><td>${actionHtml}</td></tr>`);
         });
@@ -608,7 +609,7 @@
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
-    // ⭐ 套用美化的卡片式購物車介面
+    // ⭐ 更新修改訂單購物車的排版，加上 1. 2. 3. 順序
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
         if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:16px; color:#999;">訂單已無任何商品</p>'; } else { 
@@ -619,8 +620,7 @@
                 <div class="cart-item">
                     <div class="cart-item-top">
                         <div style="flex:1;">
-                            <div class="cart-item-title">${nhiTag}${i.name}</div>
-                            ${mfgTag}
+                            <div class="cart-item-title">${x + 1}. ${nhiTag}${i.name}${mfgTag}</div>
                         </div>
                         <button class="cart-del-btn" onclick="removeEditCartItem(${x})">🗑️ 移除</button>
                     </div>
@@ -686,7 +686,7 @@
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
-    // ⭐ 套用美化的卡片式購物車介面
+    // ⭐ 更新購物車排版，加上 1. 2. 3. 順序，並將廠牌融入標題列
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
         if (cart.length === 0) { 
@@ -700,8 +700,7 @@
                 <div class="cart-item">
                     <div class="cart-item-top">
                         <div style="flex:1;">
-                            <div class="cart-item-title">${nhiTag}${i.name}</div>
-                            ${mfgTag}
+                            <div class="cart-item-title">${x + 1}. ${nhiTag}${i.name}${mfgTag}</div>
                         </div>
                         <button class="cart-del-btn" onclick="removeFromCart(${x})">🗑️ 移除</button>
                     </div>
@@ -729,7 +728,7 @@
         
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
-        callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, cart: currentCart, total: total, remark: remark }).then(res => { 
+        callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, cart: currentCart, total: total, remark: remark }).then(res => { 
             if(res && res.success){ 
                 cart=[]; saveCart(); switchView('orders'); 
                 myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: currentCart.map(i=>{let prefix = i.nhiCode ? `[${i.nhiCode}] ` : ''; let mfgStr = i.mfg ? ` [廠牌:${i.mfg}]` : ''; return `${prefix}${i.name} x ${i.qty}${mfgStr}`}).join('\n'), total: total, status: '新訂單', remark: remark });
