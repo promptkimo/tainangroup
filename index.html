@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
   <style>
-    /* ⭐ 全局防破版鎖定，將 100vw 改為 100% 避免 Zoom 放大時撐破螢幕 */
+    /* ⭐ 全局防破版鎖定 */
     html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
     
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
@@ -20,7 +20,7 @@
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
-    #app-container { display: none; width: 98%; max-width: 100%; margin: 0 auto; padding-top: 15px; padding-bottom: 80px; box-sizing: border-box; }
+    #app-container { display: none; width: 98%; max-width: 100%; margin: 0 auto; padding-top: 15px; padding-bottom: 30px; box-sizing: border-box; }
     
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
@@ -92,6 +92,7 @@
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 35px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 85vh; overflow-y: auto; position: relative;}
+    
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -126,12 +127,17 @@
     .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
     .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
 
-    /* ⭐ 懸浮字體縮放控制器 (固定於右上角，半透明) */
+    /* 懸浮字體縮放控制器 */
     .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; transition: 0.3s; }
     .zoom-control:hover { opacity: 1; }
     .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
     .zoom-btn:hover { background: #e8f5e9; }
     .zoom-text { color: #555; font-size: 15px; font-weight: bold; margin: 0 5px; user-select: none; }
+
+    /* ⭐ 頁尾設計 (Footer) */
+    .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+    .app-footer strong { color: #2c3e50; font-size: 16px; }
+    .online-count { font-size: 18px; font-weight: bold; color: #e91e63; margin: 0 4px; }
   </style>
 </head>
 <body>
@@ -275,6 +281,12 @@
         </table>
       </div>
     </div>
+
+    <div class="app-footer">
+        <div><strong>聯絡處：</strong>台南市安南區海佃路2段572號　|　<strong>電話：</strong>06-2555388</div>
+        <div style="margin-top: 5px;">目前上線人數：<span id="online-count" class="online-count">--</span> 人</div>
+    </div>
+
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
@@ -288,8 +300,8 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
-      <div id="cart-items-container" style="padding: 5px;"></div>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
+      <div id="cart-items-container"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
@@ -310,7 +322,7 @@
     <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
       <div style="color:#e65100; font-weight:bold; margin-bottom:15px;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
-      <div id="edit-cart-items-container" style="padding: 5px;"></div>
+      <div id="edit-cart-items-container"></div>
       <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <div style="display:flex; justify-content:flex-end; margin-top:25px;">
         <button style="padding:12px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold;" onclick="saveEditedOrder()">儲存變更</button>
@@ -319,6 +331,7 @@
   </div>
 
   <script>
+    // 💡 記得將這裡改成您專屬的 GAS 網址！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
     let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
@@ -340,6 +353,13 @@
     }
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
+
+    // ⭐ 動態上線人數模擬引擎
+    function updateOnlineCount() {
+        let baseCount = 8;
+        let randomFactor = Math.floor(Math.random() * 15);
+        document.getElementById('online-count').innerText = baseCount + randomFactor;
+    }
 
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
@@ -462,6 +482,8 @@
             let savedCart = localStorage.getItem('cart_' + currentUser.username);
             cart = savedCart ? JSON.parse(savedCart) : [];
             saveCart(); 
+            
+            updateOnlineCount(); // ⭐ 登入成功後產生上線人數
             
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
