@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RY29195DGL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-RY29195DGL');
+  </script>
+
   <style>
     html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
@@ -132,7 +142,6 @@
 
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
-    .online-count { font-size: 18px; font-weight: bold; color: #e91e63; margin: 0 4px; }
   </style>
 </head>
 <body>
@@ -279,7 +288,6 @@
 
     <div class="app-footer">
         <div><strong>聯絡處：</strong>台南市安南區海佃路2段572號　|　<strong>電話：</strong>06-2555388</div>
-        <div style="margin-top: 5px;">目前上線人數：<span id="online-count" class="online-count">--</span> 人</div>
     </div>
 
   </div>
@@ -346,12 +354,6 @@
     }
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
-
-    function updateOnlineCount() {
-        let baseCount = 8;
-        let randomFactor = Math.floor(Math.random() * 15);
-        document.getElementById('online-count').innerText = baseCount + randomFactor;
-    }
 
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
@@ -475,8 +477,6 @@
             cart = savedCart ? JSON.parse(savedCart) : [];
             saveCart(); 
             
-            updateOnlineCount(); 
-            
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
             if (currentUser.role === '管理員' || u === 'prompt') { document.getElementById('nav-admin').style.display = 'flex'; localStorage.setItem('admin_token', 'verified'); } 
@@ -492,7 +492,6 @@
     
     function logout() { localStorage.removeItem('admin_token'); location.reload(); }
 
-    // ⭐ 加入「英文名」與「主成分」的智慧搜尋
     function filterProducts() { 
         const q = document.getElementById('search-input').value.toLowerCase().trim(); 
         const f = getFavorites(); 
@@ -506,8 +505,8 @@
             if (currentMode === 'favorites' && !f.includes(String(p.id))) return false; 
             return String(p.nhiCode||'').toLowerCase().includes(q) || 
                    String(p.name||'').toLowerCase().includes(q) || 
-                   String(p.engName||'').toLowerCase().includes(q) ||     // 英文名搜尋
-                   String(p.ingredients||'').toLowerCase().includes(q) || // 成分搜尋
+                   String(p.engName||'').toLowerCase().includes(q) || 
+                   String(p.ingredients||'').toLowerCase().includes(q) || 
                    String(p.manufacturer||'').toLowerCase().includes(q); 
         }); 
         
