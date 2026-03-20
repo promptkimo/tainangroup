@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台南社區藥局藥品供應平台</title>
   <style>
-    /* ⭐ 全局防破版鎖定 */
     html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
-    
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
     #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
     .header-container { display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
@@ -114,7 +112,6 @@
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
-    /* 購物車全新表格 UI 設計 */
     .cart-table-wrapper { width: 100%; overflow-x: auto; margin-top: 15px; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
     .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; border-right: 1px solid #62a3cc; }
@@ -127,14 +124,12 @@
     .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
     .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
 
-    /* 懸浮字體縮放控制器 */
     .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; transition: 0.3s; }
     .zoom-control:hover { opacity: 1; }
     .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
     .zoom-btn:hover { background: #e8f5e9; }
     .zoom-text { color: #555; font-size: 15px; font-weight: bold; margin: 0 5px; user-select: none; }
 
-    /* ⭐ 頁尾設計 (Footer) */
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
     .online-count { font-size: 18px; font-weight: bold; color: #e91e63; margin: 0 4px; }
@@ -220,7 +215,7 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width: 90px;">健保碼</th>
+                  <th style="width: 110px;">健保碼</th>
                   <th style="width: auto;">藥名/成分</th>
                   <th style="width: 90px;">規格</th>
                   <th style="width: 120px;">製造商</th>
@@ -267,7 +262,7 @@
         <table>
           <thead>
             <tr>
-              <th style="width: 90px;">健保碼</th>
+              <th style="width: 110px;">健保碼</th>
               <th style="width: auto;">藥名/成分</th>
               <th style="width: 120px;">製造商</th>
               <th style="width: 80px;">單價</th>
@@ -300,7 +295,7 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 15px; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
       <div id="cart-items-container"></div>
       <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-top: 25px; color: #d32f2f;">總金額：$0</div>
       <textarea id="cart-remark" style="width:100%; margin-top:20px; padding:15px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;" rows="3" placeholder="📝 備註事項 (選填)..."></textarea>
@@ -331,7 +326,6 @@
   </div>
 
   <script>
-    // 💡 記得將這裡改成您專屬的 GAS 網址！
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
     let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
@@ -341,7 +335,6 @@
     let editingCart = []; let editingOrderId = '';
     let hasViewedRestock = false;
 
-    // ⭐ 網頁縮放功能 (RWD Zoom)
     let currentZoom = parseFloat(localStorage.getItem('app_zoom')) || 1;
     function applyZoom() { document.body.style.zoom = currentZoom; }
     function changeZoom(delta) { 
@@ -354,7 +347,6 @@
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
 
-    // ⭐ 動態上線人數模擬引擎
     function updateOnlineCount() {
         let baseCount = 8;
         let randomFactor = Math.floor(Math.random() * 15);
@@ -483,7 +475,7 @@
             cart = savedCart ? JSON.parse(savedCart) : [];
             saveCart(); 
             
-            updateOnlineCount(); // ⭐ 登入成功後產生上線人數
+            updateOnlineCount(); 
             
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
@@ -513,6 +505,7 @@
         currentFrontPage = 1; renderTable(); 
     }
 
+    // ⭐ 前台顯示新舊健保價雙重版面
     function renderTable() { 
         const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); const subs = getSubscriptions();
         if(currentFilteredProducts.length === 0) { let msg = currentMode === 'favorites' ? '您的最愛清單目前空空如也喔！' : '找不到符合的藥品喔！'; tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">${msg}</td></tr>`; paginationBox.style.display = 'none'; return; } 
@@ -545,7 +538,16 @@
                 actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div>${favBtnHtml}</div></div>${limitAlert}`;
             } 
             
-            let nhiPriceHtml = p.nhiPrice ? `<div class="nhi-text">健保價: $${p.nhiPrice}</div>` : `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; 
+            // ⭐ 判斷有無新健保價，有的話顯示雙欄位
+            let nhiPriceHtml = '';
+            if (p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice)) {
+                nhiPriceHtml = `<div class="nhi-text"><strike style="color:#aaa;">舊健保價: $${p.nhiPrice}</strike></div><div class="nhi-text" style="color:#d32f2f; font-size:14px; margin-top:2px;">新健保價: $${p.newNhiPrice}</div>`;
+            } else if (p.nhiPrice) {
+                nhiPriceHtml = `<div class="nhi-text">健保價: $${p.nhiPrice}</div>`;
+            } else {
+                nhiPriceHtml = `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`;
+            }
+
             htmlArray.push(`<tr><td><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</td><td><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td style="white-space: nowrap;">${p.spec||'-'}</td><td><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td class="price-text">$${p.price||0}</td><td>${actionHtml}</td></tr>`); 
         }); 
         
@@ -651,7 +653,14 @@
                 const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); const mfg = match[6] ? match[6].trim() : '';
                 let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; 
                 let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
-                let nhiPriceStr = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
+                
+                let nhiPriceStr = '';
+                if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
+                    nhiPriceStr = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
+                } else if (prod && prod.nhiPrice) {
+                    nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
+                }
+                
                 editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
             } 
         }); 
@@ -760,7 +769,12 @@
                 let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
                 
                 let prod = allProducts.find(p => String(p.id) === String(i.id));
-                let nhiPriceText = prod && prod.nhiPrice ? `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>` : '';
+                let nhiPriceText = '';
+                if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
+                    nhiPriceText = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
+                } else if (prod && prod.nhiPrice) {
+                    nhiPriceText = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
+                }
                 
                 let mfgText = i.mfg ? ` [${i.mfg}]` : '';
                 
