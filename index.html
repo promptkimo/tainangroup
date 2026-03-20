@@ -203,7 +203,7 @@
     </div>
 
     <div id="view-products" class="view-section active">
-      <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：請在此輸入藥品名稱或健保碼來開始選購..." onkeyup="filterProducts()"></div>
+      <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：輸入健保碼、藥名、英文名或主成分..." onkeyup="filterProducts()"></div>
       <div id="announcement-section">
          <div class="news-board news-top"><div class="news-header">最新消息</div><ul class="news-list" id="news-list-top"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
          <div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
@@ -492,20 +492,28 @@
     
     function logout() { localStorage.removeItem('admin_token'); location.reload(); }
 
+    // ⭐ 加入「英文名」與「主成分」的智慧搜尋
     function filterProducts() { 
-        const q = document.getElementById('search-input').value.toLowerCase().trim(); const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); 
+        const q = document.getElementById('search-input').value.toLowerCase().trim(); 
+        const f = getFavorites(); 
+        const annSection = document.getElementById('announcement-section'); 
+        const tableWrapper = document.getElementById('products-table-wrapper'); 
+        
         if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } 
         annSection.style.display = 'none'; tableWrapper.style.display = 'block'; 
         
         currentFilteredProducts = allProducts.filter(p => { 
             if (currentMode === 'favorites' && !f.includes(String(p.id))) return false; 
-            return String(p.nhiCode||'').toLowerCase().includes(q) || String(p.name||'').toLowerCase().includes(q) || String(p.ingredients||'').toLowerCase().includes(q) || String(p.manufacturer||'').toLowerCase().includes(q); 
+            return String(p.nhiCode||'').toLowerCase().includes(q) || 
+                   String(p.name||'').toLowerCase().includes(q) || 
+                   String(p.engName||'').toLowerCase().includes(q) ||     // 英文名搜尋
+                   String(p.ingredients||'').toLowerCase().includes(q) || // 成分搜尋
+                   String(p.manufacturer||'').toLowerCase().includes(q); 
         }); 
         
         currentFrontPage = 1; renderTable(); 
     }
 
-    // ⭐ 前台顯示新舊健保價雙重版面
     function renderTable() { 
         const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); const subs = getSubscriptions();
         if(currentFilteredProducts.length === 0) { let msg = currentMode === 'favorites' ? '您的最愛清單目前空空如也喔！' : '找不到符合的藥品喔！'; tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #666; padding: 40px; font-size: 18px;">${msg}</td></tr>`; paginationBox.style.display = 'none'; return; } 
@@ -538,7 +546,6 @@
                 actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div>${favBtnHtml}</div></div>${limitAlert}`;
             } 
             
-            // ⭐ 判斷有無新健保價，有的話顯示雙欄位
             let nhiPriceHtml = '';
             if (p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice)) {
                 nhiPriceHtml = `<div class="nhi-text"><strike style="color:#aaa;">舊健保價: $${p.nhiPrice}</strike></div><div class="nhi-text" style="color:#d32f2f; font-size:14px; margin-top:2px;">新健保價: $${p.newNhiPrice}</div>`;
