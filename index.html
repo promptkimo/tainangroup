@@ -146,6 +146,7 @@
 
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
+    .online-count { font-size: 18px; font-weight: bold; color: #e91e63; margin: 0 4px; }
   </style>
 </head>
 <body>
@@ -254,6 +255,9 @@
       <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #ff9800; color:#e65100; font-size:16px; font-weight:bold;">
         📢 以下為本期健保價有異動的藥品清單，請藥師核對您的申報設定。
       </div>
+      
+      <div class="search-container"><input type="text" id="search-price-change" placeholder="🔍 搜尋異動藥品：輸入健保碼、藥名、英文名或主成分..." onkeyup="renderPriceChangeList()"></div>
+
       <div class="table-container">
         <table>
           <thead>
@@ -262,12 +266,10 @@
               <th style="width: auto;">藥名/成分</th>
               <th style="width: 150px;">舊健保價</th>
               <th style="width: 150px;">調整後新價</th>
-              <th style="width: 80px;">單價</th>
-              <th style="width: 180px; text-align: right;">操作</th>
             </tr>
           </thead>
           <tbody id="price-change-list">
-            <tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">目前沒有藥價異動資料</td></tr>
+            <tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有藥價異動資料</td></tr>
           </tbody>
         </table>
       </div>
@@ -316,6 +318,7 @@
 
     <div class="app-footer">
         <div><strong>聯絡處：</strong>台南市安南區海佃路2段572號　|　<strong>電話：</strong>06-2555388</div>
+        <div style="margin-top: 5px;">目前上線人數：<span id="online-count" class="online-count">--</span> 人</div>
     </div>
 
   </div>
@@ -383,6 +386,29 @@
     }
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
+
+    // ⭐ 升級版：依據時間動態模擬上線人數 (含自動波動)
+    function updateOnlineCount() {
+        const hour = new Date().getHours();
+        let min = 5, max = 15;
+
+        if (hour >= 8 && hour <= 12) { min = 20; max = 35; } 
+        else if (hour >= 13 && hour <= 18) { min = 15; max = 30; } 
+        else if (hour >= 19 && hour <= 23) { min = 8; max = 18; } 
+        else { min = 2; max = 6; } 
+
+        let currentCount = Math.floor(Math.random() * (max - min + 1)) + min;
+        const countEl = document.getElementById('online-count');
+        if (countEl) countEl.innerText = currentCount;
+
+        setInterval(() => {
+            let fluctuation = Math.floor(Math.random() * 5) - 2; 
+            currentCount += fluctuation;
+            if (currentCount < min) currentCount = min;
+            if (currentCount > max + 5) currentCount = max + 5;
+            if (countEl) countEl.innerText = currentCount;
+        }, 60000);
+    }
 
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
@@ -463,7 +489,7 @@
                 allProducts = res.data; 
                 filterProducts(); 
                 checkRestockStatus(); 
-                checkPriceChanges(); // ⭐ 檢查藥價異動
+                checkPriceChanges(); 
             } 
         }); 
         callGasAPI({ action: 'getNews' }).then(res => { 
@@ -504,13 +530,14 @@
         else { badge.style.display = 'none'; }
     }
 
-    // ⭐ 檢查藥價異動數量並顯示紅點
     function checkPriceChanges() {
         const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice));
         const badge = document.getElementById('price-change-badge');
         if(changes.length > 0) {
             badge.innerText = changes.length;
             badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
         }
     }
 
@@ -527,6 +554,8 @@
             let savedCart = localStorage.getItem('cart_' + currentUser.username);
             cart = savedCart ? JSON.parse(savedCart) : [];
             saveCart(); 
+            
+            updateOnlineCount(); 
             
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
             
@@ -597,7 +626,6 @@
                 actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div>${favBtnHtml}</div></div>${limitAlert}`;
             } 
             
-            // ⭐ 判斷有無新藥價，顯示對應排版
             let nhiPriceHtml = '';
             if (p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice)) {
                 nhiPriceHtml = `<div class="nhi-text"><strike style="color:#aaa;">舊價: $${p.nhiPrice}</strike></div><div class="nhi-text" style="color:#d32f2f; font-size:14px; margin-top:2px;">新價: $${p.newNhiPrice}</div>`;
@@ -613,32 +641,28 @@
         tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
     }
 
-    // ⭐ 渲染「藥價異動」專屬清單
+    // ⭐ 渲染「藥價異動」專屬清單 (純瀏覽，移除購買按鈕)
     function renderPriceChangeList() {
         const tbody = document.getElementById('price-change-list');
-        const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice));
+        const q = (document.getElementById('search-price-change')?.value || '').toLowerCase().trim();
+
+        // 篩選出「有異動」的藥品，若有搜尋關鍵字再進行比對
+        const changes = allProducts.filter(p => {
+            if (!(p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice))) return false;
+            if (!q) return true;
+            return String(p.nhiCode||'').toLowerCase().includes(q) || 
+                   String(p.name||'').toLowerCase().includes(q) || 
+                   String(p.engName||'').toLowerCase().includes(q) || 
+                   String(p.ingredients||'').toLowerCase().includes(q);
+        });
         
         if(changes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">目前沒有藥價異動資料</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有符合的藥價異動資料</td></tr>';
             return;
         }
 
-        const svgCart = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`;
-
-        tbody.innerHTML = changes.map(p => {
-            let stk = parseInt(p.stock);
-            let safeName = String(p.name||'').replace(/'/g, "\\'");
-            let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
-            let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
-            let actionHtml = '';
-
-            if (isNaN(stk) || stk <= 0) {
-                actionHtml = `<span style="color:#d32f2f; font-weight:bold;">缺貨中</span>`;
-            } else {
-                actionHtml = `<div style="display:flex; align-items:center; justify-content:flex-end;"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-c-${p.id}"><button class="icon-only-btn btn-addcart" onclick="addToCartFromChange('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div>`;
-            }
-
-            return `<tr>
+        tbody.innerHTML = changes.map(p => `
+            <tr>
                 <td style="font-weight:bold; color:#1976d2;">${p.nhiCode||'-'}</td>
                 <td>
                     <div style="font-weight:bold; color:#2c3e50;">${p.name}</div>
@@ -646,26 +670,8 @@
                 </td>
                 <td style="color:#78909c; text-decoration:line-through; font-size:18px;">$${p.nhiPrice}</td>
                 <td style="color:#d32f2f; font-weight:bold; font-size:22px;">$${p.newNhiPrice}</td>
-                <td class="price-text">$${p.price}</td>
-                <td>${actionHtml}</td>
-            </tr>`;
-        }).join('');
-    }
-
-    function addToCartFromChange(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) {
-        const q = parseInt(document.getElementById(`qty-c-${pId}`).value); if(q < 1) return; 
-        const ex = cart.find(i => i.id === pId); 
-        if(ex) { 
-            if(ex.qty + q > maxInput) { 
-                if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true);
-                else showToast("⚠️ 數量將超過庫存上限！", true); 
-                return; 
-            } 
-            ex.qty += q; 
-        } else { 
-            cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); 
-        } 
-        saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`);
+            </tr>
+        `).join('');
     }
 
     function renderRestockList() {
