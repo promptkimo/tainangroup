@@ -34,16 +34,18 @@
     .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; }
     .view-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .app-nav { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-start;}
+    .app-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-start;}
     .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 10px; font-size: 14px; border: none; background: transparent; cursor: pointer; border-radius: 10px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; white-space: nowrap; flex-shrink: 0;}
     .app-nav button img { width: 32px; height: 32px; margin-bottom: 4px; transition: transform 0.3s ease; object-fit: contain;}
     .app-nav button:hover { background: #f4f9f4; color: #2e7d32; }
     .app-nav button.active { background: #e8f5e9; color: #4CAF50; box-shadow: inset 0 0 0 2px #4CAF50; }
     
-    /* ⭐ 特別給藥價異動按鈕的樣式 */
     #nav-price-change.active { color: #d32f2f; box-shadow: inset 0 0 0 2px #d32f2f; background: #fff1f1;}
     .price-change-tag { background: #ffebee; color: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px; font-weight: bold;}
 
+    /* ⭐ 缺藥媒合按鈕特效 */
+    #nav-match.active { color: #1976d2; box-shadow: inset 0 0 0 2px #1976d2; background: #e3f2fd;}
+    
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
     .top-bar-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex-shrink: 0;}
@@ -146,7 +148,6 @@
 
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
-    .online-count { font-size: 18px; font-weight: bold; color: #e91e63; margin: 0 4px; }
   </style>
 </head>
 <body>
@@ -203,6 +204,7 @@
           <div class="app-nav">
             <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
             <button id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異動"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
+            <button id="nav-match" onclick="switchView('match')"><img src="https://cdn-icons-png.flaticon.com/512/3062/3062295.png" alt="缺藥媒合"> <span class="nav-text">缺藥媒合</span></button>
             <button id="nav-favorites" onclick="switchView('favorites')"><img src="./icon-fav.png" alt="最愛"> <span class="nav-text">我的最愛</span></button>
             <button id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
             <button id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服"> <span class="nav-text">聯絡客服</span> <span id="msg-badge" class="badge" style="display:none;">0</span></button>
@@ -255,7 +257,6 @@
       <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #ff9800; color:#e65100; font-size:16px; font-weight:bold;">
         📢 以下為本期健保價有異動的藥品清單，請藥師核對您的申報設定。
       </div>
-      
       <div class="search-container"><input type="text" id="search-price-change" placeholder="🔍 搜尋異動藥品：輸入健保碼、藥名、英文名或主成分..." onkeyup="renderPriceChangeList()"></div>
 
       <div class="table-container">
@@ -270,6 +271,37 @@
           </thead>
           <tbody id="price-change-list">
             <tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有藥價異動資料</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="view-match" class="view-section">
+      <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #1976d2;">
+         <h2 style="margin-top:0; color:#1976d2; font-size: 22px;">📢 發布缺藥協尋</h2>
+         <p style="color:#607d8b; font-weight:bold; font-size:15px; margin-bottom: 15px;">平台沒有的藥品，可在此向台南各大藥局發出請求。若有同業接單，系統會透過【聯絡客服】自動發送對方電話給您！</p>
+         <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+            <input type="text" id="match-nhi" placeholder="健保碼 (選填)" style="flex:1; min-width:120px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <input type="text" id="match-name" placeholder="請輸入需要的藥品名稱 (必填)" style="flex:2; min-width:200px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <input type="number" id="match-qty" placeholder="數量" style="flex:0.5; min-width:80px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <button onclick="submitMatchRequest()" style="background:#1976d2; color:white; border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px; white-space:nowrap;">送出協尋</button>
+         </div>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:120px;">發布時間</th>
+              <th style="width:200px;">尋找藥局</th>
+              <th style="width:120px;">健保碼</th>
+              <th style="width:auto;">藥品名稱</th>
+              <th style="width:80px; text-align:center;">尋找數量</th>
+              <th style="width:150px; text-align:right;">同業互助</th>
+            </tr>
+          </thead>
+          <tbody id="match-list">
+            <tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">載入中...</td></tr>
           </tbody>
         </table>
       </div>
@@ -387,7 +419,7 @@
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
 
-    // ⭐ 升級版：依據時間動態模擬上線人數 (含自動波動)
+    // 依據時間動態模擬上線人數
     function updateOnlineCount() {
         const hour = new Date().getHours();
         let min = 5, max = 15;
@@ -465,6 +497,7 @@
 
         if(viewName === 'products' || viewName === 'favorites') { currentMode = viewName; filterProducts(); } 
         else if (viewName === 'price-change') { renderPriceChangeList(); } 
+        else if (viewName === 'match') { loadMatchRequests(); } // ⭐ 切換到缺藥媒合時載入資料
         else if (viewName === 'orders') { loadOrders(); } 
         else if (viewName === 'contact') { loadMyMessages(); }
     }
@@ -641,12 +674,11 @@
         tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
     }
 
-    // ⭐ 渲染「藥價異動」專屬清單 (純瀏覽，移除購買按鈕)
+    // ⭐ 渲染「藥價異動」專屬清單
     function renderPriceChangeList() {
         const tbody = document.getElementById('price-change-list');
         const q = (document.getElementById('search-price-change')?.value || '').toLowerCase().trim();
 
-        // 篩選出「有異動」的藥品，若有搜尋關鍵字再進行比對
         const changes = allProducts.filter(p => {
             if (!(p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice))) return false;
             if (!q) return true;
@@ -672,6 +704,82 @@
                 <td style="color:#d32f2f; font-weight:bold; font-size:22px;">$${p.newNhiPrice}</td>
             </tr>
         `).join('');
+    }
+
+    // --- ⭐ 新增：缺藥媒合相關功能 ---
+    function submitMatchRequest() {
+        const nhi = document.getElementById('match-nhi').value.trim();
+        const name = document.getElementById('match-name').value.trim();
+        const qty = document.getElementById('match-qty').value.trim();
+        
+        if(!name || !qty) return showToast("⚠️ 藥品名稱與數量為必填欄位！", true);
+
+        showToast("發布中...");
+        callGasAPISilent({ 
+            action: 'addMatchRequest', 
+            username: currentUser.username, 
+            pharmacyName: currentUser.pharmacyName,
+            contact: currentUser.contact,
+            nhiCode: nhi, 
+            drugName: name, 
+            qty: qty 
+        }).then(res => {
+            if(res && res.success) {
+                document.getElementById('match-nhi').value = '';
+                document.getElementById('match-name').value = '';
+                document.getElementById('match-qty').value = '';
+                showToast("✅ 缺藥協尋已發布！");
+                loadMatchRequests();
+            } else { showToast("❌ 發布失敗", true); }
+        });
+    }
+
+    function loadMatchRequests() {
+        const tbody = document.getElementById('match-list');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">正在載入全台南藥局需求...</td></tr>';
+        callGasAPISilent({ action: 'getMatchRequests' }).then(res => {
+            if(res && res.success) {
+                if(res.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#999;">太棒了！目前台南各大藥局都沒有缺藥需求。</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = res.data.map(m => {
+                    let btnHtml = '';
+                    if(m.username === currentUser.username) {
+                        btnHtml = `<span style="color:#999; font-size:14px; font-weight:bold;">您發布的需求</span>`;
+                    } else {
+                        btnHtml = `<button style="background:#ff9800; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:15px;" onclick="provideMatch('${m.id}', '${m.drugName}')">🤝 我有此藥</button>`;
+                    }
+                    return `<tr>
+                        <td style="color:#78909c; font-size:14px;">${m.time}</td>
+                        <td style="font-weight:bold; color:#2c3e50; font-size:18px;">${escapeHTML(m.requester)}</td>
+                        <td style="color:#1976d2; font-weight:bold;">${escapeHTML(m.nhiCode)}</td>
+                        <td style="font-weight:bold; color:#d32f2f; font-size:18px;">${escapeHTML(m.drugName)}</td>
+                        <td style="font-weight:bold; font-size:18px; text-align:center;">${m.qty}</td>
+                        <td style="text-align:right;">${btnHtml}</td>
+                    </tr>`;
+                }).join('');
+            }
+        });
+    }
+
+    function provideMatch(id, drugName) {
+        if(!confirm(`確定要提供「${drugName}」給對方嗎？\n點擊確定後，系統會自動發送通知與您的電話給對方藥局！`)) return;
+        showToast("媒合處理中...");
+        callGasAPISilent({
+            action: 'provideMatch',
+            id: id,
+            providerName: currentUser.pharmacyName,
+            providerContact: currentUser.contact
+        }).then(res => {
+            if(res && res.success) {
+                alert(`✅ 媒合成功！\n已通知【${res.requesterName}】。\n\n對方的聯絡電話是：${res.requesterContact}\n您可以主動聯繫，或等候對方來電。`);
+                loadMatchRequests();
+            } else {
+                alert(res ? res.message : "發生錯誤，可能已經被其他藥局搶先一步了！");
+                loadMatchRequests();
+            }
+        });
     }
 
     function renderRestockList() {
