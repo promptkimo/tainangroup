@@ -274,7 +274,7 @@
         <div class="top-bar">
           <div class="app-nav">
             <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
-            <button id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異動"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
+            <button id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異怒"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
             <button id="nav-match" onclick="switchView('match')"><img src="https://cdn-icons-png.flaticon.com/512/3062/3062295.png" alt="缺藥媒合"> <span class="nav-text">缺藥媒合</span></button>
             <button id="nav-favorites" onclick="switchView('favorites')"><img src="./icon-fav.png" alt="最愛"> <span class="nav-text">我的最愛</span></button>
             <button id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
@@ -496,7 +496,7 @@
         if (savedU && savedP) {
             document.getElementById('login-username').value = savedU;
             document.getElementById('login-password').value = savedP;
-            doLogin(document.querySelector('#login-form button')); // 傳入按鈕以支援樂觀防連點
+            doLogin(document.querySelector('#login-form button'));
         }
     };
 
@@ -700,7 +700,6 @@
     
     function goToAdmin() { const encodedP = btoa(encodeURIComponent(currentPassword)); const ssoUrl = GAS_URL + '?u=' + encodeURIComponent(currentUser.username) + '&p=' + encodedP; window.open(ssoUrl, '_blank'); }
 
-    // ⭐ 防連點註冊機制
     async function doRegister(btn) { 
         const name = document.getElementById('reg-pharmacy').value; 
         const contact = document.getElementById('reg-contact').value; 
@@ -1006,7 +1005,7 @@
         if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
 
-    // ⭐ 智慧回溯引擎：自動尋找歷史訂單中缺漏的「規格」與「單價」
+    // ⭐ 智慧回溯與單行排版引擎
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         const container = document.getElementById('order-detail-container'); 
@@ -1025,19 +1024,15 @@
             let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
             let line = itemStr.trim();
             
-            // 解析健保碼
             let nhiMatch = line.match(/^\[(.*?)\]\s*/);
             if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
             
-            // 解析廠牌
             let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
             if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
             
-            // 解析單價 (如果字串裡面有)
             let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
             if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
             
-            // 解析數量與藥名
             let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
             if (qtyMatch) {
                 qty = parseInt(qtyMatch[1]);
@@ -1045,7 +1040,6 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            // ⭐ 智慧回溯：從 allProducts 中撈取遺失的資料 (規格、單價)
             let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
             if (prod) {
                 if (!spec) spec = prod.spec || '';
@@ -1057,20 +1051,22 @@
             const subtotal = qty * price;
             
             let nhiTag = nhi ? `<span style="color:#1976d2; margin-right:4px;">[${nhi}]</span>` : '';
-            let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:8px;">(廠牌: ${escapeHTML(mfg)})</span>` : '';
-            let specTag = spec ? `<div style="font-size:13px; color:#00838f; margin-top:4px; padding-left:18px;">✨ 規格: ${escapeHTML(spec)}</div>` : '';
+            let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:6px;">(廠牌: ${escapeHTML(mfg)})</span>` : '';
+            let specTag = spec ? `<span style="font-size:13px; color:#00838f; background:#e0f7fa; padding:2px 6px; border-radius:4px; margin-left:6px;">規格: ${escapeHTML(spec)}</span>` : '';
             
             let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
 
+            // ⭐ 單行極簡排版
             html += `
-            <li style="margin-bottom:12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
-                <div style="font-weight:bold; color:#2c3e50; font-size:16px; line-height:1.4; display:flex; align-items:flex-start; flex-wrap:wrap;">
-                    <span style="margin-right:6px;">${index + 1}.</span> 
-                    <span style="flex:1;">${nhiTag}${escapeHTML(name)}${mfgTag}</span>
-                </div>
-                ${specTag}
-                <div style="color:#e65100; font-size:15px; font-weight:bold; margin-top:6px; padding-left:22px;">
-                    🛒 ${priceText}
+            <li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div style="font-size:15px; line-height:1.4; color:#2c3e50; flex:1; min-width:250px;">
+                        <span style="font-weight:bold; margin-right:4px;">${index + 1}.</span>
+                        ${nhiTag}<span style="font-weight:bold;">${escapeHTML(name)}</span>${mfgTag}${specTag}
+                    </div>
+                    <div style="color:#e65100; font-size:15px; font-weight:bold; white-space:nowrap;">
+                        ${priceText}
+                    </div>
                 </div>
             </li>`;
         }); 
@@ -1413,7 +1409,6 @@
 
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
-        // ⭐ 修改：讓結帳出去的 details 包含完整的規格和單價資訊
         let fullDetails = currentCart.map(item => { 
             let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; 
             let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; 
