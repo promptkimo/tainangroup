@@ -174,25 +174,10 @@
         
         .top-bar { padding: 10px; flex-direction: column; align-items: center; gap: 10px; border-radius: 0; box-shadow: none; border-bottom: 1px solid #e0e0e0; width: 100%; overflow: hidden;}
         
-        .app-nav { 
-            flex-wrap: nowrap !important; 
-            overflow-x: auto !important; 
-            padding-bottom: 10px; 
-            justify-content: flex-start; 
-            -webkit-overflow-scrolling: touch; 
-            width: 100%; 
-            max-width: 100vw;
-            min-width: 0; 
-            gap: 10px;
-        }
+        .app-nav { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px; justify-content: flex-start; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100vw; min-width: 0; gap: 10px; }
         .app-nav::-webkit-scrollbar { display: none; }
         .app-nav { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .app-nav button { 
-            flex: 0 0 auto !important; 
-            width: 85px; 
-            padding: 8px 5px;
-        }
+        .app-nav button { flex: 0 0 auto !important; width: 85px; padding: 8px 5px; }
 
         .top-bar-actions { justify-content: space-between; width: 100%; margin-top: 5px; padding: 0 10px; box-sizing: border-box;}
         
@@ -260,7 +245,7 @@
           <h2 style="text-align: center; margin-top:0; color:#333;">登入</h2>
           <input type="text" id="login-username" placeholder="請輸入帳號">
           <input type="password" id="login-password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin()">
-          <button onclick="doLogin()">登入系統</button>
+          <button onclick="doLogin(this)">登入系統</button>
           <div id="login-loading" style="display:none; text-align:center; margin-top:15px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
           <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div>
         </div>
@@ -270,7 +255,7 @@
           <input type="text" id="reg-contact" placeholder="連絡電話">
           <input type="text" id="reg-username" placeholder="設定帳號">
           <input type="password" id="reg-password" placeholder="設定密碼">
-          <button onclick="doRegister()">送出申請</button>
+          <button onclick="doRegister(this)">送出申請</button>
           <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block';">已有帳號？點此登入</div>
         </div>
       </div>
@@ -504,18 +489,14 @@
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
 
-    // ⭐ 網頁載入時自動執行：檢查是否曾經登入過
     window.onload = function() { 
         const savedU = localStorage.getItem('app_user');
         const savedP = localStorage.getItem('app_pass');
         
         if (savedU && savedP) {
-            // 有登入紀錄，自動填寫並登入
             document.getElementById('login-username').value = savedU;
             document.getElementById('login-password').value = savedP;
-            doLogin();
-        } else {
-            // 沒有登入紀錄，就不做任何事，讓使用者自己打字
+            doLogin(document.querySelector('#login-form button')); // 傳入按鈕以支援樂觀防連點
         }
     };
 
@@ -671,15 +652,28 @@
         }
     }
 
-    // ⭐ 登入時儲存帳密，登出時清除
-    async function doLogin() { 
+    async function doLogin(btn) { 
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
         if(!u || !p) return alert("請輸入帳號密碼！"); 
         
+        let origText = "登入系統";
+        if(btn) {
+            origText = btn.innerText;
+            btn.innerText = "⏳ 登入中...";
+            btn.disabled = true;
+            btn.style.background = "#9e9e9e";
+        }
+
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
+        
+        if(btn) {
+            btn.innerText = origText;
+            btn.disabled = false;
+            btn.style.background = "#4CAF50";
+        }
+
         if (res && res.success) { 
-            // 登入成功，儲存帳密以供下次自動登入
             localStorage.setItem('app_user', u);
             localStorage.setItem('app_pass', p);
 
@@ -699,7 +693,6 @@
             switchView('products'); loadInitialData(); checkNewMessages(); 
         } else { 
             alert(res.message); 
-            // 如果自動登入失敗（例如密碼被改），清空舊紀錄
             localStorage.removeItem('app_user');
             localStorage.removeItem('app_pass');
         }
@@ -707,9 +700,34 @@
     
     function goToAdmin() { const encodedP = btoa(encodeURIComponent(currentPassword)); const ssoUrl = GAS_URL + '?u=' + encodeURIComponent(currentUser.username) + '&p=' + encodedP; window.open(ssoUrl, '_blank'); }
 
-    async function doRegister() { const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) alert(result.message); }
+    // ⭐ 防連點註冊機制
+    async function doRegister(btn) { 
+        const name = document.getElementById('reg-pharmacy').value; 
+        const contact = document.getElementById('reg-contact').value; 
+        const user = document.getElementById('reg-username').value; 
+        const pass = document.getElementById('reg-password').value; 
+        if(!name || !user || !pass) return alert("請填寫必填欄位！"); 
+        
+        const origText = btn.innerText;
+        btn.innerText = "⏳ 送出中...";
+        btn.disabled = true;
+        btn.style.background = '#9e9e9e';
+
+        const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); 
+        
+        btn.innerText = origText;
+        btn.disabled = false;
+        btn.style.background = '#4CAF50';
+
+        if (result && result.success) { 
+            alert(result.message); 
+            document.getElementById('register-form').style.display='none'; 
+            document.getElementById('login-form').style.display='block'; 
+        } else if(result) {
+            alert(result.message); 
+        } 
+    }
     
-    // ⭐ 登出時，連同自動登入的紀錄一起清除
     function logout() { 
         localStorage.removeItem('admin_token'); 
         localStorage.removeItem('app_user');
@@ -945,7 +963,6 @@
         });
     }
 
-    // --- ⭐ 訂單渲染 (圖卡式) ---
     function renderFrontOrders() {
         const container = document.getElementById('order-card-wrapper');
         container.innerHTML = ''; 
@@ -989,10 +1006,11 @@
         if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
 
-    // --- ⭐ 列印與明細功能 ---
+    // ⭐ 智慧回溯引擎：自動尋找歷史訂單中缺漏的「規格」與「單價」
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
-        const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); 
+        const container = document.getElementById('order-detail-container'); 
+        const items = order.details.split('\n').filter(i => i.trim() !== ''); 
         
         let statusBadge = '';
         if(order.status === '撿貨中') statusBadge = `<span style="background:#f3e5f5; color:#8e24aa; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">撿貨中</span>`;
@@ -1004,20 +1022,65 @@
         html += `<ul style="list-style:none; padding:0; margin:0;">`; 
         
         items.forEach((itemStr, index) => { 
-            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)(?:\s*\[廠牌:(.*?)\])?$/); 
-            if(match) { 
-                const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); const subtotal = qty * price; 
-                let nhiTag = nhi ? `[${nhi}] ` : ''; 
-                let mfgTag = match[6] ? `<span style="font-size:13px; color:#607d8b; margin-left:8px;">(廠牌: ${escapeHTML(match[6])})</span>` : '';
-                html += `<li style="margin-bottom:8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px;"><div style="font-weight:bold; color:#2c3e50; font-size:15px; line-height:1.4;">${index + 1}. ${nhiTag}${name}${mfgTag}</div><div style="color:#e65100; font-size:14px; font-weight:bold; margin-top:2px; padding-left:18px;">$${price}元 x ${qty} ${unit} = ${subtotal} 元</div></li>`; 
-            } else { html += `<li style="margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #f0f0f0; font-size:15px;">${index + 1}. ${itemStr}</li>`; } 
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
+            let line = itemStr.trim();
+            
+            // 解析健保碼
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
+            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            
+            // 解析廠牌
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
+            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            
+            // 解析單價 (如果字串裡面有)
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
+            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            
+            // 解析數量與藥名
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
+            if (qtyMatch) {
+                qty = parseInt(qtyMatch[1]);
+                unit = (qtyMatch[2] || '').trim();
+                name = line.substring(0, qtyMatch.index).trim();
+            } else { name = line.trim(); }
+
+            // ⭐ 智慧回溯：從 allProducts 中撈取遺失的資料 (規格、單價)
+            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            if (prod) {
+                if (!spec) spec = prod.spec || '';
+                if (!price && prod.price) price = parseFloat(prod.price);
+                if (!mfg) mfg = prod.manufacturer || '';
+                if (!unit) unit = prod.unit || '盒';
+            }
+
+            const subtotal = qty * price;
+            
+            let nhiTag = nhi ? `<span style="color:#1976d2; margin-right:4px;">[${nhi}]</span>` : '';
+            let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:8px;">(廠牌: ${escapeHTML(mfg)})</span>` : '';
+            let specTag = spec ? `<div style="font-size:13px; color:#00838f; margin-top:4px; padding-left:18px;">✨ 規格: ${escapeHTML(spec)}</div>` : '';
+            
+            let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
+
+            html += `
+            <li style="margin-bottom:12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">
+                <div style="font-weight:bold; color:#2c3e50; font-size:16px; line-height:1.4; display:flex; align-items:flex-start; flex-wrap:wrap;">
+                    <span style="margin-right:6px;">${index + 1}.</span> 
+                    <span style="flex:1;">${nhiTag}${escapeHTML(name)}${mfgTag}</span>
+                </div>
+                ${specTag}
+                <div style="color:#e65100; font-size:15px; font-weight:bold; margin-top:6px; padding-left:22px;">
+                    🛒 ${priceText}
+                </div>
+            </li>`;
         }); 
+
         html += `</ul><hr style="border:0; border-top:1px solid #eee; margin:15px 0;"><div style="text-align:right; font-size: 24px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; 
+        
         if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } 
         container.innerHTML = html; 
         
         const actionsContainer = document.getElementById('order-detail-actions'); 
-        
         let actionsHtml = `<button style="padding:10px 18px; border:none; border-radius:6px; background:#546e7a; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
 
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { 
@@ -1034,32 +1097,44 @@
         if(!order) return alert("找不到訂單！"); 
         
         let trs = order.details.split('\n').filter(i => i.trim() !== '').map((itemStr, index) => { 
-            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)(?:\s*\[廠牌:(.*?)\])?$/); 
-            if (match) { 
-                const nhi = match[1] || ''; 
-                const name = escapeHTML(match[2].trim()); 
-                const qty = parseInt(match[3]); 
-                const unit = escapeHTML(match[4].trim()); 
-                const price = parseFloat(match[5]); 
-                const subtotal = qty * price; 
-                const mfg = match[6] ? escapeHTML(match[6].trim()) : '';
-                
-                let spec = ''; let prod = allProducts.find(p => String(p.nhiCode) === nhi || p.name === name);
-                if (prod && prod.spec) spec = escapeHTML(prod.spec);
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
+            let line = itemStr.trim();
+            
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
+            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
+            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
+            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
+            if (qtyMatch) {
+                qty = parseInt(qtyMatch[1]);
+                unit = (qtyMatch[2] || '').trim();
+                name = line.substring(0, qtyMatch.index).trim();
+            } else { name = line.trim(); }
 
-                let nameMfg = name + (mfg ? ` <span style="font-size:16px; color:#555;">[${mfg}]</span>` : '');
-                
-                return `<tr>
-                    <td style="text-align:center;">${index + 1}</td>
-                    <td>${nhi}</td>
-                    <td>${nameMfg}</td>
-                    <td>${spec}</td>
-                    <td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${unit}</td>
-                    <td style="text-align:right;">$${subtotal}</td>
-                </tr>`; 
-            } else {
-                return `<tr><td colspan="6">${escapeHTML(itemStr)}</td></tr>`; 
+            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            if (prod) {
+                if (!spec) spec = prod.spec || '';
+                if (!price && prod.price) price = parseFloat(prod.price);
+                if (!mfg) mfg = prod.manufacturer || '';
+                if (!unit) unit = prod.unit || '盒';
             }
+
+            const subtotal = qty * price;
+            let nameMfg = escapeHTML(name) + (mfg ? ` <span style="font-size:16px; color:#555;">[${escapeHTML(mfg)}]</span>` : '');
+            
+            return `<tr>
+                <td style="text-align:center;">${index + 1}</td>
+                <td>${escapeHTML(nhi)}</td>
+                <td>${nameMfg}</td>
+                <td>${escapeHTML(spec)}</td>
+                <td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${escapeHTML(unit)}</td>
+                <td style="text-align:right;">$${subtotal}</td>
+            </tr>`; 
         }).join(''); 
         
         const safePharm = escapeHTML(currentUser.pharmacyName); 
@@ -1116,23 +1191,47 @@
     function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
     function openEditOrder(orderId) { 
-        const order = myOrders.find(o => o.orderId === orderId); if(!order) return; editingOrderId = orderId; editingCart = []; const items = order.details.split('\n').filter(i => i.trim() !== ''); 
+        const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
+        editingOrderId = orderId; editingCart = []; 
+        const items = order.details.split('\n').filter(i => i.trim() !== ''); 
+        
         items.forEach((itemStr) => { 
-            const match = itemStr.trim().match(/^(?:\[(.*?)\]\s*)?(.*?)\s+x\s+(\d+)\s*(.*?)\s*\(\s*單價\s*:\s*(\d+(?:\.\d+)?)\s*\)(?:\s*\[廠牌:(.*?)\])?$/); 
-            if (match) { 
-                const nhi = match[1] || ''; const name = match[2].trim(); const qty = parseInt(match[3]); const unit = match[4].trim(); const price = parseFloat(match[5]); const mfg = match[6] ? match[6].trim() : '';
-                let prod = allProducts.find(p => p.name === name); let max = prod ? prod.stock : 999; 
-                let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
-                
-                let nhiPriceStr = '';
-                if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
-                    nhiPriceStr = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
-                } else if (prod && prod.nhiPrice) {
-                    nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
-                }
-                
-                editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
-            } 
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '';
+            let line = itemStr.trim();
+            
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
+            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
+            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
+            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
+            if (qtyMatch) {
+                qty = parseInt(qtyMatch[1]);
+                unit = (qtyMatch[2] || '').trim();
+                name = line.substring(0, qtyMatch.index).trim();
+            } else { name = line.trim(); }
+
+            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            
+            let max = prod ? prod.stock : 999; 
+            let limit = prod ? (prod.dailyLimit || 0) : 0; 
+            let finalMax = limit > 0 ? Math.min(max, limit) : max;
+            if (!price && prod && prod.price) price = parseFloat(prod.price);
+            if (!unit && prod && prod.unit) unit = prod.unit;
+            if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
+            
+            let nhiPriceStr = '';
+            if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
+                nhiPriceStr = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
+            } else if (prod && prod.nhiPrice) {
+                nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
+            }
+            
+            editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
         }); 
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
@@ -1174,7 +1273,11 @@
         if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; 
         
         let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); 
-        let details = editingCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; }).join('\n'); 
+        let details = editingCart.map(item => { 
+            let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; 
+            let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; 
+            return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; 
+        }).join('\n'); 
         
         const originalBg = btn.style.background;
         btn.innerText = '⏳ 儲存中...';
@@ -1310,6 +1413,13 @@
 
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
+        // ⭐ 修改：讓結帳出去的 details 包含完整的規格和單價資訊
+        let fullDetails = currentCart.map(item => { 
+            let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; 
+            let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; 
+            return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; 
+        }).join('\n');
+
         callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, cart: currentCart, total: total, remark: remark }).then(res => { 
             btn.innerText = '確認結帳';
             btn.disabled = false;
@@ -1318,7 +1428,7 @@
             if(res && res.success){ 
                 document.getElementById('cart-modal').style.display='none'; 
                 cart=[]; saveCart(); switchView('orders'); 
-                myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: currentCart.map(i=>{let prefix = i.nhiCode ? `[${i.nhiCode}] ` : ''; let mfgStr = i.mfg ? ` [廠牌:${i.mfg}]` : ''; return `${prefix}${i.name} x ${i.qty}${mfgStr}`}).join('\n'), total: total, status: '新訂單', remark: remark });
+                myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: fullDetails, total: total, status: '新訂單', remark: remark });
                 renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！");
             } else { 
                 alert(res.message || "訂單送出失敗，請稍後再試。"); 
