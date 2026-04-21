@@ -274,7 +274,7 @@
         <div class="top-bar">
           <div class="app-nav">
             <button id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
-            <button id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異怒"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
+            <button id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異動"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
             <button id="nav-match" onclick="switchView('match')"><img src="https://cdn-icons-png.flaticon.com/512/3062/3062295.png" alt="缺藥媒合"> <span class="nav-text">缺藥媒合</span></button>
             <button id="nav-favorites" onclick="switchView('favorites')"><img src="./icon-fav.png" alt="最愛"> <span class="nav-text">我的最愛</span></button>
             <button id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
@@ -496,7 +496,7 @@
         if (savedU && savedP) {
             document.getElementById('login-username').value = savedU;
             document.getElementById('login-password').value = savedP;
-            doLogin(document.querySelector('#login-form button'));
+            doLogin(document.querySelector('#login-form button')); 
         }
     };
 
@@ -1005,7 +1005,7 @@
         if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
 
-    // ⭐ 智慧回溯與單行排版引擎
+    // ⭐ 智慧回溯與精準三重比對 (解決同名不同價的問題)
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         const container = document.getElementById('order-detail-container'); 
@@ -1040,7 +1040,15 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            // ⭐ 精準三重比對 (先用名字+價格，避免同健保碼抓到別的規格)
+            let prod = null;
+            if (price > 0) {
+                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
+                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
+            }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
+            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+
             if (prod) {
                 if (!spec) spec = prod.spec || '';
                 if (!price && prod.price) price = parseFloat(prod.price);
@@ -1056,7 +1064,7 @@
             
             let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
 
-            // ⭐ 單行極簡排版
+            // 單行極簡排版
             html += `
             <li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -1088,6 +1096,7 @@
         document.getElementById('order-detail-modal').style.display = 'flex'; 
     }
     
+    // ⭐ 列印功能也同步升級精準比對
     function printFrontendOrder(orderId) {
         const order = myOrders.find(o => o.orderId === orderId); 
         if(!order) return alert("找不到訂單！"); 
@@ -1112,7 +1121,14 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            let prod = null;
+            if (price > 0) {
+                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
+                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
+            }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
+            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+
             if (prod) {
                 if (!spec) spec = prod.spec || '';
                 if (!price && prod.price) price = parseFloat(prod.price);
@@ -1186,6 +1202,7 @@
 
     function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
+    // ⭐ 修改訂單畫面也同步升級精準比對
     function openEditOrder(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         editingOrderId = orderId; editingCart = []; 
@@ -1211,7 +1228,13 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            let prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            let prod = null;
+            if (price > 0) {
+                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
+                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
+            }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
+            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
             
             let max = prod ? prod.stock : 999; 
             let limit = prod ? (prod.dailyLimit || 0) : 0; 
