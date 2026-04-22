@@ -451,7 +451,7 @@
     <div class="cart-content" onclick="event.stopPropagation()">
       <h2 style="margin-top:0; border-bottom: 2px solid #4CAF50; padding-bottom: 12px; margin-bottom: 15px; font-size: 24px;">📋 訂單完整明細</h2>
       <div id="order-detail-container"></div>
-      <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:20px; gap: 15px;" id="order-detail-actions"></div>
+      <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:20px; gap: 10px;" id="order-detail-actions"></div>
     </div>
   </div>
 
@@ -496,7 +496,7 @@
         if (savedU && savedP) {
             document.getElementById('login-username').value = savedU;
             document.getElementById('login-password').value = savedP;
-            doLogin(document.querySelector('#login-form button')); 
+            doLogin(document.querySelector('#login-form button'));
         }
     };
 
@@ -1005,7 +1005,7 @@
         if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
 
-    // ⭐ 智慧回溯與精準三重比對 (解決同名不同價的問題)
+    // ⭐ 智慧回溯與單行排版引擎
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         const container = document.getElementById('order-detail-container'); 
@@ -1040,7 +1040,7 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            // ⭐ 精準三重比對 (先用名字+價格，避免同健保碼抓到別的規格)
+            // ⭐ 精準三重比對
             let prod = null;
             if (price > 0) {
                 if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
@@ -1064,7 +1064,6 @@
             
             let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
 
-            // 單行極簡排版
             html += `
             <li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
@@ -1087,16 +1086,97 @@
         const actionsContainer = document.getElementById('order-detail-actions'); 
         let actionsHtml = `<button style="padding:10px 18px; border:none; border-radius:6px; background:#546e7a; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
 
+        // ⭐ 新增「退回購物車」按鈕
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { 
-            actionsHtml += `<button style="padding:10px 18px; border:none; border-radius:6px; background:#e53935; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 取消訂單</button>
-            <button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 修改數量</button>`; 
+            actionsHtml += `<button style="padding:10px 18px; border:none; border-radius:6px; background:#ff9800; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="returnOrderToCart('${order.orderId}')">🛒 退回購物車重結</button>
+            <button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 單純修改數量</button>
+            <button style="padding:10px 18px; border:none; border-radius:6px; background:#e53935; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 取消作廢</button>`; 
         }
         
         actionsContainer.innerHTML = actionsHtml; 
         document.getElementById('order-detail-modal').style.display = 'flex'; 
     }
+
+    // ⭐ 訂單時光機：退回購物車重結
+    function returnOrderToCart(orderId) {
+        if(!confirm("⚠️ 確定要取消這筆訂單，並將商品全數退回購物車重新結帳嗎？\n\n(原訂單將被刪除作廢，您可以在購物車中重新挑選或修改數量後再次送出)")) return;
+        
+        const order = myOrders.find(o => o.orderId === orderId);
+        if(!order) return;
+
+        document.getElementById('order-detail-modal').style.display='none';
+        showToast("⏳ 正在取消訂單並退回購物車...");
+        
+        callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}).then(res => {
+            if(res && res.success) {
+                // 1. 將訂單從前端列表移除
+                myOrders = myOrders.filter(o => o.orderId !== orderId);
+                renderFrontOrders();
+                
+                // 2. 解析訂單內容並塞入購物車
+                const items = order.details.split('\n').filter(i => i.trim() !== '');
+                items.forEach((itemStr) => {
+                    let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '';
+                    let line = itemStr.trim();
+                    
+                    let nhiMatch = line.match(/^\[(.*?)\]\s*/);
+                    if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+                    let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
+                    if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+                    let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
+                    if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+                    let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
+                    if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
+                    else { name = line.trim(); }
+
+                    // 精準比對尋找目前商品狀態
+                    let prod = null;
+                    if (price > 0) {
+                        if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
+                        if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
+                    }
+                    if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
+                    if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+                    
+                    let max = prod ? prod.stock : 999; 
+                    let limit = prod ? (prod.dailyLimit || 0) : 0; 
+                    let finalMax = limit > 0 ? Math.min(max, limit) : max;
+                    if (!price && prod && prod.price) price = parseFloat(prod.price);
+                    if (!unit && prod && prod.unit) unit = prod.unit;
+                    if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
+                    
+                    let pId = prod ? prod.id : ('temp_' + new Date().getTime() + Math.floor(Math.random()*1000));
+                    
+                    // 檢查購物車內是否已有該商品
+                    const ex = cart.find(i => i.id === pId || (i.name === name && i.price === price));
+                    if (ex) {
+                        ex.qty += qty;
+                    } else {
+                        cart.push({
+                            id: pId, 
+                            name: name, 
+                            price: price, 
+                            qty: qty, 
+                            maxStock: finalMax, 
+                            unit: unit, 
+                            nhiCode: nhi, 
+                            limit: limit, 
+                            mfg: mfg
+                        });
+                    }
+                });
+
+                // 3. 儲存並打開購物車
+                saveCart();
+                switchView('products'); // 切回商品頁面方便繼續逛
+                showToast("✅ 已成功退回購物車！");
+                openCart(); // 自動打開購物車讓藥師確認
+            } else {
+                alert("取消失敗，請稍後再試。");
+            }
+        });
+    }
     
-    // ⭐ 列印功能也同步升級精準比對
     function printFrontendOrder(orderId) {
         const order = myOrders.find(o => o.orderId === orderId); 
         if(!order) return alert("找不到訂單！"); 
@@ -1200,9 +1280,8 @@
         }, 500);
     }
 
-    function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要取消這筆訂單嗎？取消後無法復原喔！")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
+    function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要直接取消作廢這筆訂單嗎？取消後將無法復原喔！\n(如果您只是想加購或修改，建議使用旁邊的『退回購物車重結』)")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
-    // ⭐ 修改訂單畫面也同步升級精準比對
     function openEditOrder(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         editingOrderId = orderId; editingCart = []; 
