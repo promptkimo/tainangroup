@@ -150,7 +150,6 @@
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
 
-    /* 訂單圖卡專屬 CSS */
     .order-card-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box; }
     .order-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e0e0e0; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;}
     .order-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); border-color: #b0bec5; }
@@ -166,7 +165,6 @@
     .st-done { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;}
     .st-cancel { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;}
 
-    /* RWD 手機版響應式介面設計 */
     @media (max-width: 768px) {
         .header-container { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
         .header-text { text-align: center; }
@@ -244,7 +242,7 @@
         <div id="login-form">
           <h2 style="text-align: center; margin-top:0; color:#333;">登入</h2>
           <input type="text" id="login-username" placeholder="請輸入帳號">
-          <input type="password" id="login-password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin()">
+          <input type="password" id="login-password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin(this)">
           <button onclick="doLogin(this)">登入系統</button>
           <div id="login-loading" style="display:none; text-align:center; margin-top:15px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
           <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div>
@@ -475,24 +473,16 @@
     let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
     let editingCart = []; let editingOrderId = '';
-    let hasViewedRestock = false;
 
     let currentZoom = parseFloat(localStorage.getItem('app_zoom')) || 1;
     function applyZoom() { document.body.style.zoom = currentZoom; }
-    function changeZoom(delta) { 
-        currentZoom += delta; 
-        if (currentZoom < 0.7) currentZoom = 0.7; 
-        if (currentZoom > 1.5) currentZoom = 1.5; 
-        localStorage.setItem('app_zoom', currentZoom); 
-        applyZoom(); 
-    }
+    function changeZoom(delta) { currentZoom += delta; if (currentZoom < 0.7) currentZoom = 0.7; if (currentZoom > 1.5) currentZoom = 1.5; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     function resetZoom() { currentZoom = 1; localStorage.setItem('app_zoom', currentZoom); applyZoom(); }
     applyZoom(); 
 
     window.onload = function() { 
         const savedU = localStorage.getItem('app_user');
         const savedP = localStorage.getItem('app_pass');
-        
         if (savedU && savedP) {
             document.getElementById('login-username').value = savedU;
             document.getElementById('login-password').value = savedP;
@@ -503,16 +493,13 @@
     function updateOnlineCount() {
         const hour = new Date().getHours();
         let min = 5, max = 15;
-
         if (hour >= 8 && hour <= 12) { min = 20; max = 35; } 
         else if (hour >= 13 && hour <= 18) { min = 15; max = 30; } 
         else if (hour >= 19 && hour <= 23) { min = 8; max = 18; } 
         else { min = 2; max = 6; } 
-
         let currentCount = Math.floor(Math.random() * (max - min + 1)) + min;
         const countEl = document.getElementById('online-count');
         if (countEl) countEl.innerText = currentCount;
-
         setInterval(() => {
             let fluctuation = Math.floor(Math.random() * 5) - 2; 
             currentCount += fluctuation;
@@ -525,13 +512,15 @@
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
-    
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
     function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
+    // ⭐ 儲存購物車時，同步呼叫後端存雲端
     function saveCart() {
         if(currentUser.username) {
             localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
+            // 背景同步到 Google Sheets (不需要等待回應)
+            callGasAPISilent({ action: 'saveCloudCart', username: currentUser.username, cart: cart });
         }
         document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`;
     }
@@ -629,12 +618,10 @@
             let prod = allProducts.find(p => String(p.id) === id); 
             if(prod && parseInt(prod.stock) > 0) currentRestockedIds.push(String(id)); 
         });
-
         let viewedStr = localStorage.getItem('viewed_restocks_' + currentUser.username);
         let viewed = viewedStr ? JSON.parse(viewedStr) : [];
         viewed = viewed.filter(id => currentRestockedIds.includes(id));
         localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(viewed));
-
         let newRestocks = currentRestockedIds.filter(id => !viewed.includes(id));
         const badge = document.getElementById('restock-badge');
         if(newRestocks.length > 0) { badge.innerText = newRestocks.length; badge.style.display = 'inline-block'; } 
@@ -644,14 +631,11 @@
     function checkPriceChanges() {
         const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice));
         const badge = document.getElementById('price-change-badge');
-        if(changes.length > 0) {
-            badge.innerText = changes.length;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
+        if(changes.length > 0) { badge.innerText = changes.length; badge.style.display = 'inline-block'; } 
+        else { badge.style.display = 'none'; }
     }
 
+    // ⭐ 登入成功後，載入雲端同步的購物車
     async function doLogin(btn) { 
         const u = document.getElementById('login-username').value.trim(); 
         const p = document.getElementById('login-password').value.trim(); 
@@ -679,9 +663,16 @@
 
             currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
             
-            let savedCart = localStorage.getItem('cart_' + currentUser.username);
-            cart = savedCart ? JSON.parse(savedCart) : [];
-            saveCart(); 
+            // ⭐ 判斷後端有沒有傳回雲端購物車資料
+            if (res.cart && Array.isArray(res.cart)) {
+                cart = res.cart; // 用雲端的覆蓋本地的
+                localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
+            } else {
+                let savedCart = localStorage.getItem('cart_' + currentUser.username);
+                cart = savedCart ? JSON.parse(savedCart) : [];
+            }
+            
+            document.getElementById('cart-btn').innerText = `🛒 購物車 (${cart.reduce((a,b)=>a+b.qty,0)})`;
             
             updateOnlineCount(); 
             
@@ -734,17 +725,36 @@
         location.reload(); 
     }
 
+    // ⭐ 防呆機制與全形轉半形
     function filterProducts() { 
-        const q = document.getElementById('search-input').value.toLowerCase().trim(); 
+        let rawSearch = document.getElementById('search-input').value.trim(); 
+        let q = rawSearch.replace(/[\uff01-\uff5e]/g, function(ch) { 
+            return String.fromCharCode(ch.charCodeAt(0) - 0xfee0); 
+        }).toLowerCase();
+        
+        let searchMode = currentMode;
+        if (q !== '' && currentMode === 'favorites') {
+            searchMode = 'products';
+            document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
+            document.getElementById('nav-products').classList.add('active');
+        }
+
         const f = getFavorites(); 
         const annSection = document.getElementById('announcement-section'); 
         const tableWrapper = document.getElementById('products-table-wrapper'); 
         
-        if (currentMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } 
-        annSection.style.display = 'none'; tableWrapper.style.display = 'block'; 
+        if (searchMode === 'products' && q === '') { 
+            annSection.style.display = 'block'; 
+            tableWrapper.style.display = 'none'; 
+            return; 
+        } 
+        
+        annSection.style.display = 'none'; 
+        tableWrapper.style.display = 'block'; 
         
         currentFilteredProducts = allProducts.filter(p => { 
-            if (currentMode === 'favorites' && !f.includes(String(p.id))) return false; 
+            if (searchMode === 'favorites' && !f.includes(String(p.id))) return false; 
+            
             return String(p.nhiCode||'').toLowerCase().includes(q) || 
                    String(p.name||'').toLowerCase().includes(q) || 
                    String(p.engName||'').toLowerCase().includes(q) || 
@@ -752,7 +762,8 @@
                    String(p.manufacturer||'').toLowerCase().includes(q); 
         }); 
         
-        currentFrontPage = 1; renderTable(); 
+        currentFrontPage = 1; 
+        renderTable(); 
     }
 
     function renderTable() { 
@@ -807,6 +818,16 @@
         }); 
         
         tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
+    }
+
+    function changeFrontPage(d) {
+        const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1;
+        let n = currentFrontPage + d;
+        if (n >= 1 && n <= totalPages) {
+            currentFrontPage = n;
+            renderTable();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     function renderPriceChangeList() {
@@ -962,6 +983,162 @@
         });
     }
 
+    function checkNewMessages() {
+        callGasAPISilent({ action: 'getMyMessages', username: currentUser.username }).then(res => {
+            if (res && res.success) {
+                const badge = document.getElementById('msg-badge');
+                if (res.unreadCount > 0) {
+                    badge.innerText = res.unreadCount;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    function loadMyMessages() {
+        const container = document.getElementById('my-message-list');
+        container.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">載入中...</div>';
+        
+        callGasAPISilent({ action: 'getMyMessages', username: currentUser.username }).then(res => {
+            if (res && res.success) {
+                if (res.data.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; color:#aaa; padding:30px; font-size:16px;">目前沒有任何對話紀錄。您可以直接在下方發問！</div>';
+                } else {
+                    container.innerHTML = res.data.map(m => {
+                        let replyHtml = '';
+                        if (m.reply) {
+                            replyHtml = `
+                            <div class="chat-reply-wrapper">
+                                <div class="chat-reply-icon">👨‍💻</div>
+                                <div class="chat-reply-content">
+                                    <div class="chat-reply-bubble">${escapeHTML(m.reply)}</div>
+                                    <div class="chat-time-reply">系統客服回覆</div>
+                                </div>
+                            </div>`;
+                        } else {
+                            replyHtml = `
+                            <div class="chat-reply-wrapper" style="opacity:0.6;">
+                                <div class="chat-reply-icon">⏳</div>
+                                <div class="chat-reply-content">
+                                    <div class="chat-reply-bubble" style="background:#f0f0f0; color:#888; border:none;">客服正在處理中，請稍候...</div>
+                                </div>
+                            </div>`;
+                        }
+                        
+                        return `
+                        <div class="chat-thread">
+                            <div class="chat-user-wrapper">
+                                <div class="chat-user-bubble">${escapeHTML(m.content)}</div>
+                                <div class="chat-time-user">${m.time}</div>
+                            </div>
+                            ${replyHtml}
+                        </div>`;
+                    }).join('');
+                    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+                }
+                
+                document.getElementById('msg-badge').style.display = 'none';
+                callGasAPISilent({ action: 'markMessagesRead', username: currentUser.username });
+            } else {
+                container.innerHTML = '<div style="text-align:center; color:#d32f2f; padding:20px;">無法載入訊息，請稍後再試。</div>';
+            }
+        });
+    }
+
+    function submitMessage() {
+        const input = document.getElementById('contact-message');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        input.value = '';
+        input.disabled = true;
+
+        const container = document.getElementById('my-message-list');
+        const tempHtml = `
+        <div class="chat-thread">
+            <div class="chat-user-wrapper">
+                <div class="chat-user-bubble" style="opacity:0.7;">${escapeHTML(msg)}</div>
+                <div class="chat-time-user">傳送中...</div>
+            </div>
+        </div>`;
+        
+        if (container.innerHTML.includes('目前沒有任何對話紀錄')) {
+            container.innerHTML = tempHtml;
+        } else {
+            container.insertAdjacentHTML('beforeend', tempHtml);
+        }
+        container.scrollTop = container.scrollHeight;
+
+        callGasAPISilent({
+            action: 'submitMessage',
+            username: currentUser.username,
+            pharmacyName: currentUser.pharmacyName,
+            message: msg
+        }).then(res => {
+            input.disabled = false;
+            input.focus();
+            if (res && res.success) {
+                loadMyMessages();
+            } else {
+                alert("發送失敗，請檢查網路。");
+            }
+        });
+    }
+
+    function renderRestockList() {
+        const tbody = document.getElementById('restock-list');
+        const subs = getSubscriptions();
+        
+        if(subs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！<br><br>如果您看到某個藥品缺貨，點擊鈴鐺圖示就可以加入追蹤。</td></tr>';
+            return;
+        }
+
+        let htmlArray = [];
+        subs.forEach(id => {
+            let p = allProducts.find(prod => String(prod.id) === id);
+            if(p) {
+                let stk = parseInt(p.stock);
+                let unitText = p.unit ? p.unit.replace('/', '') : '盒';
+                let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
+                let safeName = String(p.name||'').replace(/'/g, "\\'");
+                let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
+
+                let actionHtml = '';
+                if(isNaN(stk) || stk <= 0) {
+                    actionHtml = `
+                    <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; width:100%;">
+                        <span style="color:#d32f2f; font-weight:bold; font-size:15px; margin-right:10px;">目前仍缺貨中</span>
+                        <button class="icon-only-btn btn-delete" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button>
+                    </div>`;
+                } else {
+                    actionHtml = `
+                    <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; width:100%;">
+                        <span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; margin-right:5px;">已到貨！</span>
+                        <input type="number" min="1" max="${maxInput}" value="1" id="qty-res-${p.id}" style="width:40px; height:32px; border:2px solid #ddd; border-radius:6px; text-align:center; font-weight:bold;">
+                        <button class="icon-only-btn btn-addcart" style="height:36px; width:36px;" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="直接加入購物車">${svgCart}</button>
+                        <button class="icon-only-btn btn-delete" style="height:36px; width:36px;" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button>
+                    </div>`;
+                }
+
+                htmlArray.push(`<tr>
+                    <td data-label="健保碼"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td>
+                    <td data-label="藥名/成分"><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td>
+                    <td data-label="製造商"><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td>
+                    <td data-label="單價" class="price-text">$${p.price||0}</td>
+                    <td data-label="庫存" style="font-weight:bold; color:${stk > 0 ? '#2e7d32' : '#d32f2f'};">${stk > 0 ? stk : '缺貨'}</td>
+                    <td data-label="狀態與操作">${actionHtml}</td>
+                </tr>`);
+            } else {
+                removeSubscription(id, false); 
+            }
+        });
+        
+        tbody.innerHTML = htmlArray.join('');
+    }
+
     function renderFrontOrders() {
         const container = document.getElementById('order-card-wrapper');
         container.innerHTML = ''; 
@@ -1005,7 +1182,6 @@
         if (res && res.success) { myOrders = res.data; renderFrontOrders(); } 
     }
 
-    // ⭐ 智慧回溯與單行排版引擎
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
         const container = document.getElementById('order-detail-container'); 
@@ -1040,7 +1216,6 @@
                 name = line.substring(0, qtyMatch.index).trim();
             } else { name = line.trim(); }
 
-            // ⭐ 精準三重比對
             let prod = null;
             if (price > 0) {
                 if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
@@ -1086,7 +1261,6 @@
         const actionsContainer = document.getElementById('order-detail-actions'); 
         let actionsHtml = `<button style="padding:10px 18px; border:none; border-radius:6px; background:#546e7a; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
 
-        // ⭐ 新增「退回購物車」按鈕
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { 
             actionsHtml += `<button style="padding:10px 18px; border:none; border-radius:6px; background:#ff9800; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="returnOrderToCart('${order.orderId}')">🛒 退回購物車重結</button>
             <button style="padding:10px 18px; border:none; border-radius:6px; background:#1976d2; color:white; cursor:pointer; font-size:15px; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 單純修改數量</button>
@@ -1097,7 +1271,6 @@
         document.getElementById('order-detail-modal').style.display = 'flex'; 
     }
 
-    // ⭐ 訂單時光機：退回購物車重結
     function returnOrderToCart(orderId) {
         if(!confirm("⚠️ 確定要取消這筆訂單，並將商品全數退回購物車重新結帳嗎？\n\n(原訂單將被刪除作廢，您可以在購物車中重新挑選或修改數量後再次送出)")) return;
         
@@ -1109,11 +1282,9 @@
         
         callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}).then(res => {
             if(res && res.success) {
-                // 1. 將訂單從前端列表移除
                 myOrders = myOrders.filter(o => o.orderId !== orderId);
                 renderFrontOrders();
                 
-                // 2. 解析訂單內容並塞入購物車
                 const items = order.details.split('\n').filter(i => i.trim() !== '');
                 items.forEach((itemStr) => {
                     let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '';
@@ -1129,7 +1300,6 @@
                     if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
                     else { name = line.trim(); }
 
-                    // 精準比對尋找目前商品狀態
                     let prod = null;
                     if (price > 0) {
                         if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
@@ -1147,7 +1317,6 @@
                     
                     let pId = prod ? prod.id : ('temp_' + new Date().getTime() + Math.floor(Math.random()*1000));
                     
-                    // 檢查購物車內是否已有該商品
                     const ex = cart.find(i => i.id === pId || (i.name === name && i.price === price));
                     if (ex) {
                         ex.qty += qty;
@@ -1166,121 +1335,15 @@
                     }
                 });
 
-                // 3. 儲存並打開購物車
                 saveCart();
-                switchView('products'); // 切回商品頁面方便繼續逛
+                switchView('products');
                 showToast("✅ 已成功退回購物車！");
-                openCart(); // 自動打開購物車讓藥師確認
+                openCart(); 
             } else {
                 alert("取消失敗，請稍後再試。");
             }
         });
     }
-    
-    function printFrontendOrder(orderId) {
-        const order = myOrders.find(o => o.orderId === orderId); 
-        if(!order) return alert("找不到訂單！"); 
-        
-        let trs = order.details.split('\n').filter(i => i.trim() !== '').map((itemStr, index) => { 
-            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
-            let line = itemStr.trim();
-            
-            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
-            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
-            
-            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
-            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
-            
-            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
-            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
-            
-            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
-            if (qtyMatch) {
-                qty = parseInt(qtyMatch[1]);
-                unit = (qtyMatch[2] || '').trim();
-                name = line.substring(0, qtyMatch.index).trim();
-            } else { name = line.trim(); }
-
-            let prod = null;
-            if (price > 0) {
-                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
-                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
-            }
-            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
-            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
-
-            if (prod) {
-                if (!spec) spec = prod.spec || '';
-                if (!price && prod.price) price = parseFloat(prod.price);
-                if (!mfg) mfg = prod.manufacturer || '';
-                if (!unit) unit = prod.unit || '盒';
-            }
-
-            const subtotal = qty * price;
-            let nameMfg = escapeHTML(name) + (mfg ? ` <span style="font-size:16px; color:#555;">[${escapeHTML(mfg)}]</span>` : '');
-            
-            return `<tr>
-                <td style="text-align:center;">${index + 1}</td>
-                <td>${escapeHTML(nhi)}</td>
-                <td>${nameMfg}</td>
-                <td>${escapeHTML(spec)}</td>
-                <td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${escapeHTML(unit)}</td>
-                <td style="text-align:right;">$${subtotal}</td>
-            </tr>`; 
-        }).join(''); 
-        
-        const safePharm = escapeHTML(currentUser.pharmacyName); 
-        const safeContact = escapeHTML(currentUser.contact || '無電話紀錄'); 
-        const safeRemark = order.remark ? escapeHTML(order.remark).replace(/\n/g, '<br>') : '';
-        const fullDateTime = order.time; 
-        
-        const htmlContent = `<!DOCTYPE html>
-        <html><head>
-        <meta charset="utf-8">
-        <title>列印出貨單 - ${order.orderId}</title>
-        <style>
-            @page { size: A4 portrait; margin: 15mm; } 
-            body { font-family: "Microsoft JhengHei", Arial, sans-serif; color: #000; margin: 0; padding: 0; background: #fff; font-size: 16px; } 
-            .print-container { width: 100%; box-sizing: border-box; }
-            .print-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
-            .print-header-title { font-size: 26px; font-weight: bold; margin-bottom: 5px; } 
-            .print-header-sub { font-size: 18px; color: #333; } 
-            .details-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-            .details-table th { border-bottom: 2px solid #333; padding: 12px 6px; text-align: left; font-size: 18px; } 
-            .details-table td { padding: 12px 6px; border-bottom: 1px dashed #999; vertical-align: middle; font-size: 18px; } 
-            .total-line { text-align: right; font-size: 26px; font-weight: bold; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; } 
-            .remark-box { margin-top: 15px; padding: 10px; border: 1px dashed #000; font-size: 18px; font-weight: bold; } 
-        </style>
-        </head><body>
-        <div class="print-container">
-            <div class="print-header">
-                <div class="print-header-title">${safePharm} (電話：${safeContact})</div>
-                <div class="print-header-sub">訂單時間：${fullDateTime}</div>
-            </div>
-            <table class="details-table">
-                <thead><tr>
-                    <th style="width:40px; text-align:center;">項次</th>
-                    <th style="width:110px;">健保碼</th>
-                    <th>藥品名稱 / 廠牌</th>
-                    <th style="width:100px;">規格</th>
-                    <th style="width:60px; text-align:center;">數量</th>
-                    <th style="width:80px; text-align:right;">金額</th>
-                </tr></thead>
-                <tbody>${trs}</tbody>
-            </table>
-            ${safeRemark ? `<div class="remark-box">備註：${safeRemark}</div>` : ''}
-            <div class="total-line">總金額：$${order.total}</div>
-        </div>
-        </body></html>`; 
-        
-        const iframe = document.createElement('iframe'); iframe.style.position = 'absolute'; iframe.style.width = '0px'; iframe.style.height = '0px'; iframe.style.border = 'none'; document.body.appendChild(iframe);
-        iframe.contentWindow.document.open(); iframe.contentWindow.document.write(htmlContent); iframe.contentWindow.document.close();
-        setTimeout(() => {
-            iframe.contentWindow.focus(); iframe.contentWindow.print(); setTimeout(() => { document.body.removeChild(iframe); }, 1000);
-        }, 500);
-    }
-
-    function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要直接取消作廢這筆訂單嗎？取消後將無法復原喔！\n(如果您只是想加購或修改，建議使用旁邊的『退回購物車重結』)")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
     function openEditOrder(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
@@ -1397,6 +1460,111 @@
             }
         });
     }
+
+    function printFrontendOrder(orderId) {
+        const order = myOrders.find(o => o.orderId === orderId); 
+        if(!order) return alert("找不到訂單！"); 
+        
+        let trs = order.details.split('\n').filter(i => i.trim() !== '').map((itemStr, index) => { 
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
+            let line = itemStr.trim();
+            
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
+            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
+            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
+            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
+            if (qtyMatch) {
+                qty = parseInt(qtyMatch[1]);
+                unit = (qtyMatch[2] || '').trim();
+                name = line.substring(0, qtyMatch.index).trim();
+            } else { name = line.trim(); }
+
+            let prod = null;
+            if (price > 0) {
+                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
+                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
+            }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
+            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+
+            if (prod) {
+                if (!spec) spec = prod.spec || '';
+                if (!price && prod.price) price = parseFloat(prod.price);
+                if (!mfg) mfg = prod.manufacturer || '';
+                if (!unit) unit = prod.unit || '盒';
+            }
+
+            const subtotal = qty * price;
+            let nameMfg = escapeHTML(name) + (mfg ? ` <span style="font-size:16px; color:#555;">[${escapeHTML(mfg)}]</span>` : '');
+            
+            return `<tr>
+                <td style="text-align:center;">${index + 1}</td>
+                <td>${escapeHTML(nhi)}</td>
+                <td>${nameMfg}</td>
+                <td>${escapeHTML(spec)}</td>
+                <td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${escapeHTML(unit)}</td>
+                <td style="text-align:right;">$${subtotal}</td>
+            </tr>`; 
+        }).join(''); 
+        
+        const safePharm = escapeHTML(currentUser.pharmacyName); 
+        const safeContact = escapeHTML(currentUser.contact || '無電話紀錄'); 
+        const safeRemark = order.remark ? escapeHTML(order.remark).replace(/\n/g, '<br>') : '';
+        const fullDateTime = order.time; 
+        
+        const htmlContent = `<!DOCTYPE html>
+        <html><head>
+        <meta charset="utf-8">
+        <title>列印出貨單 - ${order.orderId}</title>
+        <style>
+            @page { size: A4 portrait; margin: 15mm; } 
+            body { font-family: "Microsoft JhengHei", Arial, sans-serif; color: #000; margin: 0; padding: 0; background: #fff; font-size: 16px; } 
+            .print-container { width: 100%; box-sizing: border-box; }
+            .print-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+            .print-header-title { font-size: 26px; font-weight: bold; margin-bottom: 5px; } 
+            .print-header-sub { font-size: 18px; color: #333; } 
+            .details-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+            .details-table th { border-bottom: 2px solid #333; padding: 12px 6px; text-align: left; font-size: 18px; } 
+            .details-table td { padding: 12px 6px; border-bottom: 1px dashed #999; vertical-align: middle; font-size: 18px; } 
+            .total-line { text-align: right; font-size: 26px; font-weight: bold; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; } 
+            .remark-box { margin-top: 15px; padding: 10px; border: 1px dashed #000; font-size: 18px; font-weight: bold; } 
+        </style>
+        </head><body>
+        <div class="print-container">
+            <div class="print-header">
+                <div class="print-header-title">${safePharm} (電話：${safeContact})</div>
+                <div class="print-header-sub">訂單時間：${fullDateTime}</div>
+            </div>
+            <table class="details-table">
+                <thead><tr>
+                    <th style="width:40px; text-align:center;">項次</th>
+                    <th style="width:110px;">健保碼</th>
+                    <th>藥品名稱 / 廠牌</th>
+                    <th style="width:100px;">規格</th>
+                    <th style="width:60px; text-align:center;">數量</th>
+                    <th style="width:80px; text-align:right;">金額</th>
+                </tr></thead>
+                <tbody>${trs}</tbody>
+            </table>
+            ${safeRemark ? `<div class="remark-box">備註：${safeRemark}</div>` : ''}
+            <div class="total-line">總金額：$${order.total}</div>
+        </div>
+        </body></html>`; 
+        
+        const iframe = document.createElement('iframe'); iframe.style.position = 'absolute'; iframe.style.width = '0px'; iframe.style.height = '0px'; iframe.style.border = 'none'; document.body.appendChild(iframe);
+        iframe.contentWindow.document.open(); iframe.contentWindow.document.write(htmlContent); iframe.contentWindow.document.close();
+        setTimeout(() => {
+            iframe.contentWindow.focus(); iframe.contentWindow.print(); setTimeout(() => { document.body.removeChild(iframe); }, 1000);
+        }, 500);
+    }
+
+    function deleteMyOrder(orderId) { if(!confirm("⚠️ 確定要直接取消作廢這筆訂單嗎？取消後將無法復原喔！\n(如果您只是想加購或修改，建議使用旁邊的『退回購物車重結』)")) return; document.getElementById('order-detail-modal').style.display='none'; myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders(); showToast("✅ 已成功取消訂單"); callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); }
 
     function addToCart(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; 
