@@ -152,7 +152,7 @@
     .st-done { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;}
     .st-cancel { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;}
 
-    /* ⭐ 捲動與固定底部核心架構 (購物車/修改訂單專用) */
+    /* ⭐ 凍結底部（Sticky Footer）與內部捲動核心架構 */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);}
     .cart-content { background: white; padding: 25px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; box-sizing: border-box;}
     .modal-body-scroll { flex: 1; overflow-y: auto; padding-right: 5px; min-height: 0; margin-top: 10px;}
@@ -169,8 +169,10 @@
     .cart-table tbody tr:hover { background-color: #e3f0f9; }
     .cart-qty-input { width: 60px; padding: 6px; border: 1px solid #b0bec5; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s; }
     .cart-qty-input:focus { border-color: #3b8ebf; box-shadow: 0 0 5px rgba(59,142,191,0.4); }
-    .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 16px;}
-    .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); }
+    
+    /* 修正紅色刪除按鈕樣式，確保 100% 點擊成功 */
+    .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: white; border: 2px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 14px; outline: none; padding: 0;}
+    .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); box-shadow: 0 2px 5px rgba(211,47,47,0.3);}
 
     /* RWD 手機版響應式介面設計 */
     @media (max-width: 768px) {
@@ -209,7 +211,7 @@
         .status-badge-front { width: auto; padding: 6px 12px; }
         .qty-wrapper { width: auto; }
         
-        /* 手機版 Modal 優化，讓按鈕始終在底部可見 */
+        /* ⭐ 修正手機版彈出視窗高度 */
         .cart-content { width: 100%; height: 100dvh; max-height: 100dvh; max-width: 100%; border-radius: 0; padding: 15px; box-sizing: border-box;}
         .modal-overlay { align-items: flex-start; }
         
@@ -431,7 +433,7 @@
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
-    <div class="cart-content" style="max-width: 800px; height:auto; max-height:80vh;" onclick="event.stopPropagation()">
+    <div class="cart-content" style="max-width: 800px; height:auto; max-height:85vh;" onclick="event.stopPropagation()">
       <h2 id="news-detail-title" style="margin-top:0; color:#00838f; border-bottom:2px solid #b2ebf2; padding-bottom:15px; font-size: 26px; line-height: 1.4; flex-shrink: 0;">公告標題</h2>
       <div class="modal-body-scroll">
           <div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div>
@@ -446,7 +448,7 @@
 
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 10px; font-size: 26px; color:#2c3e50; flex-shrink: 0;">🛒 您的購物車</h2>
+      <h2 style="margin-top:0; border-bottom: 2px solid #3b8ebf; padding-bottom: 15px; margin-bottom: 0; font-size: 26px; color:#2c3e50; flex-shrink: 0;">🛒 您的購物車</h2>
       
       <div class="modal-body-scroll">
           <div id="cart-items-container"></div>
@@ -470,8 +472,9 @@
       <div class="modal-body-scroll" id="order-detail-container"></div>
       
       <div class="modal-footer-fixed">
+          <div id="order-detail-total" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
           <div style="display:flex; justify-content:center; flex-wrap:wrap; gap: 10px;" id="order-detail-actions"></div>
-          <div style="text-align:center; margin-top:10px;">
+          <div style="text-align:center; margin-top:15px;">
               <button style="padding:8px 20px; border:1px solid #ccc; border-radius:6px; background:#f4f4f4; color:#333; cursor:pointer; font-size:15px; font-weight:bold;" onclick="document.getElementById('order-detail-modal').style.display='none'">關閉視窗</button>
           </div>
       </div>
@@ -480,8 +483,10 @@
 
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
-      <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 10px; font-size: 26px; color:#1976d2; flex-shrink: 0;">📝 修改訂單數量</h2>
-      <div style="color:#e65100; font-weight:bold; margin-bottom:10px; flex-shrink: 0;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
+      <div style="flex-shrink: 0;">
+          <h2 style="margin-top:0; border-bottom: 2px solid #1976d2; padding-bottom: 15px; margin-bottom: 10px; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
+          <div style="color:#e65100; font-weight:bold; margin-bottom:10px;">提示：若將數量改為 0 (或點擊刪除)，該品項將被取消。修改完成請點擊最下方儲存。</div>
+      </div>
       
       <div class="modal-body-scroll">
           <div id="edit-cart-items-container"></div>
@@ -622,6 +627,17 @@
     async function callGasAPI(data, loadingElementId) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block'; try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); } }
     async function callGasAPISilent(data) { try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); return await res.json(); } catch(e) { return {success: false, message: '網路連線異常'}; } }
 
+    function openNewsDetail(encId) { 
+        let id = decodeURIComponent(encId);
+        const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; 
+        document.getElementById('news-detail-title').innerText = news.title; 
+        document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; 
+        document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; 
+        const attachContainer = document.getElementById('news-detail-attach-container'); 
+        if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } 
+        document.getElementById('news-detail-modal').style.display = 'flex'; 
+    }
+
     async function loadInitialData() { 
         callGasAPI({ action: 'getProducts' }).then(res => { 
             if (res && res.success) { 
@@ -655,13 +671,15 @@
         localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(viewed));
         let newRestocks = currentRestockedIds.filter(id => !viewed.includes(id));
         const badge = document.getElementById('restock-badge');
-        if(newRestocks.length > 0) { badge.innerText = newRestocks.length; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; }
+        if(newRestocks.length > 0) { badge.innerText = newRestocks.length; badge.style.display = 'inline-block'; } 
+        else { badge.style.display = 'none'; }
     }
 
     function checkPriceChanges() {
         const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice));
         const badge = document.getElementById('price-change-badge');
-        if(changes.length > 0) { badge.innerText = changes.length; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; }
+        if(changes.length > 0) { badge.innerText = changes.length; badge.style.display = 'inline-block'; } 
+        else { badge.style.display = 'none'; }
     }
 
     async function doLogin(btn) { 
@@ -1009,10 +1027,11 @@
             html += `<li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;"><div style="font-size:15px; line-height:1.4; color:#2c3e50; flex:1; min-width:250px;"><span style="font-weight:bold; margin-right:4px;">${index + 1}.</span>${nhiTag}<span style="font-weight:bold;">${escapeHTML(name)}</span>${mfgTag}${specTag}</div><div style="color:#e65100; font-size:15px; font-weight:bold; white-space:nowrap;">${priceText}</div></div></li>`;
         }); 
 
-        html += `</ul><hr style="border:0; border-top:1px solid #eee; margin:15px 0;"><div style="text-align:right; font-size: 24px; color:#d32f2f;"><strong>總金額：$${order.total}</strong></div>`; 
+        html += `</ul>`; 
         if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } 
         
         container.innerHTML = html; 
+        document.getElementById('order-detail-total').innerText = `總金額：$${order.total}`;
         
         const actionsContainer = document.getElementById('order-detail-actions'); 
         let actionsHtml = `<button style="padding:10px 20px; border:1px solid #546e7a; border-radius:8px; background:white; color:#546e7a; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
@@ -1148,7 +1167,7 @@
                     <td data-label="單價 / 單位" style="text-align:center;">$${i.price} / ${i.unit || '盒'}</td>
                     <td data-label="數量" style="text-align:center;"><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"></td>
                     <td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${i.price * i.qty}</td>
-                    <td data-label="刪除" style="text-align:center;"><a class="cart-del-icon" onclick="removeEditCartItem(${x})" title="刪除">❌</a></td>
+                    <td data-label="刪除" style="text-align:center;"><button class="cart-del-btn" onclick="removeEditCartItem(${x})" title="刪除">❌</button></td>
                 </tr>`; 
             }); 
             html += `</tbody></table></div>`; c.innerHTML = html;
@@ -1160,7 +1179,7 @@
     function removeEditCartItem(index) { editingCart.splice(index, 1); renderEditOrderCart(); }
     
     function saveEditedOrder(btn) { 
-        if(editingCart.length === 0) { alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「取消作廢」按鈕。"); return; } 
+        if(editingCart.length === 0) { alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「刪除作廢」按鈕。"); return; } 
         if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; 
         
         let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); 
@@ -1192,11 +1211,10 @@
         if (cart.length === 0) { 
             c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; 
         } else { 
-            let html = `<div class="cart-table-wrapper"><table class="cart-table">
-                <thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
+            let html = `<div class="cart-table-wrapper"><table class="cart-table"><thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
 
             cart.forEach((i, x) => { 
-                if(!i) return; // 雙重防呆
+                if(!i) return; 
                 let itemPrice = parseFloat(i.price) || 0;
                 let itemQty = parseInt(i.qty) || 1;
                 
@@ -1220,11 +1238,10 @@
                     <td data-label="單價 / 單位" style="text-align:center;">$${itemPrice} / ${escapeHTML(i.unit || '盒')}</td>
                     <td data-label="數量" style="text-align:center;"><input type="number" value="${itemQty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input"></td>
                     <td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${itemPrice * itemQty}</td>
-                    <td data-label="刪除" style="text-align:center;"><a class="cart-del-icon" onclick="removeFromCart(${x})" title="刪除">❌</a></td>
+                    <td data-label="刪除" style="text-align:center;"><button class="cart-del-btn" onclick="removeFromCart(${x})" title="刪除">❌</button></td>
                 </tr>`;
             }); 
-            html += `</tbody></table></div>`;
-            c.innerHTML = html;
+            html += `</tbody></table></div>`; c.innerHTML = html;
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
