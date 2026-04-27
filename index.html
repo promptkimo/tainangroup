@@ -124,7 +124,6 @@
     .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; transition: 0.3s; background: #f9f9f9;}
     .chat-input-area textarea:focus { border-color: #4CAF50; background: white;}
     .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px; transition: 0.2s;}
-    
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
@@ -153,14 +152,14 @@
     .st-cancel { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;}
 
     /* ⭐ 凍結底部（Sticky Footer）與內部捲動核心架構 */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; padding: 25px; border-radius: 16px; width: 95%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; box-sizing: border-box;}
-    .modal-body-scroll { flex: 1; overflow-y: auto; padding-right: 5px; min-height: 0; margin-top: 10px;}
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: flex-start; z-index: 2000; backdrop-filter: blur(3px); padding: 4vh 2vw; box-sizing: border-box;}
+    .cart-content { background: white; padding: 20px 25px; border-radius: 16px; width: 100%; max-width: 900px; max-height: 100%; display: flex; flex-direction: column; position: relative; box-sizing: border-box; overflow: hidden;}
+    .modal-body-scroll { flex: 1 1 auto; overflow-y: auto; min-height: 0; padding-right: 8px; margin-right: -4px;}
     .modal-body-scroll::-webkit-scrollbar { width: 8px; }
     .modal-body-scroll::-webkit-scrollbar-thumb { background-color: #cfd8dc; border-radius: 4px; }
-    .modal-footer-fixed { flex-shrink: 0; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+    .modal-footer-fixed { flex-shrink: 0; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; background: white; z-index: 10;}
 
-    .cart-table-wrapper { width: 100%; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 15px;}
+    .cart-table-wrapper { width: 100%; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 10px;}
     .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
     .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; border-right: 1px solid #62a3cc; position: sticky; top: 0; z-index: 10;}
     .cart-table th:last-child { border-right: none; }
@@ -170,7 +169,7 @@
     .cart-qty-input { width: 60px; padding: 6px; border: 1px solid #b0bec5; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s; }
     .cart-qty-input:focus { border-color: #3b8ebf; box-shadow: 0 0 5px rgba(59,142,191,0.4); }
     
-    /* 修正紅色刪除按鈕樣式，確保 100% 點擊成功 */
+    /* 修正刪除按鈕樣式，確保 100% 點擊成功 */
     .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: white; border: 2px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; font-size: 14px; outline: none; padding: 0;}
     .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: scale(1.1); box-shadow: 0 2px 5px rgba(211,47,47,0.3);}
 
@@ -212,8 +211,9 @@
         .qty-wrapper { width: auto; }
         
         /* ⭐ 修正手機版彈出視窗高度 */
-        .cart-content { width: 100%; height: 100dvh; max-height: 100dvh; max-width: 100%; border-radius: 0; padding: 15px; box-sizing: border-box;}
-        .modal-overlay { align-items: flex-start; }
+        .modal-overlay { padding: 0; }
+        .cart-content { border-radius: 0; padding: 15px; max-height: 100dvh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden;}
+        .cart-table-wrapper { border: none; box-shadow: none; overflow: visible; padding: 0;}
         
         #view-match > div:first-child > div { flex-direction: column; align-items: stretch; gap: 10px;}
         #view-match input, #view-match button { width: 100%; max-width: none; flex: auto; box-sizing: border-box;}
@@ -433,7 +433,7 @@
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
-    <div class="cart-content" style="max-width: 800px; height:auto; max-height:85vh;" onclick="event.stopPropagation()">
+    <div class="cart-content" style="max-width: 800px;" onclick="event.stopPropagation()">
       <h2 id="news-detail-title" style="margin-top:0; color:#00838f; border-bottom:2px solid #b2ebf2; padding-bottom:15px; font-size: 26px; line-height: 1.4; flex-shrink: 0;">公告標題</h2>
       <div class="modal-body-scroll">
           <div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div>
@@ -1148,6 +1148,7 @@
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
     }
     
+    // ⭐ 套用固定底部與內部捲動 + 修正實體按鈕
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
         if (editingCart.length === 0) { 
@@ -1204,6 +1205,7 @@
         });
     }
 
+    // ⭐ 購物車也套用固定底部與內部捲動 + 修正實體按鈕
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
         if (!Array.isArray(cart)) cart = [];
@@ -1211,7 +1213,8 @@
         if (cart.length === 0) { 
             c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">您的購物車空空如也，快去選購吧！</p>'; 
         } else { 
-            let html = `<div class="cart-table-wrapper"><table class="cart-table"><thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
+            let html = `<div class="cart-table-wrapper"><table class="cart-table">
+                <thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
 
             cart.forEach((i, x) => { 
                 if(!i) return; 
@@ -1241,7 +1244,8 @@
                     <td data-label="刪除" style="text-align:center;"><button class="cart-del-btn" onclick="removeFromCart(${x})" title="刪除">❌</button></td>
                 </tr>`;
             }); 
-            html += `</tbody></table></div>`; c.innerHTML = html;
+            html += `</tbody></table></div>`;
+            c.innerHTML = html;
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
