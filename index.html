@@ -14,8 +14,11 @@
   </script>
 
   <style>
+    /* 全局與基礎設定 */
     html, body { overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f4f7f6; font-size: 16px; line-height: 1.6; color: #333; letter-spacing: 0.3px; min-height: 100vh; overflow-y: auto; }
+    
+    /* 登入畫面 */
     #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f4f7f6; z-index: 9999; }
     .header-container { display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
     .header-container img { width: 120px; height: auto; flex-shrink: 0; }
@@ -27,13 +30,12 @@
     .form-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);}
     .form-container button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s;}
     
+    /* 主應用程式容器 */
     #app-container { display: none; width: 98%; max-width: 100%; margin: 0 auto; padding-top: 15px; padding-bottom: 30px; box-sizing: border-box; }
     
+    /* 導覽列 */
     .sticky-nav-wrapper { position: sticky; top: 0; z-index: 1000; background-color: #f4f7f6; padding: 10px 0; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px;}
     .top-bar { width: 100%; box-sizing: border-box; background-color: #fff; padding: 10px 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;}
-    .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; }
-    .view-section.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .app-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-start;}
     .app-nav button { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 10px; font-size: 14px; border: none; background: transparent; cursor: pointer; border-radius: 10px; font-weight: bold; color: #666; transition: all 0.3s ease; position: relative; white-space: nowrap; flex-shrink: 0;}
     .app-nav button img { width: 32px; height: 32px; margin-bottom: 4px; transition: transform 0.3s ease; object-fit: contain;}
@@ -42,14 +44,20 @@
     
     #nav-price-change.active { color: #d32f2f; box-shadow: inset 0 0 0 2px #d32f2f; background: #fff1f1;}
     .price-change-tag { background: #ffebee; color: #d32f2f; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 5px; font-weight: bold;}
-
     #nav-match.active { color: #1976d2; box-shadow: inset 0 0 0 2px #1976d2; background: #e3f2fd;}
-    
     .badge { background: #f44336; color: white; border-radius: 50%; padding: 4px 8px; font-size: 12px; position: absolute; top: -5px; right: -5px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); animation: pulse 1.5s infinite;}
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+    
     .top-bar-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; flex-shrink: 0;}
     .top-bar-actions span { font-weight: bold; color: #333; font-size: 18px; white-space: nowrap;}
     .top-bar-actions button { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; white-space: nowrap;}
+    
+    /* 區塊切換與動畫 */
+    .view-section { display: none; width: 100%; animation: fadeIn 0.3s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* 搜尋框與首頁公告 */
     .search-container { width: 100%; box-sizing: border-box; margin-bottom: 20px; }
     .search-container input { width: 100%; padding: 16px 20px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);}
     .search-container input:focus { border-color: #4CAF50; outline: none; box-shadow: 0 0 8px rgba(76,175,80,0.2);}
@@ -72,17 +80,19 @@
     .news-bottom .news-title { color: #555; }
     .search-hint { margin: 10px auto 30px auto; color: #607d8b; font-size: 18px; font-weight: bold; animation: pulse 2s infinite; text-align: center; }
     
+    /* 表格樣式 */
     .table-container { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; width: 100%; box-sizing: border-box; overflow-x: auto;}
     table { width: 100%; border-collapse: collapse; font-size: 16px; table-layout: fixed; min-width: 1000px;}
     th { background-color: #4CAF50; color: white; padding: 14px 10px; text-align: left; font-size: 16px; white-space: nowrap;}
     td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
     tr:hover { background-color: #f9fbf9; }
-    
     .truncate-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%; }
     .prod-name { font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; }
     .prod-ing { font-size: 13px; color: #607d8b; }
     .price-text { font-size: 18px; font-weight: bold; color: #333;}
     .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; display: block;}
+    
+    /* 表格操作區 */
     .action-grid { display: grid; grid-template-columns: 65px 70px 42px 42px; gap: 6px; align-items: center; justify-content: end; }
     .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; letter-spacing: 0.5px;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
@@ -90,9 +100,11 @@
     .qty-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; }
     .qty-input { width: 44px; height: 34px; border: 2px solid #ddd; border-radius: 6px; text-align: center; font-size: 15px; outline: none; color:#333; font-weight:bold; margin-right: 4px; box-sizing: border-box; padding:0;}
     .qty-input:focus { border-color: #4CAF50; }
+    
+    /* 小圖示按鈕 */
     .icon-only-btn { background: white; border: 1px solid #ccc; border-radius: 8px; width: 42px; height: 42px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .icon-only-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .icon-only-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s; pointer-events: none;}
+    .icon-only-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s; pointer-events: none; }
     .btn-addcart { color: #ff9800; border-color: #ff9800; }
     .btn-addcart:hover { background: #fff3e0; }
     .btn-fav { color: #e91e63; border-color: #e91e63; }
@@ -101,11 +113,14 @@
     .btn-fav:hover:not(.active) { background: #fce4ec; }
     .btn-notify { color: #2196F3; border-color: #2196F3; }
     .btn-notify:hover { background: #e3f2fd; }
+    
+    /* 分頁 */
     .pagination-container { display: flex; justify-content: center; gap: 15px; padding: 15px; width: 100%; box-sizing: border-box; margin-top: 15px;}
     .pagination-container button { padding: 10px 25px; font-size: 16px; border: none; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; font-weight: bold; color: #333; cursor: pointer; transition: 0.2s;}
     .pagination-container button:hover:not(:disabled) { background: #e8f5e9; color: #2e7d32;}
     .pagination-container button:disabled { opacity: 0.5; cursor: not-allowed; }
-    
+
+    /* 客服中心 */
     .chat-app-container { width: 100%; box-sizing: border-box; background: #f4f7f6; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; height: 75vh; overflow: hidden; border: 1px solid #e0e0e0; margin: 0;}
     .chat-header { background: white; padding: 18px 25px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;}
     .chat-header h2 { margin: 0; color: #2c3e50; font-size: 20px; }
@@ -128,6 +143,7 @@
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
+    /* 縮放功能 */
     .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; transition: 0.3s; }
     .zoom-control:hover { opacity: 1; }
     .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
@@ -137,6 +153,7 @@
     .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
     .app-footer strong { color: #2c3e50; font-size: 16px; }
 
+    /* 訂單圖卡 */
     .order-card-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box; }
     .order-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e0e0e0; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;}
     .order-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); border-color: #b0bec5; }
@@ -174,7 +191,7 @@
     
     .modal-footer-fixed { padding: 15px 25px 20px; border-top: 1px solid #eee; background: #fafafa; flex-shrink: 0; z-index: 10; }
 
-    /* 表格與按鈕細節 */
+    /* 購物車內部表格樣式 */
     .cart-table-wrapper { width: 100%; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 15px;}
     .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
     .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; position: sticky; top: 0; z-index: 10;}
@@ -405,6 +422,7 @@
       </div>
     </div>
 
+    <!-- ⭐ 訂單畫面 -->
     <div id="view-orders" class="view-section">
       <div id="order-card-wrapper" class="order-card-container"></div>
     </div>
@@ -453,6 +471,7 @@
 
   </div>
 
+  <!-- ⭐ 公告彈出視窗 (凍結底部防裁切) -->
   <div id="news-detail-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom:2px solid #b2ebf2;">
@@ -469,6 +488,7 @@
     </div>
   </div>
 
+  <!-- ⭐ 購物車 Modal (凍結底部防裁切) -->
   <div id="cart-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #3b8ebf;">
@@ -490,6 +510,7 @@
     </div>
   </div>
 
+  <!-- ⭐ 訂單明細視窗 (凍結底部防裁切) -->
   <div id="order-detail-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #4CAF50;">
@@ -508,6 +529,7 @@
     </div>
   </div>
 
+  <!-- ⭐ 修改訂單數量 Modal (凍結底部防裁切) -->
   <div id="edit-order-modal" class="modal-overlay">
     <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #1976d2;">
@@ -529,12 +551,12 @@
     </div>
   </div>
 
+  <!-- ⭐ 核心 JavaScript -->
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
     
     let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
-    let currentPassword = ''; 
-    let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
+    let currentPassword = ''; let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; 
     let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; 
     let editingCart = []; let editingOrderId = '';
 
@@ -551,32 +573,15 @@
     applyZoom(); 
 
     window.onload = function() { 
-        const savedU = localStorage.getItem('app_user');
-        const savedP = localStorage.getItem('app_pass');
-        if (savedU && savedP) {
-            document.getElementById('login-username').value = savedU;
-            document.getElementById('login-password').value = savedP;
-            doLogin(document.querySelector('#login-form button'));
-        }
+        const savedU = localStorage.getItem('app_user'); const savedP = localStorage.getItem('app_pass');
+        if (savedU && savedP) { document.getElementById('login-username').value = savedU; document.getElementById('login-password').value = savedP; doLogin(document.querySelector('#login-form button')); }
     };
 
     function updateOnlineCount() {
-        const hour = new Date().getHours();
-        let min = 5, max = 15;
-        if (hour >= 8 && hour <= 12) { min = 20; max = 35; } 
-        else if (hour >= 13 && hour <= 18) { min = 15; max = 30; } 
-        else if (hour >= 19 && hour <= 23) { min = 8; max = 18; } 
-        else { min = 2; max = 6; } 
-        let currentCount = Math.floor(Math.random() * (max - min + 1)) + min;
-        const countEl = document.getElementById('online-count');
-        if (countEl) countEl.innerText = currentCount;
-        setInterval(() => {
-            let fluctuation = Math.floor(Math.random() * 5) - 2; 
-            currentCount += fluctuation;
-            if (currentCount < min) currentCount = min;
-            if (currentCount > max + 5) currentCount = max + 5;
-            if (countEl) countEl.innerText = currentCount;
-        }, 60000);
+        const hour = new Date().getHours(); let min = 5, max = 15;
+        if (hour >= 8 && hour <= 12) { min = 20; max = 35; } else if (hour >= 13 && hour <= 18) { min = 15; max = 30; } else if (hour >= 19 && hour <= 23) { min = 8; max = 18; } else { min = 2; max = 6; } 
+        let currentCount = Math.floor(Math.random() * (max - min + 1)) + min; const countEl = document.getElementById('online-count'); if (countEl) countEl.innerText = currentCount;
+        setInterval(() => { let fluctuation = Math.floor(Math.random() * 5) - 2; currentCount += fluctuation; if (currentCount < min) currentCount = min; if (currentCount > max + 5) currentCount = max + 5; if (countEl) countEl.innerText = currentCount; }, 60000);
     }
 
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
@@ -586,106 +591,43 @@
     function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
     function saveCart() {
-        if (!Array.isArray(cart)) cart = [];
-        let cleanCart = cart.filter(i => i != null); 
-        cart = cleanCart;
-
-        if(currentUser.username) {
-            localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart));
-            callGasAPISilent({ action: 'saveCloudCart', username: currentUser.username, cart: cart });
-        }
-        let totalQty = cart.reduce((a,b) => a + (parseInt(b.qty)||0), 0);
-        document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalQty})`;
+        if (!Array.isArray(cart)) cart = []; let cleanCart = cart.filter(i => i != null); cart = cleanCart;
+        if(currentUser.username) { localStorage.setItem('cart_' + currentUser.username, JSON.stringify(cart)); callGasAPISilent({ action: 'saveCloudCart', username: currentUser.username, cart: cart }); }
+        let totalQty = cart.reduce((a,b) => a + (parseInt(b.qty)||0), 0); document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalQty})`;
     }
 
     function getFavorites() { const f = localStorage.getItem('favs_' + currentUser.username); if(!f) return []; return JSON.parse(f).map(String); }
     function toggleFavorite(id) { id = String(id); let f = getFavorites(); if (f.includes(id)) f = f.filter(i => i !== id); else f.push(id); localStorage.setItem('favs_' + currentUser.username, JSON.stringify(f)); filterProducts(); }
 
     function getSubscriptions() { const s = localStorage.getItem('subs_' + currentUser.username); if(!s) return []; return JSON.parse(s).map(String); }
-    
-    function subscribeRestock(pId, pName) { 
-        if(confirm(`確定要訂閱追蹤【${pName}】嗎？\n(當後台補貨時，最上方標籤會跳出紅色數字提醒您)`)) { 
-            pId = String(pId); let subs = getSubscriptions();
-            if(!subs.includes(pId)) { subs.push(pId); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs)); }
-            showToast("✅ 已為您登記追蹤通知"); 
-            callGasAPISilent({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); 
-            checkRestockStatus(); filterProducts();
-        } 
-    }
-
-    function removeSubscription(pId, showMsg = true) { 
-        pId = String(pId); 
-        let subs = getSubscriptions(); 
-        subs = subs.filter(id => id !== pId); 
-        localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs)); 
-        if(showMsg) showToast("✅ 已取消追蹤"); 
-        
-        if (currentMode === 'restock') { renderRestockList(); } else { filterProducts(); }
-        checkRestockStatus(); 
-    }
+    function subscribeRestock(pId, pName) { if(confirm(`確定要訂閱追蹤【${pName}】嗎？\n(當後台補貨時，最上方標籤會跳出紅色數字提醒您)`)) { pId = String(pId); let subs = getSubscriptions(); if(!subs.includes(pId)) { subs.push(pId); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs)); } showToast("✅ 已為您登記追蹤通知"); callGasAPISilent({ action: 'subscribeRestock', username: currentUser.username, pharmacyName: currentUser.pharmacyName, productId: pId, productName: pName }); checkRestockStatus(); filterProducts(); } }
+    function removeSubscription(pId, showMsg = true) { pId = String(pId); let subs = getSubscriptions(); subs = subs.filter(id => id !== pId); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(subs)); if(showMsg) showToast("✅ 已取消追蹤"); if (currentMode === 'restock') { renderRestockList(); } else { filterProducts(); } checkRestockStatus(); }
 
     function switchView(viewName) { 
-        document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
-        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); 
-        document.getElementById(`nav-${viewName}`).classList.add('active'); 
-        currentMode = viewName; 
-        
-        let targetView = viewName === 'favorites' ? 'products' : viewName;
-        document.getElementById(`view-${targetView}`).classList.add('active');
-
-        if (viewName === 'restock') { 
-            let subs = getSubscriptions();
-            let currentRestockedIds = [];
-            subs.forEach(id => {
-                let prod = allProducts.find(p => String(p.id) === id);
-                if(prod && parseInt(prod.stock) > 0) currentRestockedIds.push(String(id));
-            });
-            localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(currentRestockedIds));
-            document.getElementById('restock-badge').style.display = 'none'; 
-            renderRestockList(); 
-        }
-
-        if(viewName === 'products' || viewName === 'favorites') { filterProducts(); } 
-        else if (viewName === 'price-change') { renderPriceChangeList(); } 
-        else if (viewName === 'match') { loadMatchRequests(); } 
-        else if (viewName === 'orders') { loadOrders(); } 
-        else if (viewName === 'contact') { loadMyMessages(); }
+        document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active')); document.getElementById(`nav-${viewName}`).classList.add('active'); currentMode = viewName; 
+        let targetView = viewName === 'favorites' ? 'products' : viewName; document.getElementById(`view-${targetView}`).classList.add('active');
+        if (viewName === 'restock') { let subs = getSubscriptions(); let currentRestockedIds = []; subs.forEach(id => { let prod = allProducts.find(p => String(p.id) === id); if(prod && parseInt(prod.stock) > 0) currentRestockedIds.push(String(id)); }); localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(currentRestockedIds)); document.getElementById('restock-badge').style.display = 'none'; renderRestockList(); }
+        if(viewName === 'products' || viewName === 'favorites') { filterProducts(); } else if (viewName === 'price-change') { renderPriceChangeList(); } else if (viewName === 'match') { loadMatchRequests(); } else if (viewName === 'orders') { loadOrders(); } else if (viewName === 'contact') { loadMyMessages(); }
     }
 
     async function callGasAPI(data, loadingElementId) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'block'; try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); const result = await res.json(); if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; return result;} catch (err) { if(loadingElementId) document.getElementById(loadingElementId).style.display = 'none'; alert('連線失敗'); } }
     async function callGasAPISilent(data) { try { const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(data) }); return await res.json(); } catch(e) { return {success: false, message: '網路連線異常'}; } }
 
     function openNewsDetail(encId) { 
-        let id = decodeURIComponent(encId);
-        const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; 
-        document.getElementById('news-detail-title').innerText = news.title; 
-        document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; 
-        document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; 
+        let id = decodeURIComponent(encId); const news = allNewsData.find(n => String(n.id) === String(id)); if(!news) return; 
+        document.getElementById('news-detail-title').innerText = news.title; document.getElementById('news-detail-date').innerText = `發布日期：${news.date}　|　分類：${news.category}`; document.getElementById('news-detail-content').innerText = news.content || '無詳細內容'; 
         const attachContainer = document.getElementById('news-detail-attach-container'); 
         if(news.fileUrl) { attachContainer.innerHTML = `<a href="${news.fileUrl}" target="_blank" style="display:inline-block; padding:12px 30px; background:#00acc1; color:white; text-decoration:none; border-radius:8px; font-weight:bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">📥 點此下載 / 檢視附件檔</a>`; } else { attachContainer.innerHTML = ''; } 
         document.getElementById('news-detail-modal').style.display = 'flex'; 
     }
 
     async function loadInitialData() { 
-        callGasAPI({ action: 'getProducts' }).then(res => { 
-            if (res && res.success) { 
-                allProducts = res.data; filterProducts(); checkRestockStatus(); checkPriceChanges(); 
-            } 
-        }); 
+        callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); checkRestockStatus(); checkPriceChanges(); } }); 
         callGasAPI({ action: 'getNews' }).then(res => { 
             if (res && res.success) { 
-                allNewsData = res.data; 
-                const listTop = document.getElementById('news-list-top'); const listBottom = document.getElementById('news-list-bottom'); 
-                let topHtml = ''; let bottomHtml = ''; 
-                res.data.forEach(n => { 
-                    let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : ''; 
-                    let safeId = safeEncode(n.id);
-                    let titleHtml = `<span class="news-title" onclick="openNewsDetail('${safeId}')">${escapeHTML(n.title)}${attachIcon}</span>`; 
-                    let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`; 
-                    if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml; 
-                }); 
-                listTop.innerHTML = topHtml || '<li><div style="padding:15px; color:#e0f7fa;">目前尚無最新消息</div></li>'; 
-                listBottom.innerHTML = bottomHtml || '<li><div style="padding:15px; color:#999;">目前尚無醫藥快訊</div></li>'; 
+                allNewsData = res.data; const listTop = document.getElementById('news-list-top'); const listBottom = document.getElementById('news-list-bottom'); let topHtml = ''; let bottomHtml = ''; 
+                res.data.forEach(n => { let attachIcon = n.fileUrl ? ' <span style="font-size:12px; color:#ff9800;">📎有附件</span>' : ''; let safeId = safeEncode(n.id); let titleHtml = `<span class="news-title" onclick="openNewsDetail('${safeId}')">${escapeHTML(n.title)}${attachIcon}</span>`; let liHtml = `<li><span class="icon-arrow">></span><span class="news-date">${n.date}</span>${titleHtml}</li>`; if(n.category === '最新消息') topHtml += liHtml; else bottomHtml += liHtml; }); 
+                listTop.innerHTML = topHtml || '<li><div style="padding:15px; color:#e0f7fa;">目前尚無最新消息</div></li>'; listBottom.innerHTML = bottomHtml || '<li><div style="padding:15px; color:#999;">目前尚無醫藥快訊</div></li>'; 
             } 
         }); 
     }
@@ -693,51 +635,23 @@
     function checkRestockStatus() {
         let subs = getSubscriptions(); let currentRestockedIds = [];
         subs.forEach(id => { let prod = allProducts.find(p => String(p.id) === id); if(prod && parseInt(prod.stock) > 0) currentRestockedIds.push(String(id)); });
-        let viewedStr = localStorage.getItem('viewed_restocks_' + currentUser.username);
-        let viewed = viewedStr ? JSON.parse(viewedStr) : [];
-        viewed = viewed.filter(id => currentRestockedIds.includes(id));
-        localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(viewed));
-        let newRestocks = currentRestockedIds.filter(id => !viewed.includes(id));
-        const badge = document.getElementById('restock-badge');
-        if(newRestocks.length > 0) { badge.innerText = newRestocks.length; badge.style.display = 'inline-block'; } 
-        else { badge.style.display = 'none'; }
+        let viewedStr = localStorage.getItem('viewed_restocks_' + currentUser.username); let viewed = viewedStr ? JSON.parse(viewedStr) : []; viewed = viewed.filter(id => currentRestockedIds.includes(id)); localStorage.setItem('viewed_restocks_' + currentUser.username, JSON.stringify(viewed)); let newRestocks = currentRestockedIds.filter(id => !viewed.includes(id)); const badge = document.getElementById('restock-badge');
+        if(newRestocks.length > 0) { badge.innerText = newRestocks.length; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; }
     }
 
-    function checkPriceChanges() {
-        const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice));
-        const badge = document.getElementById('price-change-badge');
-        if(changes.length > 0) { badge.innerText = changes.length; badge.style.display = 'inline-block'; } 
-        else { badge.style.display = 'none'; }
-    }
+    function checkPriceChanges() { const changes = allProducts.filter(p => p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice)); const badge = document.getElementById('price-change-badge'); if(changes.length > 0) { badge.innerText = changes.length; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; } }
 
     async function doLogin(btn) { 
-        const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value.trim(); 
-        if(!u || !p) return alert("請輸入帳號密碼！"); 
-        
-        let origText = "登入系統";
-        if(btn) { origText = btn.innerText; btn.innerText = "⏳ 登入中..."; btn.disabled = true; btn.style.background = "#9e9e9e"; }
-
+        const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value.trim(); if(!u || !p) return alert("請輸入帳號密碼！"); 
+        let origText = "登入系統"; if(btn) { origText = btn.innerText; btn.innerText = "⏳ 登入中..."; btn.disabled = true; btn.style.background = "#9e9e9e"; }
         const res = await callGasAPI({ action: 'login', username: u, password: p }, 'login-loading'); 
-        
         if(btn) { btn.innerText = origText; btn.disabled = false; btn.style.background = "#4CAF50"; }
 
         if (res && res.success) { 
-            localStorage.setItem('app_user', u); localStorage.setItem('app_pass', p);
-            currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
-            
-            try {
-                if (res.cart) { cart = typeof res.cart === 'string' ? JSON.parse(res.cart) : res.cart; } 
-                else { let savedCart = localStorage.getItem('cart_' + currentUser.username); cart = savedCart ? JSON.parse(savedCart) : []; }
-                if (!Array.isArray(cart)) cart = [];
-            } catch(e) { cart = []; }
-            
-            saveCart(); 
-            updateOnlineCount(); 
-            document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
-            
-            if (currentUser.role === '管理員' || u === 'prompt') { document.getElementById('nav-admin').style.display = 'flex'; localStorage.setItem('admin_token', 'verified'); } 
-            else { document.getElementById('nav-admin').style.display = 'none'; localStorage.removeItem('admin_token'); }
-            
+            localStorage.setItem('app_user', u); localStorage.setItem('app_pass', p); currentUser.username = u; currentUser.pharmacyName = res.pharmacyName; currentUser.role = res.role || ''; currentUser.contact = res.contact || ''; currentPassword = p; 
+            try { if (res.cart) { cart = typeof res.cart === 'string' ? JSON.parse(res.cart) : res.cart; } else { let savedCart = localStorage.getItem('cart_' + currentUser.username); cart = savedCart ? JSON.parse(savedCart) : []; } if (!Array.isArray(cart)) cart = []; } catch(e) { cart = []; }
+            saveCart(); updateOnlineCount(); document.getElementById('login-screen').style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('welcome-message').innerText = `${res.pharmacyName}`; 
+            if (currentUser.role === '管理員' || u === 'prompt') { document.getElementById('nav-admin').style.display = 'flex'; localStorage.setItem('admin_token', 'verified'); } else { document.getElementById('nav-admin').style.display = 'none'; localStorage.removeItem('admin_token'); }
             switchView('products'); loadInitialData(); checkNewMessages(); 
         } else { alert(res.message); localStorage.removeItem('app_user'); localStorage.removeItem('app_pass'); }
     }
@@ -745,13 +659,10 @@
     function goToAdmin() { const encodedP = btoa(encodeURIComponent(currentPassword)); const ssoUrl = GAS_URL + '?u=' + encodeURIComponent(currentUser.username) + '&p=' + encodedP; window.open(ssoUrl, '_blank'); }
 
     async function doRegister(btn) { 
-        const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; 
-        if(!name || !user || !pass) return alert("請填寫必填欄位！"); 
-        
+        const name = document.getElementById('reg-pharmacy').value; const contact = document.getElementById('reg-contact').value; const user = document.getElementById('reg-username').value; const pass = document.getElementById('reg-password').value; if(!name || !user || !pass) return alert("請填寫必填欄位！"); 
         const origText = btn.innerText; btn.innerText = "⏳ 送出中..."; btn.disabled = true; btn.style.background = '#9e9e9e';
         const result = await callGasAPI({ action: 'register', name: name, contact: contact, username: user, password: pass }); 
         btn.innerText = origText; btn.disabled = false; btn.style.background = '#4CAF50';
-
         if (result && result.success) { alert(result.message); document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block'; } else if(result) { alert(result.message); } 
     }
     
@@ -760,30 +671,19 @@
     function filterProducts() { 
         let rawSearch = document.getElementById('search-input').value.trim(); 
         let q = rawSearch.replace(/[\uff01-\uff5e]/g, function(ch) { return String.fromCharCode(ch.charCodeAt(0) - 0xfee0); }).toLowerCase();
-        
         let searchMode = currentMode;
-        if (q !== '' && currentMode === 'favorites') {
-            searchMode = 'products';
-            document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); 
-            document.getElementById('nav-products').classList.add('active');
-        }
-
-        const f = getFavorites(); 
-        const annSection = document.getElementById('announcement-section'); 
-        const tableWrapper = document.getElementById('products-table-wrapper'); 
-        
+        if (q !== '' && currentMode === 'favorites') { searchMode = 'products'; document.querySelectorAll('.app-nav button').forEach(btn => btn.classList.remove('active')); document.getElementById('nav-products').classList.add('active'); }
+        const f = getFavorites(); const annSection = document.getElementById('announcement-section'); const tableWrapper = document.getElementById('products-table-wrapper'); 
         if (searchMode === 'products' && q === '') { annSection.style.display = 'block'; tableWrapper.style.display = 'none'; return; } 
-        
         annSection.style.display = 'none'; tableWrapper.style.display = 'block'; 
-        
         currentFilteredProducts = allProducts.filter(p => { 
             if (searchMode === 'favorites' && !f.includes(String(p.id))) return false; 
             return String(p.nhiCode||'').toLowerCase().includes(q) || String(p.name||'').toLowerCase().includes(q) || String(p.engName||'').toLowerCase().includes(q) || String(p.ingredients||'').toLowerCase().includes(q) || String(p.manufacturer||'').toLowerCase().includes(q); 
         }); 
-        
         currentFrontPage = 1; renderTable(); 
     }
 
+    // ⭐ 修正包含雙引號導致按鈕當機的問題
     function renderTable() { 
         const tbody = document.getElementById('product-list'); const paginationBox = document.getElementById('front-pagination'); const favs = getFavorites(); const subs = getSubscriptions();
         if(currentFilteredProducts.length === 0) { let msg = currentMode === 'favorites' ? '您的最愛清單目前空空如也喔！' : '找不到符合的藥品喔！'; tbody.innerHTML = `<tr><td colspan="6">${msg}</td></tr>`; paginationBox.style.display = 'none'; return; } 
@@ -794,47 +694,39 @@
         let htmlArray = []; 
         pageData.forEach(p => { 
             let stk = parseInt(p.stock); let actionHtml = ''; 
+            
+            // 防彈裝甲：處理引號防止失效
+            let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); 
+            let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
             let isFav = favs.includes(String(p.id)); let favClass = isFav ? 'active' : ''; let favTitle = isFav ? '移除最愛' : '加入最愛';
-            let isSub = subs.includes(String(p.id)); let notifyClass = isSub ? 'active' : ''; let notifyTitle = isSub ? '已訂閱追蹤' : '到貨通知'; let notifyIcon = isSub ? svgCheck : svgNotify; let notifyAction = isSub ? `onclick="removeSubscription('${p.id}')"` : `onclick="subscribeRestock('${p.id}', '${p.name}')"`;
+            let isSub = subs.includes(String(p.id)); let notifyClass = isSub ? 'active' : ''; let notifyTitle = isSub ? '已訂閱追蹤' : '到貨通知'; let notifyIcon = isSub ? svgCheck : svgNotify; let notifyAction = isSub ? `onclick="removeSubscription('${p.id}')"` : `onclick="subscribeRestock('${p.id}', '${safeName}')"`;
             let unitText = p.unit ? String(p.unit).replace('/', '') : '盒'; 
             let favBtnHtml = `<button type="button" class="icon-only-btn btn-fav ${favClass}" onclick="toggleFavorite('${p.id}')" title="${favTitle}">${svgHeart}</button>`;
 
             let limitAlert = (p.dailyLimit > 0) ? `<div style="color:#d32f2f; font-size:13px; font-weight:bold; margin-top:4px; width:100%;">⚠️ 每人每日限購: ${p.dailyLimit}</div>` : '';
             let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
-            
-            let safeName = String(p.name||'').replace(/'/g, "\\'"); let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
 
             if (isNaN(stk) || stk <= 0) { 
                 actionHtml = `<div class="action-grid"><div class="status-badge-front status-out">缺貨中</div><div class="qty-wrapper"><span style="color:#ccc;">-</span></div><div><button type="button" class="icon-only-btn btn-notify ${notifyClass}" ${notifyAction} title="${notifyTitle}">${notifyIcon}</button></div><div>${favBtnHtml}</div></div>`;
             } else { 
-                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button type="button" class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div>${favBtnHtml}</div>${limitAlert}</div>`;
+                actionHtml = `<div class="action-grid"><div class="status-badge-front status-in">供貨中</div><div class="qty-wrapper"><input type="number" min="1" max="${maxInput}" value="1" class="qty-input" id="qty-${p.id}"><span style="font-size:14px; font-weight:bold; color:#888;">${unitText}</span></div><div><button type="button" class="icon-only-btn btn-addcart" onclick="addToCart('${p.id}', '${safeName}', ${p.price || 0}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="加入購物車">${svgCart}</button></div><div>${favBtnHtml}</div>${limitAlert}</div>`;
             } 
             
             let nhiPriceHtml = '';
             if (p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice)) { nhiPriceHtml = `<div class="nhi-text"><strike style="color:#aaa;">舊價: $${p.nhiPrice}</strike></div><div class="nhi-text" style="color:#d32f2f; font-size:14px; margin-top:2px;">新價: $${p.newNhiPrice}</div>`; } else if (p.nhiPrice) { nhiPriceHtml = `<div class="nhi-text">健保價: $${p.nhiPrice}</div>`; } else { nhiPriceHtml = `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; }
 
-            htmlArray.push(`<tr><td data-label="健保碼/藥價"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td data-label="規格" style="white-space: nowrap;">${p.spec||'-'}</td><td data-label="製造商"><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`); 
+            htmlArray.push(`<tr><td data-label="健保碼/藥價"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</div><div class="truncate-text prod-ing" title="${escapeHTML(p.ingredients)}">${escapeHTML(p.ingredients)}</div></td><td data-label="規格" style="white-space: nowrap;">${escapeHTML(p.spec)}</td><td data-label="製造商"><div class="truncate-text" title="${escapeHTML(p.manufacturer)}">${escapeHTML(p.manufacturer)}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`); 
         }); 
         
         tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
     }
 
-    function changeFrontPage(d) {
-        const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1;
-        let n = currentFrontPage + d;
-        if (n >= 1 && n <= totalPages) { currentFrontPage = n; renderTable(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    }
+    function changeFrontPage(d) { const totalPages = Math.ceil(currentFilteredProducts.length / itemsPerPageFront) || 1; let n = currentFrontPage + d; if (n >= 1 && n <= totalPages) { currentFrontPage = n; renderTable(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
 
     function renderPriceChangeList() {
-        const tbody = document.getElementById('price-change-list');
-        const q = (document.getElementById('search-price-change')?.value || '').toLowerCase().trim();
-
-        const changes = allProducts.filter(p => {
-            if (!(p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice))) return false;
-            if (!q) return true;
-            return String(p.nhiCode||'').toLowerCase().includes(q) || String(p.name||'').toLowerCase().includes(q) || String(p.engName||'').toLowerCase().includes(q) || String(p.ingredients||'').toLowerCase().includes(q);
-        });
-        
+        const tbody = document.getElementById('price-change-list'); const q = (document.getElementById('search-price-change')?.value || '').toLowerCase().trim();
+        const changes = allProducts.filter(p => { if (!(p.newNhiPrice && parseFloat(p.newNhiPrice) !== parseFloat(p.nhiPrice))) return false; if (!q) return true; return String(p.nhiCode||'').toLowerCase().includes(q) || String(p.name||'').toLowerCase().includes(q) || String(p.engName||'').toLowerCase().includes(q) || String(p.ingredients||'').toLowerCase().includes(q); });
         if(changes.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有符合的藥價異動資料</td></tr>'; return; }
         tbody.innerHTML = changes.map(p => `<tr><td data-label="健保碼" style="font-weight:bold; color:#1976d2;">${p.nhiCode||'-'}</td><td data-label="藥名/成分"><div style="font-weight:bold; color:#2c3e50;">${p.name}</div><div style="font-size:12px; color:#78909c;">${p.ingredients||'-'}</div></td><td data-label="舊健保價" style="color:#78909c; text-decoration:line-through; font-size:18px;">$${p.nhiPrice}</td><td data-label="調整後新價" style="color:#d32f2f; font-weight:bold; font-size:22px;">$${p.newNhiPrice}</td></tr>`).join('');
     }
@@ -843,11 +735,9 @@
         const nhi = document.getElementById('match-nhi').value.trim(); const name = document.getElementById('match-name').value.trim(); const qty = document.getElementById('match-qty').value.trim();
         if(!name || !qty) return showToast("⚠️ 藥品名稱與數量為必填欄位！", true);
         const originalText = btn.innerText; btn.innerText = '⏳ 發布中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
-
         const tbody = document.getElementById('match-list');
         const tempHtml = `<tr><td data-label="發布時間" style="color:#78909c; font-size:14px;">剛剛</td><td data-label="尋找藥局" style="font-weight:bold; color:#2c3e50; font-size:18px;">${escapeHTML(currentUser.pharmacyName)}</td><td data-label="健保碼" style="color:#1976d2; font-weight:bold;">${escapeHTML(nhi)}</td><td data-label="藥品名稱" style="font-weight:bold; color:#d32f2f; font-size:18px;">${escapeHTML(name)}</td><td data-label="尋找數量" style="font-weight:bold; font-size:18px; text-align:center;">${qty}</td><td data-label="同業互助" style="text-align:right;"><span style="color:#999; font-size:14px; font-weight:bold;">系統處理中...</span></td></tr>`;
         if (tbody.innerHTML.includes('太棒了') || tbody.innerHTML.includes('載入中')) { tbody.innerHTML = tempHtml; } else { tbody.insertAdjacentHTML('afterbegin', tempHtml); }
-
         callGasAPISilent({ action: 'addMatchRequest', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, nhiCode: nhi, drugName: name, qty: qty }).then(res => {
             btn.innerText = originalText; btn.disabled = false; btn.style.background = '#1976d2';
             if(res && res.success) { document.getElementById('match-nhi').value = ''; document.getElementById('match-name').value = ''; document.getElementById('match-qty').value = ''; showToast("✅ 缺藥協尋已發布！"); loadMatchRequests(); } else { showToast("❌ 發布失敗", true); loadMatchRequests(); }
@@ -872,122 +762,73 @@
 
     function provideMatch(id, drugName, btn) {
         if(!confirm(`確定要提供「${drugName}」給對方嗎？\n點擊確定後，系統會自動發送通知與您的電話給對方藥局！`)) return;
-        const originalText = btn.innerText; const originalBg = btn.style.background;
-        btn.innerText = '⏳ 處理中...'; btn.style.background = '#9e9e9e'; btn.disabled = true;
+        const originalText = btn.innerText; const originalBg = btn.style.background; btn.innerText = '⏳ 處理中...'; btn.style.background = '#9e9e9e'; btn.disabled = true;
         const tr = btn.closest('tr'); if (tr) tr.style.display = 'none';
-
         callGasAPISilent({ action: 'provideMatch', id: id, providerName: currentUser.pharmacyName, providerContact: currentUser.contact }).then(res => {
-            if(res && res.success) {
-                if (tr) tr.remove(); 
-                const tbody = document.getElementById('match-list');
-                if(tbody.children.length === 0) { tbody.innerHTML = '<tr><td colspan="6">太棒了！目前台南各大藥局都沒有缺藥需求。</td></tr>'; }
-                alert(`✅ 媒合成功！\n已通知【${res.requesterName}】。\n\n對方的聯絡電話是：${res.requesterContact}\n您可以主動聯繫，或等候對方來電。`);
-            } else {
-                if (tr) tr.style.display = ''; btn.innerText = originalText; btn.style.background = originalBg; btn.disabled = false;
-                alert(res ? res.message : "發生錯誤，可能已經被其他藥局搶先一步了！"); loadMatchRequests(); 
-            }
+            if(res && res.success) { if (tr) tr.remove(); const tbody = document.getElementById('match-list'); if(tbody.children.length === 0) { tbody.innerHTML = '<tr><td colspan="6">太棒了！目前台南各大藥局都沒有缺藥需求。</td></tr>'; } alert(`✅ 媒合成功！\n已通知【${res.requesterName}】。\n\n對方的聯絡電話是：${res.requesterContact}\n您可以主動聯繫，或等候對方來電。`); } 
+            else { if (tr) tr.style.display = ''; btn.innerText = originalText; btn.style.background = originalBg; btn.disabled = false; alert(res ? res.message : "發生錯誤，可能已經被其他藥局搶先一步了！"); loadMatchRequests(); }
         });
     }
 
-    function checkNewMessages() {
-        callGasAPISilent({ action: 'getMyMessages', username: currentUser.username }).then(res => {
-            if (res && res.success) {
-                const badge = document.getElementById('msg-badge');
-                if (res.unreadCount > 0) { badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } 
-                else { badge.style.display = 'none'; }
-            }
-        });
-    }
+    function checkNewMessages() { callGasAPISilent({ action: 'getMyMessages', username: currentUser.username }).then(res => { if (res && res.success) { const badge = document.getElementById('msg-badge'); if (res.unreadCount > 0) { badge.innerText = res.unreadCount; badge.style.display = 'inline-block'; } else { badge.style.display = 'none'; } } }); }
 
     function loadMyMessages() {
-        const container = document.getElementById('my-message-list');
-        container.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">載入中...</div>';
-        
+        const container = document.getElementById('my-message-list'); container.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">載入中...</div>';
         callGasAPISilent({ action: 'getMyMessages', username: currentUser.username }).then(res => {
             if (res && res.success) {
-                if (res.data.length === 0) {
-                    container.innerHTML = '<div style="text-align:center; color:#aaa; padding:30px; font-size:16px;">目前沒有任何對話紀錄。您可以直接在下方發問！</div>';
-                } else {
+                if (res.data.length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; padding:30px; font-size:16px;">目前沒有任何對話紀錄。您可以直接在下方發問！</div>'; } 
+                else {
                     container.innerHTML = res.data.map(m => {
-                        let replyHtml = '';
-                        if (m.reply) { replyHtml = `<div class="chat-reply-wrapper"><div class="chat-reply-icon">👨‍💻</div><div class="chat-reply-content"><div class="chat-reply-bubble">${escapeHTML(m.reply)}</div><div class="chat-time-reply">系統客服回覆</div></div></div>`; } 
-                        else { replyHtml = `<div class="chat-reply-wrapper" style="opacity:0.6;"><div class="chat-reply-icon">⏳</div><div class="chat-reply-content"><div class="chat-reply-bubble" style="background:#f0f0f0; color:#888; border:none;">客服正在處理中，請稍候...</div></div></div>`; }
+                        let replyHtml = m.reply ? `<div class="chat-reply-wrapper"><div class="chat-reply-icon">👨‍💻</div><div class="chat-reply-content"><div class="chat-reply-bubble">${escapeHTML(m.reply)}</div><div class="chat-time-reply">系統客服回覆</div></div></div>` : `<div class="chat-reply-wrapper" style="opacity:0.6;"><div class="chat-reply-icon">⏳</div><div class="chat-reply-content"><div class="chat-reply-bubble" style="background:#f0f0f0; color:#888; border:none;">客服正在處理中，請稍候...</div></div></div>`;
                         return `<div class="chat-thread"><div class="chat-user-wrapper"><div class="chat-user-bubble">${escapeHTML(m.content)}</div><div class="chat-time-user">${m.time}</div></div>${replyHtml}</div>`;
-                    }).join('');
-                    setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+                    }).join(''); setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
                 }
-                document.getElementById('msg-badge').style.display = 'none';
-                callGasAPISilent({ action: 'markMessagesRead', username: currentUser.username });
+                document.getElementById('msg-badge').style.display = 'none'; callGasAPISilent({ action: 'markMessagesRead', username: currentUser.username });
             } else { container.innerHTML = '<div style="text-align:center; color:#d32f2f; padding:20px;">無法載入訊息，請稍後再試。</div>'; }
         });
     }
 
     function submitMessage() {
-        const input = document.getElementById('contact-message'); const msg = input.value.trim(); if (!msg) return;
-        input.value = ''; input.disabled = true;
-        const container = document.getElementById('my-message-list');
-        const tempHtml = `<div class="chat-thread"><div class="chat-user-wrapper"><div class="chat-user-bubble" style="opacity:0.7;">${escapeHTML(msg)}</div><div class="chat-time-user">傳送中...</div></div></div>`;
+        const input = document.getElementById('contact-message'); const msg = input.value.trim(); if (!msg) return; input.value = ''; input.disabled = true;
+        const container = document.getElementById('my-message-list'); const tempHtml = `<div class="chat-thread"><div class="chat-user-wrapper"><div class="chat-user-bubble" style="opacity:0.7;">${escapeHTML(msg)}</div><div class="chat-time-user">傳送中...</div></div></div>`;
         if (container.innerHTML.includes('目前沒有任何對話紀錄')) { container.innerHTML = tempHtml; } else { container.insertAdjacentHTML('beforeend', tempHtml); }
         container.scrollTop = container.scrollHeight;
-
-        callGasAPISilent({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }).then(res => {
-            input.disabled = false; input.focus();
-            if (res && res.success) { loadMyMessages(); } else { alert("發送失敗，請檢查網路。"); }
-        });
+        callGasAPISilent({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }).then(res => { input.disabled = false; input.focus(); if (res && res.success) { loadMyMessages(); } else { alert("發送失敗，請檢查網路。"); } });
     }
 
+    // ⭐ 修正包含雙引號導致按鈕當機的問題
     function renderRestockList() {
-        const tbody = document.getElementById('restock-list');
-        let subs = getSubscriptions();
-        
-        if(subs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！<br><br>如果您看到某個藥品缺貨，點擊鈴鐺圖示就可以加入追蹤。</td></tr>';
-            return;
-        }
-
+        const tbody = document.getElementById('restock-list'); let subs = getSubscriptions();
+        if(subs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！<br><br>如果您看到某個藥品缺貨，點擊鈴鐺圖示就可以加入追蹤。</td></tr>'; return; }
         let htmlArray = []; let missingIds = [];
 
         subs.forEach(id => {
             let p = allProducts.find(prod => String(prod.id) === id);
             if(p) {
-                let stk = parseInt(p.stock);
-                let unitText = p.unit ? String(p.unit).replace('/', '') : '盒';
-                let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
-                let safeName = String(p.name||'').replace(/'/g, "\\'");
-                let safeMfg = String(p.manufacturer||'').replace(/'/g, "\\'");
+                let stk = parseInt(p.stock); let unitText = p.unit ? String(p.unit).replace('/', '') : '盒'; let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
+                
+                // 防彈裝甲：處理引號防止失效
+                let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); 
+                let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
                 let actionHtml = '';
-                if(isNaN(stk) || stk <= 0) {
-                    actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; width:100%;"><span style="color:#d32f2f; font-weight:bold; font-size:15px; margin-right:10px;">目前仍缺貨中</span><button type="button" class="icon-only-btn btn-delete" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`;
-                } else {
-                    actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; width:100%;"><span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; margin-right:5px;">已到貨！</span><input type="number" min="1" max="${maxInput}" value="1" id="qty-res-${p.id}" style="width:40px; height:32px; border:2px solid #ddd; border-radius:6px; text-align:center; font-weight:bold;"><button type="button" class="icon-only-btn btn-addcart" style="height:36px; width:36px;" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="直接加入購物車">${svgCart}</button><button type="button" class="icon-only-btn btn-delete" style="height:36px; width:36px;" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`;
-                }
-
-                htmlArray.push(`<tr><td data-label="健保碼"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${p.name||'-'}">${p.name||'-'}</div><div class="truncate-text prod-ing" title="${p.ingredients||'-'}">${p.ingredients||'-'}</div></td><td data-label="製造商"><div class="truncate-text" title="${p.manufacturer||'-'}">${p.manufacturer||'-'}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="庫存" style="font-weight:bold; color:${stk > 0 ? '#2e7d32' : '#d32f2f'};">${stk > 0 ? stk : '缺貨'}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`);
+                if(isNaN(stk) || stk <= 0) { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; width:100%;"><span style="color:#d32f2f; font-weight:bold; font-size:15px; margin-right:10px;">目前仍缺貨中</span><button type="button" class="icon-only-btn btn-delete" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`; } 
+                else { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; width:100%;"><span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; margin-right:5px;">已到貨！</span><input type="number" min="1" max="${maxInput}" value="1" id="qty-res-${p.id}" style="width:40px; height:32px; border:2px solid #ddd; border-radius:6px; text-align:center; font-weight:bold;"><button type="button" class="icon-only-btn btn-addcart" style="height:36px; width:36px;" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price || 0}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="直接加入購物車">${svgCart}</button><button type="button" class="icon-only-btn btn-delete" style="height:36px; width:36px;" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`; }
+                htmlArray.push(`<tr><td data-label="健保碼"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</div><div class="truncate-text prod-ing" title="${escapeHTML(p.ingredients)}">${escapeHTML(p.ingredients)}</div></td><td data-label="製造商"><div class="truncate-text" title="${escapeHTML(p.manufacturer)}">${escapeHTML(p.manufacturer)}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="庫存" style="font-weight:bold; color:${stk > 0 ? '#2e7d32' : '#d32f2f'};">${stk > 0 ? stk : '缺貨'}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`);
             } else { missingIds.push(id); }
         });
         
-        if (missingIds.length > 0) {
-            let currentSubs = getSubscriptions().filter(id => !missingIds.includes(id));
-            localStorage.setItem('subs_' + currentUser.username, JSON.stringify(currentSubs));
-        }
-
-        if (htmlArray.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！</td></tr>'; } 
-        else { tbody.innerHTML = htmlArray.join(''); }
+        if (missingIds.length > 0) { let currentSubs = getSubscriptions().filter(id => !missingIds.includes(id)); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(currentSubs)); }
+        if (htmlArray.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！</td></tr>'; } else { tbody.innerHTML = htmlArray.join(''); }
     }
 
     function renderFrontOrders() {
-        const container = document.getElementById('order-card-wrapper');
-        container.innerHTML = ''; 
+        const container = document.getElementById('order-card-wrapper'); container.innerHTML = ''; 
         if(myOrders.length === 0) { container.innerHTML = '<div style="text-align: center; padding:40px; color:#666; font-size:18px; width: 100%;">目前沒有歷史訂單喔！</div>'; return; }
-
         let html = '';
         myOrders.forEach(o => { 
             let stClass = 'st-new'; let sideColor = '#ff9800'; 
-            if(o.status === '撿貨中') { stClass = 'st-pick'; sideColor = '#ab47bc'; }
-            else if(o.status === '已完成') { stClass = 'st-done'; sideColor = '#4caf50'; }
-            else if(o.status === '已取消') { stClass = 'st-cancel'; sideColor = '#f44336'; }
-
+            if(o.status === '撿貨中') { stClass = 'st-pick'; sideColor = '#ab47bc'; } else if(o.status === '已完成') { stClass = 'st-done'; sideColor = '#4caf50'; } else if(o.status === '已取消') { stClass = 'st-cancel'; sideColor = '#f44336'; }
             html += `<div class="order-card" style="border-left: 5px solid ${sideColor};" onclick="showOrderDetails('${o.orderId}')"><div class="order-card-header"><span class="order-card-id">${o.orderId}</span><span class="order-card-time">${o.time}</span></div><div class="order-card-body"><div style="color:#666; font-size:14px; margin-bottom:5px;">總金額</div><div class="order-card-total">$${o.total}</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><span class="order-card-status ${stClass}">${o.status}</span><span style="color:#1976d2; font-size:14px; font-weight:bold;">查看明細 ➔</span></div></div>`;
         });
         container.innerHTML = html;
@@ -1001,139 +842,71 @@
 
     function showOrderDetails(orderId) { 
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return; 
-        const container = document.getElementById('order-detail-container'); 
-        const items = order.details.split('\n').filter(i => i.trim() !== ''); 
-        
+        const container = document.getElementById('order-detail-container'); const items = order.details.split('\n').filter(i => i.trim() !== ''); 
         let statusBadge = '';
-        if(order.status === '撿貨中') statusBadge = `<span style="background:#f3e5f5; color:#8e24aa; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">撿貨中</span>`;
-        else if(order.status === '已完成') statusBadge = `<span style="background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">已完成</span>`;
-        else if(order.status === '已取消') statusBadge = `<span style="background:#ffebee; color:#d32f2f; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">已取消</span>`;
-        else statusBadge = `<span style="background:#fff3e0; color:#e65100; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">新訂單</span>`;
+        if(order.status === '撿貨中') statusBadge = `<span style="background:#f3e5f5; color:#8e24aa; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">撿貨中</span>`; else if(order.status === '已完成') statusBadge = `<span style="background:#e8f5e9; color:#2e7d32; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">已完成</span>`; else if(order.status === '已取消') statusBadge = `<span style="background:#ffebee; color:#d32f2f; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">已取消</span>`; else statusBadge = `<span style="background:#fff3e0; color:#e65100; padding:4px 10px; border-radius:15px; font-size:14px; font-weight:bold; margin-left:10px;">新訂單</span>`;
 
-        let html = `<p style="font-size:15px; color:#333; margin: 4px 0; display:flex; align-items:center;"><strong>訂單編號：</strong> ${order.orderId} ${statusBadge}</p><p style="font-size:14px; color:#666; margin: 4px 0;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">`; 
-        html += `<ul style="list-style:none; padding:0; margin:0;">`; 
+        let html = `<p style="font-size:15px; color:#333; margin: 4px 0; display:flex; align-items:center;"><strong>訂單編號：</strong> ${order.orderId} ${statusBadge}</p><p style="font-size:14px; color:#666; margin: 4px 0;"><strong>訂購時間：</strong> ${order.time}</p><hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;"><ul style="list-style:none; padding:0; margin:0;">`; 
         
         items.forEach((itemStr, index) => { 
-            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = '';
-            let line = itemStr.trim();
-            
-            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
-            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
-            
-            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
-            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
-            
-            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
-            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
-            
-            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
-            if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
-            else { name = line.trim(); }
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '', spec = ''; let line = itemStr.trim();
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/); if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/); if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/); if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/); if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } else { name = line.trim(); }
 
-            let prod = null;
-            if (price > 0) {
-                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
-                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
-            }
-            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
-            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
-
-            if (prod) {
-                if (!spec) spec = prod.spec || '';
-                if (!price && prod.price) price = parseFloat(prod.price);
-                if (!mfg) mfg = prod.manufacturer || '';
-                if (!unit) unit = prod.unit || '盒';
-            }
+            let prod = null; if (price > 0) { if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price); if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price); }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name); if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            if (prod) { if (!spec) spec = prod.spec || ''; if (!price && prod.price) price = parseFloat(prod.price); if (!mfg) mfg = prod.manufacturer || ''; if (!unit) unit = prod.unit || '盒'; }
 
             const subtotal = qty * price;
-            
-            let nhiTag = nhi ? `<span style="color:#1976d2; margin-right:4px;">[${nhi}]</span>` : '';
-            let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:6px;">(廠牌: ${escapeHTML(mfg)})</span>` : '';
-            let specTag = spec ? `<span style="font-size:13px; color:#00838f; background:#e0f7fa; padding:2px 6px; border-radius:4px; margin-left:6px;">規格: ${escapeHTML(spec)}</span>` : '';
+            let nhiTag = nhi ? `<span style="color:#1976d2; margin-right:4px;">[${nhi}]</span>` : ''; let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:6px;">(廠牌: ${escapeHTML(mfg)})</span>` : ''; let specTag = spec ? `<span style="font-size:13px; color:#00838f; background:#e0f7fa; padding:2px 6px; border-radius:4px; margin-left:6px;">規格: ${escapeHTML(spec)}</span>` : '';
             let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
-
             html += `<li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;"><div style="font-size:15px; line-height:1.4; color:#2c3e50; flex:1; min-width:250px;"><span style="font-weight:bold; margin-right:4px;">${index + 1}.</span>${nhiTag}<span style="font-weight:bold;">${escapeHTML(name)}</span>${mfgTag}${specTag}</div><div style="color:#e65100; font-size:15px; font-weight:bold; white-space:nowrap;">${priceText}</div></div></li>`;
         }); 
 
-        html += `</ul>`; 
-        if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } 
-        
-        container.innerHTML = html; 
-        document.getElementById('order-detail-total').innerText = `總金額：$${order.total}`;
+        html += `</ul>`; if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } 
+        container.innerHTML = html; document.getElementById('order-detail-total').innerText = `總金額：$${order.total}`;
         
         const actionsContainer = document.getElementById('order-detail-actions'); 
         let actionsHtml = `<button type="button" style="padding:10px 20px; border:1px solid #546e7a; border-radius:8px; background:white; color:#546e7a; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
-
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { 
             actionsHtml += `<button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#ff9800; color:white; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="returnOrderToCart('${order.orderId}')">🛒 退回購物車重結</button>
             <button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="openEditOrder('${order.orderId}')">📝 單純修改數量</button>
             <button type="button" style="padding:10px 20px; border:1px solid #e53935; border-radius:8px; background:white; color:#e53935; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 刪除作廢</button>`; 
         }
-        
-        actionsContainer.innerHTML = actionsHtml; 
-        document.getElementById('order-detail-modal').style.display = 'flex'; 
+        actionsContainer.innerHTML = actionsHtml; document.getElementById('order-detail-modal').style.display = 'flex'; 
     }
 
     function returnOrderToCart(orderId) {
         if(!confirm("⚠️ 確定要取消這筆訂單，並將商品全數退回購物車重新結帳嗎？\n\n(原訂單將被刪除作廢，您可以在購物車中重新挑選或修改數量後再次送出)")) return;
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return;
-
-        document.getElementById('order-detail-modal').style.display='none';
-        showToast("⏳ 正在取消訂單並退回購物車...");
+        document.getElementById('order-detail-modal').style.display='none'; showToast("⏳ 正在取消訂單並退回購物車...");
         
         callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}).then(res => {
             if(res && res.success) {
-                myOrders = myOrders.filter(o => o.orderId !== orderId);
-                renderFrontOrders();
-                
+                myOrders = myOrders.filter(o => o.orderId !== orderId); renderFrontOrders();
                 const items = order.details.split('\n').filter(i => i.trim() !== '');
                 items.forEach((itemStr) => {
-                    let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '';
-                    let line = itemStr.trim();
-                    
-                    let nhiMatch = line.match(/^\[(.*?)\]\s*/);
-                    if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
-                    let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
-                    if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
-                    let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
-                    if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
-                    let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
-                    if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
-                    else { name = line.trim(); }
+                    let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = ''; let line = itemStr.trim();
+                    let nhiMatch = line.match(/^\[(.*?)\]\s*/); if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+                    let mfgMatch = line.match(/\[廠牌:(.*?)\]/); if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+                    let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/); if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+                    let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/); if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } else { name = line.trim(); }
 
-                    let prod = null;
-                    if (price > 0) {
-                        if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
-                        if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
-                    }
-                    if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
-                    if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+                    let prod = null; if (price > 0) { if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price); if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price); }
+                    if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name); if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
                     
-                    let max = prod ? prod.stock : 999; 
-                    let limit = prod ? (prod.dailyLimit || 0) : 0; 
-                    let finalMax = limit > 0 ? Math.min(max, limit) : max;
-                    if (!price && prod && prod.price) price = parseFloat(prod.price);
-                    if (!unit && prod && prod.unit) unit = prod.unit;
-                    if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
-                    
+                    let max = prod ? prod.stock : 999; let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
+                    if (!price && prod && prod.price) price = parseFloat(prod.price); if (!unit && prod && prod.unit) unit = prod.unit; if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
                     let pId = prod ? prod.id : ('temp_' + new Date().getTime() + Math.floor(Math.random()*1000));
                     
                     const ex = cart.find(i => i && (i.id === pId || (i.name === name && i.price === price)));
                     if (ex) { ex.qty += qty; } else { cart.push({ id: pId, name: name, price: price, qty: qty, maxStock: finalMax, unit: unit, nhiCode: nhi, limit: limit, mfg: mfg }); }
                 });
-
                 saveCart(); switchView('products'); showToast("✅ 已成功退回購物車！"); openCart(); 
             } else { alert("取消失敗，請稍後再試。"); }
         });
-    }
-
-    function deleteMyOrder(orderId) { 
-        if(!confirm("⚠️ 確定要直接取消作廢這筆訂單嗎？取消後將無法復原喔！\n(如果您只是想加購或修改，建議使用旁邊的『退回購物車重結』)")) return; 
-        document.getElementById('order-detail-modal').style.display='none'; 
-        myOrders = myOrders.filter(o => o.orderId !== orderId); 
-        renderFrontOrders(); 
-        showToast("✅ 已成功取消訂單"); 
-        callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}); 
     }
 
     function openEditOrder(orderId) { 
@@ -1142,44 +915,20 @@
         const items = order.details.split('\n').filter(i => i.trim() !== ''); 
         
         items.forEach((itemStr) => { 
-            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = '';
-            let line = itemStr.trim();
-            
-            let nhiMatch = line.match(/^\[(.*?)\]\s*/);
-            if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
-            
-            let mfgMatch = line.match(/\[廠牌:(.*?)\]/);
-            if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
-            
-            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/);
-            if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
-            
-            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/);
-            if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
-            else { name = line.trim(); }
+            let nhi = '', name = '', qty = 1, unit = '', price = 0, mfg = ''; let line = itemStr.trim();
+            let nhiMatch = line.match(/^\[(.*?)\]\s*/); if (nhiMatch) { nhi = nhiMatch[1]; line = line.replace(nhiMatch[0], ''); }
+            let mfgMatch = line.match(/\[廠牌:(.*?)\]/); if (mfgMatch) { mfg = mfgMatch[1]; line = line.replace(mfgMatch[0], ''); }
+            let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/); if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
+            let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/); if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } else { name = line.trim(); }
 
-            let prod = null;
-            if (price > 0) {
-                if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price);
-                if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price);
-            }
-            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name);
-            if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            let prod = null; if (price > 0) { if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price); if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price); }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name); if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
             
-            let max = prod ? prod.stock : 999; 
-            let limit = prod ? (prod.dailyLimit || 0) : 0; 
-            let finalMax = limit > 0 ? Math.min(max, limit) : max;
-            if (!price && prod && prod.price) price = parseFloat(prod.price);
-            if (!unit && prod && prod.unit) unit = prod.unit;
-            if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
+            let max = prod ? prod.stock : 999; let limit = prod ? (prod.dailyLimit || 0) : 0; let finalMax = limit > 0 ? Math.min(max, limit) : max;
+            if (!price && prod && prod.price) price = parseFloat(prod.price); if (!unit && prod && prod.unit) unit = prod.unit; if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
             
             let nhiPriceStr = '';
-            if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
-                nhiPriceStr = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
-            } else if (prod && prod.nhiPrice) {
-                nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
-            }
-            
+            if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) { nhiPriceStr = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`; } else if (prod && prod.nhiPrice) { nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`; }
             editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
         }); 
         document.getElementById('order-detail-modal').style.display='none'; renderEditOrderCart(); 
@@ -1187,29 +936,14 @@
     
     function renderEditOrderCart() { 
         const c = document.getElementById('edit-cart-items-container'); c.innerHTML=''; let t = 0; 
-        if (editingCart.length === 0) { 
-            c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">訂單已無任何商品</p>'; 
-        } else { 
+        if (editingCart.length === 0) { c.innerHTML = '<p style="text-align:center; font-size:20px; color:#999; padding:40px;">訂單已無任何商品</p>'; } 
+        else { 
             let html = `<div class="cart-table-wrapper"><table class="cart-table"><thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
-
             editingCart.forEach((i, x) => { 
-                t += i.price * i.qty; 
-                let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
-                let mfgText = i.mfg ? ` <span style="color:#607d8b; font-size:14px; margin-left:6px;">[${i.mfg}]</span>` : '';
-                
-                // ⭐ 修復編輯訂單裡面的刪除按鈕，加入 type="button" 與防穿透設計
-                html += `<tr>
-                    <td data-label="項次" style="text-align:center;">${x + 1}</td>
-                    <td data-label="健保資訊"><div style="font-weight:bold; color:#1976d2; font-size:14px;">${nhiText}</div>${i.nhiPriceStr || ''}</td>
-                    <td data-label="品名"><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${i.name}${mfgText}</div></td>
-                    <td data-label="單價 / 單位" style="text-align:center;">$${i.price} / ${i.unit || '盒'}</td>
-                    <td data-label="數量" style="text-align:center;"><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"></td>
-                    <td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${i.price * i.qty}</td>
-                    <td data-label="刪除" style="text-align:center;"><button type="button" class="cart-del-btn" onclick="removeEditCartItem(${x})" title="刪除">${svgDelete}</button></td>
-                </tr>`; 
+                t += i.price * i.qty; let nhiText = i.nhiCode ? `${i.nhiCode}` : '無'; let mfgText = i.mfg ? ` <span style="color:#607d8b; font-size:14px; margin-left:6px;">[${escapeHTML(i.mfg)}]</span>` : '';
+                html += `<tr><td data-label="項次" style="text-align:center;">${x + 1}</td><td data-label="健保資訊"><div style="font-weight:bold; color:#1976d2; font-size:14px;">${escapeHTML(nhiText)}</div>${i.nhiPriceStr || ''}</td><td data-label="品名"><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${escapeHTML(i.name)}${mfgText}</div></td><td data-label="單價 / 單位" style="text-align:center;">$${i.price} / ${escapeHTML(i.unit || '盒')}</td><td data-label="數量" style="text-align:center;"><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"></td><td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${i.price * i.qty}</td><td data-label="刪除" style="text-align:center;"><button type="button" class="cart-del-btn" onclick="removeEditCartItem(${x})" title="刪除">${svgDelete}</button></td></tr>`; 
             }); 
-            html += `</tbody></table></div>`;
-            c.innerHTML = html;
+            html += `</tbody></table></div>`; c.innerHTML = html;
         } 
         document.getElementById('edit-cart-total-display').innerText = `總金額：$${t}`; document.getElementById('edit-order-modal').style.display = 'flex'; 
     }
@@ -1222,61 +956,33 @@
         if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; 
         
         let total = editingCart.reduce((a, b) => a + (b.price * b.qty), 0); 
-        let details = editingCart.map(item => { 
-            let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; 
-            let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; 
-            return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; 
-        }).join('\n'); 
+        let details = editingCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; }).join('\n'); 
         
-        const originalBg = btn.style.background;
-        btn.innerText = '⏳ 儲存中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
+        const originalBg = btn.style.background; btn.innerText = '⏳ 儲存中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
 
         callGasAPISilent({ action: 'updateMyOrder', username: currentUser.username, orderId: editingOrderId, cart: editingCart, total: total }).then(res => {
             btn.innerText = '儲存變更'; btn.disabled = false; btn.style.background = originalBg;
-
-            if(res && res.success) { 
-                document.getElementById('edit-order-modal').style.display = 'none'; 
-                const orderIndex = myOrders.findIndex(o => o.orderId === editingOrderId); 
-                if(orderIndex !== -1) { myOrders[orderIndex].total = total; myOrders[orderIndex].details = details; renderFrontOrders(); } 
-                showToast("✅ 修改已儲存"); 
-            } else { showToast("❌ 修改失敗：" + (res ? res.message : '連線異常'), true); }
+            if(res && res.success) { document.getElementById('edit-order-modal').style.display = 'none'; const orderIndex = myOrders.findIndex(o => o.orderId === editingOrderId); if(orderIndex !== -1) { myOrders[orderIndex].total = total; myOrders[orderIndex].details = details; renderFrontOrders(); } showToast("✅ 修改已儲存"); } 
+            else { showToast("❌ 修改失敗：" + (res ? res.message : '連線異常'), true); }
         });
     }
 
     function addToCart(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) { 
         const q = parseInt(document.getElementById(`qty-${pId}`).value); if(q < 1) return; 
         if (!Array.isArray(cart)) cart = []; const ex = cart.find(i => i.id === pId); 
-        
-        if(ex) { 
-            if(ex.qty + q > maxInput) { 
-                if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true);
-                else showToast("⚠️ 數量將超過庫存上限！", true); 
-                return; 
-            } 
-            ex.qty += q; 
-        } else { 
-            cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); 
-        } 
+        if(ex) { if(ex.qty + q > maxInput) { if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true); else showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } 
+        else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); } 
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); 
     }
     
     function addToCartFromRestock(pId, pName, pPrice, maxInput, pUnit, pNhi, pLimit, pMfg) {
         const q = parseInt(document.getElementById(`qty-res-${pId}`).value); if(q < 1) return; 
         if (!Array.isArray(cart)) cart = []; const ex = cart.find(i => i.id === pId); 
-        if(ex) { 
-            if(ex.qty + q > maxInput) { 
-                if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true);
-                else showToast("⚠️ 數量將超過庫存上限！", true); 
-                return; 
-            } 
-            ex.qty += q; 
-        } else { 
-            cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); 
-        } 
+        if(ex) { if(ex.qty + q > maxInput) { if (pLimit > 0 && ex.qty + q > pLimit) showToast(`⚠️ 購物車內已有 ${ex.qty} 盒，加上本次將超過每日限購 ${pLimit} 盒！`, true); else showToast("⚠️ 數量將超過庫存上限！", true); return; } ex.qty += q; } 
+        else { cart.push({id: pId, name: pName, price: pPrice, qty: q, maxStock: maxInput, unit: pUnit, nhiCode: pNhi, limit: pLimit, mfg: pMfg}); } 
         saveCart(); showToast(`✅ 已將 ${q} 筆商品加入購物車！`); removeSubscription(pId, false);
     }
 
-    // ⭐ 購物車也套用固定底部與內部捲動 + 修正實體按鈕
     function openCart() { 
         const c = document.getElementById('cart-items-container'); c.innerHTML=''; let t = 0; let totalItems = 0; 
         if (!Array.isArray(cart)) cart = [];
@@ -1288,35 +994,14 @@
 
             cart.forEach((i, x) => { 
                 if(!i) return; 
-                let itemPrice = parseFloat(i.price) || 0;
-                let itemQty = parseInt(i.qty) || 1;
-                
-                t += itemPrice * itemQty; totalItems += itemQty; 
-                let nhiText = i.nhiCode ? `${i.nhiCode}` : '無';
-                
-                let prod = allProducts.find(p => String(p.id) === String(i.id));
-                let nhiPriceText = '';
-                if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) {
-                    nhiPriceText = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`;
-                } else if (prod && prod.nhiPrice) {
-                    nhiPriceText = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`;
-                }
-                
+                let itemPrice = parseFloat(i.price) || 0; let itemQty = parseInt(i.qty) || 1; t += itemPrice * itemQty; totalItems += itemQty; 
+                let nhiText = i.nhiCode ? `${i.nhiCode}` : '無'; let prod = allProducts.find(p => String(p.id) === String(i.id)); let nhiPriceText = '';
+                if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) { nhiPriceText = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`; } else if (prod && prod.nhiPrice) { nhiPriceText = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`; }
                 let mfgText = i.mfg ? ` <span style="font-size:13px; color:#607d8b; margin-left:6px;">[${escapeHTML(i.mfg)}]</span>` : '';
                 
-                // ⭐ 修復購物車裡面的刪除按鈕，加入 type="button" 與防穿透設計
-                html += `<tr>
-                    <td data-label="項次" style="text-align:center;">${x + 1}</td>
-                    <td data-label="健保資訊"><div style="font-weight:bold; color:#1976d2; font-size:14px;">${escapeHTML(nhiText)}</div>${nhiPriceText}</td>
-                    <td data-label="品名"><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${escapeHTML(i.name)}${mfgText}</div></td>
-                    <td data-label="單價 / 單位" style="text-align:center;">$${itemPrice} / ${escapeHTML(i.unit || '盒')}</td>
-                    <td data-label="數量" style="text-align:center;"><input type="number" value="${itemQty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input"></td>
-                    <td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${itemPrice * itemQty}</td>
-                    <td data-label="刪除" style="text-align:center;"><button type="button" class="cart-del-btn" onclick="removeFromCart(${x})" title="刪除">${svgDelete}</button></td>
-                </tr>`;
+                html += `<tr><td data-label="項次" style="text-align:center;">${x + 1}</td><td data-label="健保資訊"><div style="font-weight:bold; color:#1976d2; font-size:14px;">${escapeHTML(nhiText)}</div>${nhiPriceText}</td><td data-label="品名"><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${escapeHTML(i.name)}${mfgText}</div></td><td data-label="單價 / 單位" style="text-align:center;">$${itemPrice} / ${escapeHTML(i.unit || '盒')}</td><td data-label="數量" style="text-align:center;"><input type="number" value="${itemQty}" min="1" max="${i.maxStock}" onchange="updateCartQty(${x}, this.value)" class="cart-qty-input"></td><td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${itemPrice * itemQty}</td><td data-label="刪除" style="text-align:center;"><button type="button" class="cart-del-btn" onclick="removeFromCart(${x})" title="刪除">${svgDelete}</button></td></tr>`;
             }); 
-            html += `</tbody></table></div>`;
-            c.innerHTML = html;
+            html += `</tbody></table></div>`; c.innerHTML = html;
         } 
         document.getElementById('cart-total-display').innerText = `總金額：$${t}`; document.getElementById('cart-btn').innerText = `🛒 購物車 (${totalItems})`; document.getElementById('cart-modal').style.display = 'flex'; 
     }
@@ -1328,29 +1013,15 @@
         if(!Array.isArray(cart) || cart.length===0) return; 
         if(!confirm("確定要送出這筆訂單嗎？")) return; 
         
-        const remark = document.getElementById('cart-remark').value; 
-        const currentCart = [...cart]; 
-        const total = cart.reduce((a,b)=>a+((parseFloat(b.price)||0)*(parseInt(b.qty)||1)),0);
-        
-        const originalBg = btn.style.background;
-        btn.innerText = '⏳ 送出中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
+        const remark = document.getElementById('cart-remark').value; const currentCart = [...cart]; const total = cart.reduce((a,b)=>a+((parseFloat(b.price)||0)*(parseInt(b.qty)||1)),0);
+        const originalBg = btn.style.background; btn.innerText = '⏳ 送出中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
         showToast("🚀 訂單傳送中，正在驗證額度...");
         
-        let fullDetails = currentCart.map(item => { 
-            let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; 
-            let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; 
-            return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; 
-        }).join('\n');
+        let fullDetails = currentCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; }).join('\n');
 
         callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, cart: currentCart, total: total, remark: remark }).then(res => { 
             btn.innerText = '確認結帳'; btn.disabled = false; btn.style.background = originalBg;
-
-            if(res && res.success){ 
-                document.getElementById('cart-modal').style.display='none'; 
-                cart=[]; saveCart(); switchView('orders'); 
-                myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: fullDetails, total: total, status: '新訂單', remark: remark });
-                renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！");
-            } else { alert(res.message || "訂單送出失敗，請稍後再試。"); } 
+            if(res && res.success){ document.getElementById('cart-modal').style.display='none'; cart=[]; saveCart(); switchView('orders'); myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: fullDetails, total: total, status: '新訂單', remark: remark }); renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！"); } else { alert(res.message || "訂單送出失敗，請稍後再試。"); } 
         }); 
     }
   </script>
