@@ -94,7 +94,7 @@
     
     /* 表格操作區 */
     .action-grid { display: grid; grid-template-columns: 65px 70px 42px 42px; gap: 6px; align-items: center; justify-content: end; }
-    .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box;}
+    .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; letter-spacing: 0.5px;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
     .status-out { background: #ffebee; color: #d32f2f; }
     .qty-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -130,206 +130,425 @@
     .chat-user-wrapper { display: flex; flex-direction: column; align-items: flex-end; width: 100%; margin-bottom: 5px; }
     .chat-user-bubble { background-color: #4CAF50; color: white; padding: 12px 18px; border-radius: 18px 18px 0 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 75%; font-size: 16px; white-space: pre-wrap; word-wrap: break-word; }
     .chat-time-user { color: #888; font-size: 12px; margin-top: 4px; padding-right: 5px; }
-    .chat-reply-wrapper { display: flex; margin-top: 5px; align-items: flex-start; width: 100%; margin-bottom: 25px;}
+    .chat-reply-wrapper { display: flex; margin-top: 5px; align-items: flex-start; width: 100%; }
+    .chat-reply-icon { font-size: 32px; margin-right: 12px; margin-top: 4px; }
+    .chat-reply-content { display: flex; flex-direction: column; align-items: flex-start; max-width: 75%; }
     .chat-reply-bubble { background-color: #ffffff; color: #333; padding: 14px 18px; border-radius: 0 18px 18px 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #e0e0e0; font-size: 16px; white-space: pre-wrap; word-wrap: break-word;}
+    .chat-time-reply { color: #888; font-size: 12px; margin-top: 4px; padding-left: 5px; }
     .chat-input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #ddd; align-items: flex-end; gap: 12px; }
-    .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; background: #f9f9f9;}
+    .chat-input-area textarea { flex: 1; resize: none; padding: 14px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; outline: none; transition: 0.3s; background: #f9f9f9;}
     .chat-input-area textarea:focus { border-color: #4CAF50; background: white;}
     .chat-input-area button { padding: 12px 25px; background: #4CAF50; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; height: 50px; transition: 0.2s;}
+    
     #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 8px; padding: 16px 24px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 18px; font-weight: bold; opacity: 0; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
     #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-    .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; }
+
+    /* 縮放功能 */
+    .zoom-control { position: fixed; top: 15px; right: 15px; background: rgba(255,255,255,0.85); border: 2px solid #4CAF50; border-radius: 30px; display: flex; align-items: center; padding: 4px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; opacity: 0.4; transition: 0.3s; }
     .zoom-control:hover { opacity: 1; }
-    .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; border-radius: 20px; outline: none; }
-    .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; }
+    .zoom-btn { background: transparent; border: none; color: #4CAF50; font-weight: bold; font-size: 18px; cursor: pointer; padding: 5px 12px; transition: 0.2s; border-radius: 20px; outline: none; }
+    .zoom-btn:hover { background: #e8f5e9; }
+    .zoom-text { color: #555; font-size: 15px; font-weight: bold; margin: 0 5px; user-select: none; }
+
+    .app-footer { margin-top: 30px; padding: 25px 15px; background-color: #e8f0eb; border-radius: 12px; border: 1px solid #cfd8dc; text-align: center; color: #546e7a; font-size: 15px; line-height: 1.8; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+    .app-footer strong { color: #2c3e50; font-size: 16px; }
+
+    /* 訂單圖卡 */
     .order-card-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; width: 100%; box-sizing: border-box; }
-    .order-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid #e0e0e0; display: flex; flex-direction: column; justify-content: space-between;}
+    .order-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: 0.3s; border: 1px solid #e0e0e0; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;}
+    .order-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.12); border-color: #b0bec5; }
     .order-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
+    .order-card-id { font-weight: bold; color: #546e7a; font-size: 18px; }
+    .order-card-time { color: #888; font-size: 14px; }
+    .order-card-body { margin-bottom: 15px; }
     .order-card-total { font-size: 28px; font-weight: bold; color: #333; }
+    .order-card-status { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 15px; font-weight: bold; text-align: center;}
+    
     .st-new { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80;}
     .st-pick { background: #f3e5f5; color: #8e24aa; border: 1px solid #e1bee7;}
     .st-done { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;}
     .st-cancel { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2;}
 
-    /* ⭐ 凍結底部（Sticky Footer）與內部捲動核心架構 */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(3px);}
-    .cart-content { background: white; border-radius: 16px; width: 95%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2);}
+    /* ⭐ 凍結底部（Sticky Footer）與內部捲動嚴格控制版 */
+    .modal-overlay { 
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; 
+        z-index: 2000; backdrop-filter: blur(3px); padding: 20px; box-sizing: border-box;
+    }
+    .cart-content { 
+        background: white; border-radius: 16px; width: 100%; max-width: 900px; 
+        max-height: calc(100vh - 40px); /* 嚴格限制高度不可超出螢幕 */
+        display: flex; flex-direction: column; position: relative; box-sizing: border-box; 
+        overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 0;
+    }
+    
     .modal-header-fixed { padding: 20px 25px 15px; flex-shrink: 0; background: white; z-index: 10; border-bottom: 2px solid #ccc; }
+    .modal-header-fixed h2 { margin: 0; font-size: 24px; }
+    
     .modal-body-scroll { flex: 1 1 auto; overflow-y: auto; padding: 15px 25px; min-height: 0; -webkit-overflow-scrolling: touch; }
     .modal-body-scroll::-webkit-scrollbar { width: 8px; }
     .modal-body-scroll::-webkit-scrollbar-thumb { background-color: #cfd8dc; border-radius: 4px; }
-    .modal-footer-fixed { padding: 15px 25px; border-top: 1px solid #eee; background: white; flex-shrink: 0; z-index: 10; }
     
-    .cart-table-wrapper { width: 100%; border: 1px solid #b3d4fc; border-radius: 8px; overflow-x: auto; margin-bottom: 15px;}
+    .modal-footer-fixed { padding: 15px 25px 20px; border-top: 1px solid #eee; background: #fafafa; flex-shrink: 0; z-index: 10; }
+
+    /* 購物車內部表格樣式 */
+    .cart-table-wrapper { width: 100%; border: 1px solid #b3d4fc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow-x: auto; margin-bottom: 15px;}
     .cart-table { width: 100%; border-collapse: collapse; min-width: 750px; font-size: 16px; }
     .cart-table th { background-color: #3b8ebf; color: white; padding: 12px 10px; text-align: center; white-space: nowrap; position: sticky; top: 0; z-index: 10;}
+    .cart-table th:last-child { border-right: none; }
     .cart-table td { padding: 14px 10px; border: 1px solid #b3d4fc; vertical-align: middle; color: #333; }
-    .cart-qty-input { width: 60px; padding: 6px; border: 1px solid #b0bec5; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; }
+    .cart-table tbody tr:nth-child(even) { background-color: #f7fbff; }
+    .cart-table tbody tr:hover { background-color: #e3f0f9; }
+    .cart-qty-input { width: 60px; padding: 6px; border: 1px solid #b0bec5; border-radius: 4px; text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; outline:none; transition:0.3s; }
+    .cart-qty-input:focus { border-color: #3b8ebf; box-shadow: 0 0 5px rgba(59,142,191,0.4); }
     
-    /* ⭐ 防彈實體刪除按鈕 */
-    .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; padding: 0; outline: none; transition: 0.2s;}
-    .cart-del-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; pointer-events: none; }
-    .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: translateY(-2px);}
+    /* ⭐ 修正刪除按鈕樣式與防呆穿透機制，確保 100% 點擊成功 */
+    .cart-del-btn { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: white; border: 1px solid #b0bec5; color: #78909c; cursor: pointer; transition: 0.2s; padding: 0; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+    .cart-del-btn svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2; fill: none; transition: 0.2s; pointer-events: none; /* 防止點到圖示失去反應 */ }
+    .cart-del-btn:hover { background: #ffebee; color: #d32f2f; border-color: #d32f2f; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(211,47,47,0.2);}
 
+    /* RWD 手機版響應式介面設計 */
     @media (max-width: 768px) {
         .header-container { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
-        .top-bar { padding: 10px; flex-direction: column; gap: 10px; border-radius: 0; }
-        .app-nav { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px; width: 100%; gap: 10px; }
-        .app-nav::-webkit-scrollbar { display: none; }
-        .app-nav button { flex: 0 0 auto !important; width: 85px; padding: 8px 5px; }
-        .top-bar-actions { justify-content: space-between; width: 100%; padding: 0 10px; }
-        table:not(.cart-table) { border: none; min-width: 100% !important; display: block; width: 100%;}
-        table:not(.cart-table) thead { display: none; }
-        table:not(.cart-table) tbody, table:not(.cart-table) tr { display: block; width: 100%; }
-        table:not(.cart-table) tr { margin-bottom: 15px; background: #fff; border-radius: 12px; border: 1px solid #e0e0e0; padding: 10px; }
-        table:not(.cart-table) td { display: flex; flex-direction: column; align-items: flex-start; border: none; border-bottom: 1px dashed #eee; position: relative; padding: 10px 10px 10px 35%; text-align: left !important;}
-        table:not(.cart-table) td::before { content: attr(data-label); position: absolute; left: 10px; top: 12px; width: 30%; font-weight: bold; color: #607d8b; font-size: 14px;}
-        .action-grid { display: flex !important; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+        .header-text { text-align: center; }
+        .header-text h1 { white-space: normal; font-size: 24px; line-height: 1.3;}
         
+        .top-bar { padding: 10px; flex-direction: column; align-items: center; gap: 10px; border-radius: 0; box-shadow: none; border-bottom: 1px solid #e0e0e0; width: 100%; overflow: hidden;}
+        
+        .app-nav { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 10px; justify-content: flex-start; -webkit-overflow-scrolling: touch; width: 100%; max-width: 100vw; min-width: 0; gap: 10px; }
+        .app-nav::-webkit-scrollbar { display: none; }
+        .app-nav { -ms-overflow-style: none; scrollbar-width: none; }
+        .app-nav button { flex: 0 0 auto !important; width: 85px; padding: 8px 5px; }
+
+        .top-bar-actions { justify-content: space-between; width: 100%; margin-top: 5px; padding: 0 10px; box-sizing: border-box;}
+        
+        .search-container input { font-size: 16px; padding: 12px 15px; }
+        .news-header { font-size: 18px; padding: 10px 15px; }
+        .news-list li { flex-direction: column; align-items: flex-start; padding: 12px 15px; gap: 5px;}
+        .news-date { margin-right: 0; font-size: 14px; }
+        .news-title { white-space: normal; }
+
+        table:not(.cart-table) { border: none; min-width: 100% !important; display: block; width: 100%; box-sizing: border-box;}
+        table:not(.cart-table) thead { display: none; }
+        table:not(.cart-table) tbody { display: block; width: 100%; box-sizing: border-box; }
+        table:not(.cart-table) tr { display: block; margin-bottom: 15px; background: #fff; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; padding: 10px; }
+        table:not(.cart-table) td { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; border: none; border-bottom: 1px dashed #eee; position: relative; padding: 10px 10px 10px 35%; text-align: left !important; min-height: 40px; box-sizing: border-box;}
+        table:not(.cart-table) td:last-child { border-bottom: none; align-items: flex-start; padding-bottom: 5px;}
+        
+        table:not(.cart-table) td::before { content: attr(data-label); position: absolute; left: 10px; top: 12px; width: 30%; white-space: nowrap; font-weight: bold; color: #607d8b; font-size: 14px; text-align: left; overflow: hidden; text-overflow: ellipsis; }
+        table:not(.cart-table) td[colspan] { display: block; padding: 40px 10px !important; text-align: center !important; }
+        table:not(.cart-table) td[colspan]::before { content: none !important; }
+
+        .truncate-text { white-space: normal; }
+        .action-grid { display: flex !important; flex-wrap: wrap; gap: 8px; justify-content: flex-start; align-items: center; width: 100%; margin-top: 5px;}
+        .status-badge-front { width: auto; padding: 6px 12px; }
+        .qty-wrapper { width: auto; }
+        
+        /* ⭐ 手機版彈出視窗安全高度與滿版設定 */
         .modal-overlay { padding: 0; }
         .cart-content { width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0;}
         .modal-header-fixed { padding: 15px 20px 10px; }
         .modal-body-scroll { padding: 10px 20px; }
         .modal-footer-fixed { padding: 15px 20px; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
-        .cart-table-wrapper { border: none; box-shadow: none; overflow: visible; padding: 0;}
+        
+        .cart-table-wrapper { border: none; box-shadow: none; overflow: visible; padding: 0; margin-bottom: 0;}
         
         #view-match > div:first-child > div { flex-direction: column; align-items: stretch; gap: 10px;}
         #view-match input, #view-match button { width: 100%; max-width: none; flex: auto; box-sizing: border-box;}
+        
         .chat-input-area { flex-direction: column; padding: 10px; }
         .chat-input-area textarea { width: 100%; box-sizing: border-box; }
         .chat-input-area button { width: 100%; height: 45px;}
-        .zoom-control { top: 5px; right: 5px; transform: scale(0.8); transform-origin: top right; }
+
+        .zoom-control { top: 5px; right: 5px; padding: 2px 5px; transform: scale(0.8); transform-origin: top right; }
+        .order-card-container { grid-template-columns: 1fr; gap: 15px; }
     }
   </style>
 </head>
 <body>
+
   <div id="toast"></div>
+
   <div class="zoom-control">
-    <button class="zoom-btn" onclick="changeZoom(-0.1)">A-</button><span class="zoom-text">字體</span><button class="zoom-btn" onclick="changeZoom(0.1)">A+</button><button class="zoom-btn" style="font-size: 14px;" onclick="resetZoom()">預設</button>
+    <button type="button" class="zoom-btn" onclick="changeZoom(-0.1)" title="縮小文字">A-</button>
+    <span class="zoom-text">字體</span>
+    <button type="button" class="zoom-btn" onclick="changeZoom(0.1)" title="放大文字">A+</button>
+    <button type="button" class="zoom-btn" style="font-size: 14px;" onclick="resetZoom()" title="還原預設大小">預設</button>
   </div>
 
   <div id="login-screen">
-      <div class="header-container" style="justify-content: center; margin-bottom: 25px;"><img src="./logo.jpg" alt="Logo"><div class="header-text"><h1>台南社區藥局藥品供應平台</h1><p>行政院衛生署補(捐)助科技發展計畫</p></div></div>
+      <div class="header-container" style="justify-content: center; margin-bottom: 25px;">
+          <img src="./logo.jpg" alt="Logo">
+          <div class="header-text">
+              <h1>台南社區藥局藥品供應平台</h1>
+              <p>行政院衛生署補(捐)助科技發展計畫</p>
+          </div>
+      </div>
       <div class="form-container" id="auth-section">
-        <div id="login-form"><h2 style="text-align: center; margin-top:0;">登入</h2><input type="text" id="login-username" placeholder="請輸入帳號"><input type="password" id="login-password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin(this)"><button type="button" onclick="doLogin(this)">登入系統</button><div id="login-loading" style="display:none; text-align:center; margin-top:15px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div><div style="text-align: center; margin-top: 20px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div></div>
-        <div id="register-form" style="display:none;"><h2 style="text-align: center; margin-top:0;">申請帳號</h2><input type="text" id="reg-pharmacy" placeholder="藥局名稱 (必填)"><input type="text" id="reg-contact" placeholder="連絡電話"><input type="text" id="reg-username" placeholder="設定帳號"><input type="password" id="reg-password" placeholder="設定密碼"><button type="button" onclick="doRegister(this)">送出申請</button><div style="text-align: center; margin-top: 20px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block';">已有帳號？點此登入</div></div>
+        <div id="login-form">
+          <h2 style="text-align: center; margin-top:0; color:#333;">登入</h2>
+          <input type="text" id="login-username" placeholder="請輸入帳號">
+          <input type="password" id="login-password" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin(this)">
+          <button type="button" onclick="doLogin(this)">登入系統</button>
+          <div id="login-loading" style="display:none; text-align:center; margin-top:15px; color:#ff9800; font-weight:bold;">連線中，請稍候...</div>
+          <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block';">還沒有帳號？點此註冊</div>
+        </div>
+        <div id="register-form" style="display:none;">
+          <h2 style="text-align: center; margin-top:0; color:#333;">申請帳號</h2>
+          <input type="text" id="reg-pharmacy" placeholder="藥局名稱 (必填)">
+          <input type="text" id="reg-contact" placeholder="連絡電話">
+          <input type="text" id="reg-username" placeholder="設定帳號">
+          <input type="password" id="reg-password" placeholder="設定密碼">
+          <button type="button" onclick="doRegister(this)">送出申請</button>
+          <div style="text-align: center; margin-top: 20px; font-size: 15px; color: #1976d2; cursor: pointer; font-weight:bold;" onclick="document.getElementById('register-form').style.display='none'; document.getElementById('login-form').style.display='block';">已有帳號？點此登入</div>
+        </div>
       </div>
   </div>
 
   <div id="app-container">
-    <div class="header-container"><img src="./logo.jpg" alt="Logo"><div class="header-text"><h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1><p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p></div></div>
+    <div class="header-container">
+      <img src="./logo.jpg" alt="Logo">
+      <div class="header-text">
+        <h1 style="font-size:24px; margin:0;">台南社區藥局藥品供應平台</h1>
+        <p style="font-size:14px;">行政院衛生署補(捐)助科技發展計畫</p>
+      </div>
+    </div>
+
     <div class="sticky-nav-wrapper">
         <div class="top-bar">
           <div class="app-nav">
-            <button type="button" id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁">首頁/搜尋</button>
-            <button type="button" id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異動">藥價異動<span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
-            <button type="button" id="nav-match" onclick="switchView('match')"><img src="https://cdn-icons-png.flaticon.com/512/3062/3062295.png" alt="缺藥媒合">缺藥媒合</button>
-            <button type="button" id="nav-favorites" onclick="switchView('favorites')"><img src="./icon-fav.png" alt="最愛">我的最愛</button>
-            <button type="button" id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單">我的訂單</button>
-            <button type="button" id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服">聯絡客服 <span id="msg-badge" class="badge" style="display:none;">0</span></button>
-            <button type="button" id="nav-restock" onclick="switchView('restock')"><img src="./icon-restock.png" alt="通知">貨到通知 <span id="restock-badge" class="badge" style="display:none;">0</span></button>
-            <button type="button" id="nav-admin" style="display:none;" onclick="goToAdmin()"><img src="./icon-admin.png" alt="管理後台"><span style="color:#f57c00;">管理後台</span></button>
+            <button type="button" id="nav-products" class="active" onclick="switchView('products')"><img src="./icon-list.png" alt="首頁"> <span class="nav-text">首頁/搜尋</span></button>
+            <button type="button" id="nav-price-change" onclick="switchView('price-change')"><img src="https://cdn-icons-png.flaticon.com/512/3522/3522644.png" alt="藥價異動"> <span class="nav-text">藥價異動</span><span id="price-change-badge" class="price-change-tag" style="display:none;">0</span></button>
+            <button type="button" id="nav-match" onclick="switchView('match')"><img src="https://cdn-icons-png.flaticon.com/512/3062/3062295.png" alt="缺藥媒合"> <span class="nav-text">缺藥媒合</span></button>
+            <button type="button" id="nav-favorites" onclick="switchView('favorites')"><img src="./icon-fav.png" alt="最愛"> <span class="nav-text">我的最愛</span></button>
+            <button type="button" id="nav-orders" onclick="switchView('orders')"><img src="./icon-order.png" alt="訂單"> <span class="nav-text">我的訂單</span></button>
+            <button type="button" id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服"> <span class="nav-text">聯絡客服</span> <span id="msg-badge" class="badge" style="display:none;">0</span></button>
+            <button type="button" id="nav-restock" onclick="switchView('restock')"><img src="./icon-restock.png" alt="通知"> <span class="nav-text">貨到通知</span> <span id="restock-badge" class="badge" style="display:none;">0</span></button>
+            <button type="button" id="nav-admin" style="display:none;" onclick="goToAdmin()"><img src="./icon-admin.png" alt="管理後台"> <span class="nav-text" style="color:#f57c00;">管理後台</span></button>
           </div>
-          <div class="top-bar-actions"><span id="welcome-message" style="color:#2e7d32;">歡迎</span><button type="button" id="cart-btn" style="background-color: #ff9800; color:white;" onclick="openCart()">🛒 購物車 (0)</button><button type="button" style="background-color: #f44336; color:white;" onclick="logout()">登出</button></div>
+          <div class="top-bar-actions">
+            <span id="welcome-message" style="color:#2e7d32;">歡迎</span>
+            <button type="button" id="cart-btn" style="background-color: #ff9800; color:white; padding: 10px 18px; font-size: 18px; border-radius: 8px;" onclick="openCart()">🛒 購物車 (0)</button>
+            <button type="button" style="background-color: #f44336; color:white; padding: 10px 18px; border-radius: 8px;" onclick="logout()">登出</button>
+          </div>
         </div>
     </div>
 
     <div id="view-products" class="view-section active">
       <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：輸入健保碼、藥名、英文名或主成分..." onkeyup="filterProducts()"></div>
-      <div id="announcement-section"><div class="news-board news-top"><div class="news-header">最新消息</div><ul class="news-list" id="news-list-top"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div><div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div><div class="search-hint">👆 請使用上方的搜尋框，尋找您需要的藥品 👆</div></div>
+      <div id="announcement-section">
+         <div class="news-board news-top"><div class="news-header">最新消息</div><ul class="news-list" id="news-list-top"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
+         <div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
+         <div class="search-hint">👆 請使用上方的搜尋框，尋找您需要的藥品 👆</div>
+      </div>
+
       <div id="products-table-wrapper" style="display:none;">
-          <div class="table-container"><table><thead><tr><th style="width: 110px;">健保碼</th><th style="width: auto;">藥名/成分</th><th style="width: 90px;">規格</th><th style="width: 120px;">製造商</th><th style="width: 80px;">單價</th><th style="width: 240px; text-align: right;">狀態與操作</th></tr></thead><tbody id="product-list"><tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">載入中...</td></tr></tbody></table></div>
-          <div id="front-pagination" class="pagination-container" style="display:none;"><button type="button" id="btn-prev-page" onclick="changeFrontPage(-1)">⬅️ 上一頁</button><span id="front-page-info" style="font-weight: bold; color: #555; font-size: 18px; padding-top:10px;">第 1 / 1 頁</span><button type="button" id="btn-next-page" onclick="changeFrontPage(1)">下一頁 ➡️</button></div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 110px;">健保碼</th>
+                  <th style="width: auto;">藥名/成分</th>
+                  <th style="width: 90px;">規格</th>
+                  <th style="width: 120px;">製造商</th>
+                  <th style="width: 80px;">單價</th>
+                  <th style="width: 240px; text-align: right;">狀態與操作</th>
+                </tr>
+              </thead>
+              <tbody id="product-list">
+                <tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">載入中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="front-pagination" class="pagination-container" style="display:none;">
+              <button type="button" id="btn-prev-page" onclick="changeFrontPage(-1)">⬅️ 上一頁</button>
+              <span id="front-page-info" style="font-weight: bold; color: #555; font-size: 18px; padding-top:10px;">第 1 / 1 頁</span>
+              <button type="button" id="btn-next-page" onclick="changeFrontPage(1)">下一頁 ➡️</button>
+          </div>
       </div>
     </div>
 
     <div id="view-price-change" class="view-section">
-      <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #ff9800; color:#e65100; font-size:16px; font-weight:bold;">📢 以下為本期健保價有異動的藥品清單，請藥師核對您的申報設定。</div>
-      <div class="search-container"><input type="text" id="search-price-change" placeholder="🔍 搜尋異動藥品..." onkeyup="renderPriceChangeList()"></div>
-      <div class="table-container"><table><thead><tr><th style="width: 110px;">健保碼</th><th style="width: auto;">藥名/成分</th><th style="width: 150px;">舊健保價</th><th style="width: 150px;">調整後新價</th></tr></thead><tbody id="price-change-list"><tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有資料</td></tr></tbody></table></div>
+      <div style="background:#fff3e0; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #ff9800; color:#e65100; font-size:16px; font-weight:bold;">
+        📢 以下為本期健保價有異動的藥品清單，請藥師核對您的申報設定。
+      </div>
+      <div class="search-container"><input type="text" id="search-price-change" placeholder="🔍 搜尋異動藥品：輸入健保碼、藥名、英文名或主成分..." onkeyup="renderPriceChangeList()"></div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 110px;">健保碼</th>
+              <th style="width: auto;">藥名/成分</th>
+              <th style="width: 150px;">舊健保價</th>
+              <th style="width: 150px;">調整後新價</th>
+            </tr>
+          </thead>
+          <tbody id="price-change-list">
+            <tr><td colspan="4" style="text-align: center; padding: 40px; color:#999;">目前沒有藥價異動資料</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div id="view-match" class="view-section">
       <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #1976d2;">
-         <h2 style="margin-top:0; color:#1976d2;">📢 發布缺藥協尋</h2><p style="color:#607d8b; font-weight:bold; margin-bottom: 15px;">平台沒有的藥品，可在此向台南各大藥局發出請求。</p>
-         <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;"><input type="text" id="match-nhi" placeholder="健保碼 (選填)" style="flex:1; padding:12px; border-radius:8px; border:1px solid #ccc;"><input type="text" id="match-name" placeholder="請輸入需要的藥品名稱 (必填)" style="flex:2; padding:12px; border-radius:8px; border:1px solid #ccc;"><input type="number" id="match-qty" placeholder="數量" style="flex:0.5; padding:12px; border-radius:8px; border:1px solid #ccc;"><button type="button" onclick="submitMatchRequest(this)" style="background:#1976d2; color:white; border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer;">送出協尋</button></div>
+         <h2 style="margin-top:0; color:#1976d2; font-size: 22px;">📢 發布缺藥協尋</h2>
+         <p style="color:#607d8b; font-weight:bold; font-size:15px; margin-bottom: 15px;">平台沒有的藥品，可在此向台南各大藥局發出請求。若有同業接單，系統會透過【聯絡客服】自動發送對方電話給您！</p>
+         <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+            <input type="text" id="match-nhi" placeholder="健保碼 (選填)" style="flex:1; min-width:120px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <input type="text" id="match-name" placeholder="請輸入需要的藥品名稱 (必填)" style="flex:2; min-width:200px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <input type="number" id="match-qty" placeholder="數量" style="flex:0.5; min-width:80px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+            <button type="button" onclick="submitMatchRequest(this)" style="background:#1976d2; color:white; border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:16px; white-space:nowrap; transition: 0.2s;">送出協尋</button>
+         </div>
       </div>
-      <div class="table-container"><table><thead><tr><th style="width:120px;">發布時間</th><th style="width:200px;">尋找藥局</th><th style="width:120px;">健保碼</th><th style="width:auto;">藥品名稱</th><th style="width:80px; text-align:center;">尋找數量</th><th style="width:150px; text-align:right;">同業互助</th></tr></thead><tbody id="match-list"><tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">載入中...</td></tr></tbody></table></div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:120px;">發布時間</th>
+              <th style="width:200px;">尋找藥局</th>
+              <th style="width:120px;">健保碼</th>
+              <th style="width:auto;">藥品名稱</th>
+              <th style="width:80px; text-align:center;">尋找數量</th>
+              <th style="width:150px; text-align:right;">同業互助</th>
+            </tr>
+          </thead>
+          <tbody id="match-list">
+            <tr><td colspan="6" style="text-align:center; padding:40px; color:#999;">載入中...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div id="view-orders" class="view-section"><div id="order-card-wrapper" class="order-card-container"></div></div>
+    <div id="view-orders" class="view-section">
+      <div id="order-card-wrapper" class="order-card-container"></div>
+    </div>
     
     <div id="view-contact" class="view-section">
-      <div class="chat-app-container"><div class="chat-header"><div><h2>💬 客服中心</h2><p>有問題請在下方輸入。</p></div><button type="button" onclick="loadMyMessages()" style="background:transparent; border:1px solid #ccc; border-radius:6px; padding:6px 12px; cursor:pointer; font-weight:bold; color:#555;">🔄 更新訊息</button></div><div id="my-message-list" class="chat-history-area"></div><div class="chat-input-area"><textarea id="contact-message" placeholder="輸入問題... (按 Enter 可送出)" rows="2" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitMessage(); }"></textarea><button type="button" onclick="submitMessage()">發送 📤</button></div></div>
+      <div class="chat-app-container">
+        <div class="chat-header">
+            <div><h2>💬 客服中心</h2><p>有任何問題請在下方輸入，我們將盡快回覆。</p></div>
+            <button type="button" onclick="loadMyMessages()" style="background:transparent; border:1px solid #ccc; border-radius:6px; padding:6px 12px; cursor:pointer; font-weight:bold; color:#555;">🔄 更新訊息</button>
+        </div>
+        <div id="my-message-list" class="chat-history-area"></div>
+        <div class="chat-input-area">
+            <textarea id="contact-message" placeholder="輸入您的問題... (按 Enter 可直接送出，Shift + Enter 換行)" rows="2" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitMessage(); }"></textarea>
+            <button type="button" onclick="submitMessage()">發送 📤</button>
+        </div>
+      </div>
     </div>
 
     <div id="view-restock" class="view-section">
-      <div style="background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #2196F3; color:#1565c0; font-weight:bold;">🔔 這裡顯示您訂閱追蹤的缺貨藥品。</div>
-      <div class="table-container"><table><thead><tr><th style="width: 110px;">健保碼</th><th style="width: auto;">藥名/成分</th><th style="width: 120px;">製造商</th><th style="width: 80px;">單價</th><th style="width: 80px;">庫存</th><th style="width: 200px; text-align: right;">狀態與操作</th></tr></thead><tbody id="restock-list"><tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">載入中...</td></tr></tbody></table></div>
-    </div>
-
-    <div class="app-footer"><div><strong>聯絡處：</strong>台南市安南區海佃路2段572號　|　<strong>電話：</strong>06-2555388</div><div style="margin-top: 5px;">目前上線人數：<span id="online-count" class="online-count">--</span> 人</div></div>
-  </div>
-
-  <!-- ⭐ 彈出視窗：購物車 -->
-  <div id="cart-modal" class="modal-overlay">
-    <div class="cart-content" onclick="event.stopPropagation()">
-      <div class="modal-header-fixed" style="border-color: #3b8ebf;"><h2 style="margin:0; font-size:26px; color:#2c3e50;">🛒 您的購物車</h2></div>
-      <div class="modal-body-scroll">
-          <div id="cart-items-container"></div>
-          <textarea id="cart-remark" style="width:100%; margin-top:15px; padding:12px; border-radius:8px; border:1px solid #ccc; font-size:16px; box-sizing:border-box;" rows="2" placeholder="📝 備註事項 (選填)..."></textarea>
+      <div style="background:#e3f2fd; padding:15px; border-radius:8px; margin-bottom:15px; border-left:4px solid #2196F3; color:#1565c0; font-size: 16px; font-weight:bold;">
+        🔔 這裡會顯示您訂閱追蹤的缺貨藥品。當後台更新庫存補貨時，右上角會跳出紅字提醒您！
       </div>
-      <div class="modal-footer-fixed">
-          <div id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
-          <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" style="padding:10px 20px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-weight:bold;" onclick="document.getElementById('cart-modal').style.display='none'">繼續選購</button>
-            <button type="button" style="padding:10px 30px; border:none; border-radius:8px; background:#e53935; color:white; cursor:pointer; font-weight:bold;" onclick="checkout(this)">確認結帳</button>
-          </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 110px;">健保碼</th>
+              <th style="width: auto;">藥名/成分</th>
+              <th style="width: 120px;">製造商</th>
+              <th style="width: 80px;">單價</th>
+              <th style="width: 80px;">庫存</th>
+              <th style="width: 200px; text-align: right;">狀態與操作</th>
+            </tr>
+          </thead>
+          <tbody id="restock-list">
+            <tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">載入中...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
 
-  <!-- ⭐ 彈出視窗：訂單明細 -->
-  <div id="order-detail-modal" class="modal-overlay">
-    <div class="cart-content" onclick="event.stopPropagation()">
-      <div class="modal-header-fixed" style="border-color: #4CAF50;"><h2 style="margin:0; font-size:24px; color:#2e7d32;">📋 訂單完整明細</h2></div>
-      <div class="modal-body-scroll" id="order-detail-container"></div>
-      <div class="modal-footer-fixed">
-          <div id="order-detail-total" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
-          <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;" id="order-detail-actions"></div>
-          <div style="text-align:center; margin-top:10px;"><button type="button" style="padding:8px 20px; border:1px solid #ccc; border-radius:6px; background:#f4f4f4; color:#333; cursor:pointer; font-weight:bold;" onclick="document.getElementById('order-detail-modal').style.display='none'">關閉視窗</button></div>
-      </div>
+    <div class="app-footer">
+        <div><strong>聯絡處：</strong>台南市安南區海佃路2段572號　|　<strong>電話：</strong>06-2555388</div>
+        <div style="margin-top: 5px;">目前上線人數：<span id="online-count" class="online-count">--</span> 人</div>
     </div>
-  </div>
 
-  <!-- ⭐ 彈出視窗：修改訂單數量 -->
-  <div id="edit-order-modal" class="modal-overlay">
-    <div class="cart-content" onclick="event.stopPropagation()">
-      <div class="modal-header-fixed" style="border-color: #1976d2;">
-          <h2 style="margin:0; font-size:26px; color:#1976d2;">📝 修改訂單數量</h2>
-          <div style="color:#e65100; font-weight:bold; font-size:14px; margin-top:5px;">提示：若將數量改為 0 (或點擊垃圾桶)，該品項將被取消。</div>
-      </div>
-      <div class="modal-body-scroll"><div id="edit-cart-items-container"></div></div>
-      <div class="modal-footer-fixed">
-          <div id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
-          <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <button type="button" style="padding:10px 20px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-weight:bold;" onclick="document.getElementById('edit-order-modal').style.display='none'">放棄修改</button>
-            <button type="button" style="padding:10px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-weight:bold;" onclick="saveEditedOrder(this)">儲存變更</button>
-          </div>
-      </div>
-    </div>
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
     <div class="cart-content" style="max-width: 800px; padding:0;" onclick="event.stopPropagation()">
-      <div class="modal-header-fixed" style="border-color: #b2ebf2;"><h2 id="news-detail-title" style="margin:0; color:#00838f; font-size: 26px;">公告</h2></div>
-      <div class="modal-body-scroll"><div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div><div id="news-detail-content" style="font-size:18px; line-height:1.8; color:#333; white-space:pre-wrap; margin-bottom:30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">內容</div><div id="news-detail-attach-container" style="margin-bottom:10px; text-align:center;"></div></div>
-      <div class="modal-footer-fixed" style="text-align: center;"><button type="button" style="padding:10px 30px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-weight:bold;" onclick="document.getElementById('news-detail-modal').style.display='none'">關閉視窗</button></div>
+      <div class="modal-header-fixed" style="border-bottom:2px solid #b2ebf2;">
+        <h2 id="news-detail-title" style="margin:0; color:#00838f; font-size: 26px; line-height: 1.4;">公告標題</h2>
+      </div>
+      <div class="modal-body-scroll">
+          <div id="news-detail-date" style="color:#888; font-size:15px; margin-bottom:25px; font-weight:bold;">發布日期</div>
+          <div id="news-detail-content" style="font-size:18px; line-height:1.8; color:#333; white-space:pre-wrap; margin-bottom:30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">文章內容</div>
+          <div id="news-detail-attach-container" style="margin-bottom:10px; text-align:center;"></div>
+      </div>
+      <div class="modal-footer-fixed" style="text-align: center;">
+          <button type="button" style="padding:10px 30px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="document.getElementById('news-detail-modal').style.display='none'">關閉視窗</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cart-modal" class="modal-overlay">
+    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+      <div class="modal-header-fixed" style="border-bottom: 2px solid #3b8ebf;">
+        <h2 style="margin:0; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
+      </div>
+      
+      <div class="modal-body-scroll">
+          <div id="cart-items-container"></div>
+          <textarea id="cart-remark" style="width:100%; margin-top:15px; padding:12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing:border-box;" rows="2" placeholder="📝 備註事項 (選填)..."></textarea>
+      </div>
+      
+      <div class="modal-footer-fixed">
+          <div class="cart-total" id="cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" style="padding:10px 20px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="document.getElementById('cart-modal').style.display='none'">繼續選購</button>
+            <button type="button" style="padding:10px 30px; border:none; border-radius:8px; background:#e53935; color:white; cursor:pointer; font-size:18px; font-weight:bold; transition:0.2s;" onclick="checkout(this)">確認結帳</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="order-detail-modal" class="modal-overlay">
+    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+      <div class="modal-header-fixed" style="border-bottom: 2px solid #4CAF50;">
+        <h2 style="margin:0; font-size: 24px; color:#2e7d32;">📋 訂單完整明細</h2>
+      </div>
+      
+      <div class="modal-body-scroll" id="order-detail-container"></div>
+      
+      <div class="modal-footer-fixed">
+          <div id="order-detail-total" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
+          <div style="display:flex; justify-content:center; flex-wrap:wrap; gap: 10px;" id="order-detail-actions"></div>
+          <div style="text-align:center; margin-top:15px;">
+              <button type="button" style="padding:8px 20px; border:1px solid #ccc; border-radius:6px; background:#f4f4f4; color:#333; cursor:pointer; font-size:15px; font-weight:bold;" onclick="document.getElementById('order-detail-modal').style.display='none'">關閉視窗</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-order-modal" class="modal-overlay">
+    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+      <div class="modal-header-fixed" style="border-bottom: 2px solid #1976d2;">
+          <h2 style="margin:0; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
+          <div style="color:#e65100; font-weight:bold; font-size:14px; margin-top:5px;">提示：若將數量改為 0 (或點擊垃圾桶)，該品項將被取消。修改完成請點擊最下方儲存。</div>
+      </div>
+      
+      <div class="modal-body-scroll">
+          <div id="edit-cart-items-container"></div>
+      </div>
+      
+      <div class="modal-footer-fixed">
+          <div class="cart-total" id="edit-cart-total-display" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" style="padding:10px 20px; border:1px solid #ccc; border-radius:8px; background:white; color:#555; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="document.getElementById('edit-order-modal').style.display='none'">放棄修改</button>
+            <button type="button" style="padding:10px 30px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="saveEditedOrder(this)">儲存變更</button>
+          </div>
+      </div>
     </div>
   </div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz2d0XPN4dHlscPC4Mapd-GlySIfW7LUKXR6vZXwgpTb7BJdyY4uvvkm4n042jHQeN5CQ/exec"; 
+    
     let currentUser = { username: '', pharmacyName: '', role: '', contact: '' };
     let currentPassword = ''; let cart = []; let allProducts = []; let currentFilteredProducts = []; let myOrders = []; let allNewsData = []; let currentMode = 'products'; let currentFrontPage = 1; const itemsPerPageFront = 50; let toastTimeout; let editingCart = []; let editingOrderId = '';
 
@@ -466,11 +685,7 @@
         let htmlArray = []; 
         pageData.forEach(p => { 
             let stk = parseInt(p.stock); let actionHtml = ''; 
-            
-            // ⭐ 終極防彈裝甲：同時處理單引號、雙引號與反斜線，防止按鈕當機失效
-            let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); 
-            let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
+            let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
             let isFav = favs.includes(String(p.id)); let favClass = isFav ? 'active' : ''; 
             let isSub = subs.includes(String(p.id)); let notifyClass = isSub ? 'active' : ''; let notifyIcon = isSub ? svgCheck : svgNotify; let notifyAction = isSub ? `onclick="removeSubscription('${p.id}')"` : `onclick="subscribeRestock('${p.id}', '${safeName}')"`;
             let unitText = p.unit ? String(p.unit).replace('/', '') : '盒'; 
@@ -518,11 +733,11 @@
         if(tbody.innerHTML.trim() === '') { tbody.innerHTML = '<tr><td colspan="6">正在載入全台南藥局需求...</td></tr>'; }
         callGasAPISilent({ action: 'getMatchRequests' }).then(res => {
             if(res && res.success) {
-                if(res.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6">太棒了！目前台南各大藥局都沒有缺藥需求。</td></tr>'; return; }
+                if(res.data.length === 0) { tbody.innerHTML = '<tr><td colspan="6">太棒了！目前沒有缺藥需求。</td></tr>'; return; }
                 tbody.innerHTML = res.data.map(m => {
                     let btnHtml = '';
                     if(m.username === currentUser.username) { btnHtml = `<span style="color:#999; font-size:14px; font-weight:bold;">您發布的需求</span>`; } 
-                    else { btnHtml = `<button type="button" style="background:#ff9800; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:15px; transition:0.2s;" onclick="provideMatch('${m.id}', '${m.drugName}', this)">🤝 我有此藥</button>`; }
+                    else { btnHtml = `<button type="button" style="background:#ff9800; color:white; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:15px;" onclick="provideMatch('${m.id}', '${m.drugName}', this)">🤝 我有此藥</button>`; }
                     return `<tr><td data-label="發布時間" style="color:#78909c; font-size:14px;">${m.time}</td><td data-label="尋找藥局" style="font-weight:bold; color:#2c3e50; font-size:18px;">${escapeHTML(m.requester)}</td><td data-label="健保碼" style="color:#1976d2; font-weight:bold;">${escapeHTML(m.nhiCode)}</td><td data-label="藥品名稱" style="font-weight:bold; color:#d32f2f; font-size:18px;">${escapeHTML(m.drugName)}</td><td data-label="尋找數量" style="font-weight:bold; font-size:18px; text-align:center;">${m.qty}</td><td data-label="同業互助" style="text-align:right;">${btnHtml}</td></tr>`;
                 }).join('');
             }
@@ -530,12 +745,12 @@
     }
 
     function provideMatch(id, drugName, btn) {
-        if(!confirm(`確定要提供「${drugName}」給對方嗎？\n點擊確定後，系統會自動發送通知與您的電話給對方藥局！`)) return;
+        if(!confirm(`確定要提供「${drugName}」給對方嗎？`)) return;
         const originalText = btn.innerText; const originalBg = btn.style.background; btn.innerText = '⏳ 處理中...'; btn.style.background = '#9e9e9e'; btn.disabled = true;
         const tr = btn.closest('tr'); if (tr) tr.style.display = 'none';
         callGasAPISilent({ action: 'provideMatch', id: id, providerName: currentUser.pharmacyName, providerContact: currentUser.contact }).then(res => {
-            if(res && res.success) { if (tr) tr.remove(); const tbody = document.getElementById('match-list'); if(tbody.children.length === 0) { tbody.innerHTML = '<tr><td colspan="6">太棒了！目前台南各大藥局都沒有缺藥需求。</td></tr>'; } alert(`✅ 媒合成功！\n已通知【${res.requesterName}】。\n\n對方的聯絡電話是：${res.requesterContact}\n您可以主動聯繫，或等候對方來電。`); } 
-            else { if (tr) tr.style.display = ''; btn.innerText = originalText; btn.style.background = originalBg; btn.disabled = false; alert(res ? res.message : "發生錯誤，可能已經被其他藥局搶先一步了！"); loadMatchRequests(); }
+            if(res && res.success) { if (tr) tr.remove(); alert(`✅ 媒合成功！\n已通知【${res.requesterName}】。\n聯絡電話：${res.requesterContact}`); } 
+            else { if (tr) tr.style.display = ''; btn.innerText = originalText; btn.style.background = originalBg; btn.disabled = false; alert(res ? res.message : "發生錯誤！"); loadMatchRequests(); }
         });
     }
 
@@ -559,35 +774,26 @@
 
     function submitMessage() {
         const input = document.getElementById('contact-message'); const msg = input.value.trim(); if (!msg) return; input.value = ''; input.disabled = true;
-        const container = document.getElementById('my-message-list');
-        const tempHtml = `<div class="chat-thread"><div class="chat-user-wrapper"><div class="chat-user-bubble" style="opacity:0.7;">${escapeHTML(msg)}</div><div class="chat-time-user">傳送中...</div></div></div>`;
+        const container = document.getElementById('my-message-list'); const tempHtml = `<div class="chat-thread"><div class="chat-user-wrapper"><div class="chat-user-bubble" style="opacity:0.7;">${escapeHTML(msg)}</div><div class="chat-time-user">傳送中...</div></div></div>`;
         if (container.innerHTML.includes('目前沒有任何對話紀錄')) { container.innerHTML = tempHtml; } else { container.insertAdjacentHTML('beforeend', tempHtml); }
         container.scrollTop = container.scrollHeight;
         callGasAPISilent({ action: 'submitMessage', username: currentUser.username, pharmacyName: currentUser.pharmacyName, message: msg }).then(res => { input.disabled = false; input.focus(); if (res && res.success) { loadMyMessages(); } else { alert("發送失敗，請檢查網路。"); } });
     }
 
-    // ⭐ 貨到通知防呆渲染
     function renderRestockList() {
         const tbody = document.getElementById('restock-list'); let subs = getSubscriptions();
-        if(subs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！<br><br>如果您看到某個藥品缺貨，點擊鈴鐺圖示就可以加入追蹤。</td></tr>'; return; }
+        if(subs.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！</td></tr>'; return; }
         let htmlArray = []; let missingIds = [];
-
         subs.forEach(id => {
             let p = allProducts.find(prod => String(prod.id) === id);
             if(p) {
                 let stk = parseInt(p.stock); let unitText = p.unit ? String(p.unit).replace('/', '') : '盒'; let maxInput = (p.dailyLimit > 0) ? Math.min(stk, p.dailyLimit) : stk;
-                
-                // 防彈裝甲：處理引號防止失效
-                let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); 
-                let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
-                let actionHtml = '';
-                if(isNaN(stk) || stk <= 0) { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; width:100%;"><span style="color:#d32f2f; font-weight:bold; font-size:15px; margin-right:10px;">目前仍缺貨中</span><button type="button" class="icon-only-btn btn-delete" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`; } 
-                else { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; width:100%;"><span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; margin-right:5px;">已到貨！</span><input type="number" min="1" max="${maxInput}" value="1" id="qty-res-${p.id}" style="width:40px; height:32px; border:2px solid #ddd; border-radius:6px; text-align:center; font-weight:bold;"><button type="button" class="icon-only-btn btn-addcart" style="height:36px; width:36px;" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price || 0}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')" title="直接加入購物車">${svgCart}</button><button type="button" class="icon-only-btn btn-delete" style="height:36px; width:36px;" onclick="removeSubscription('${p.id}')" title="取消追蹤">❌</button></div>`; }
-                htmlArray.push(`<tr><td data-label="健保碼"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</div><div class="truncate-text prod-ing" title="${escapeHTML(p.ingredients)}">${escapeHTML(p.ingredients)}</div></td><td data-label="製造商"><div class="truncate-text" title="${escapeHTML(p.manufacturer)}">${escapeHTML(p.manufacturer)}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="庫存" style="font-weight:bold; color:${stk > 0 ? '#2e7d32' : '#d32f2f'};">${stk > 0 ? stk : '缺貨'}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`);
+                let safeName = String(p.name||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); let safeMfg = String(p.manufacturer||'').replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;"); let actionHtml = '';
+                if(isNaN(stk) || stk <= 0) { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:10px; width:100%;"><span style="color:#d32f2f; font-weight:bold; font-size:15px; margin-right:10px;">目前仍缺貨中</span><button type="button" class="icon-only-btn btn-delete" onclick="removeSubscription('${p.id}')">❌</button></div>`; } 
+                else { actionHtml = `<div style="display:flex; justify-content:flex-end; align-items:center; gap:8px; width:100%;"><span style="background:#e8f5e9; color:#2e7d32; font-weight:bold; padding:4px 8px; border-radius:4px; font-size:14px; margin-right:5px;">已到貨！</span><input type="number" min="1" max="${maxInput}" value="1" id="qty-res-${p.id}" style="width:40px; height:32px; border:2px solid #ddd; border-radius:6px; text-align:center; font-weight:bold;"><button type="button" class="icon-only-btn btn-addcart" style="height:36px; width:36px;" onclick="addToCartFromRestock('${p.id}', '${safeName}', ${p.price || 0}, ${maxInput}, '${p.unit || ''}', '${p.nhiCode || ''}', ${p.dailyLimit || 0}, '${safeMfg}')">${svgCart}</button><button type="button" class="icon-only-btn btn-delete" style="height:36px; width:36px;" onclick="removeSubscription('${p.id}')">❌</button></div>`; }
+                htmlArray.push(`<tr><td data-label="健保碼"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div></td><td data-label="藥名/成分"><div class="truncate-text prod-name">${escapeHTML(p.name)}</div><div class="truncate-text prod-ing">${escapeHTML(p.ingredients)}</div></td><td data-label="製造商"><div class="truncate-text">${escapeHTML(p.manufacturer)}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="庫存" style="font-weight:bold; color:${stk > 0 ? '#2e7d32' : '#d32f2f'};">${stk > 0 ? stk : '缺貨'}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`);
             } else { missingIds.push(id); }
         });
-        
         if (missingIds.length > 0) { let currentSubs = getSubscriptions().filter(id => !missingIds.includes(id)); localStorage.setItem('subs_' + currentUser.username, JSON.stringify(currentSubs)); }
         if (htmlArray.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color:#999;">您目前沒有訂閱追蹤任何缺貨藥品喔！</td></tr>'; } else { tbody.innerHTML = htmlArray.join(''); }
     }
@@ -625,32 +831,33 @@
             let priceMatch = line.match(/\(單價:(\d+(?:\.\d+)?)\)/); if (priceMatch) { price = parseFloat(priceMatch[1]); line = line.replace(priceMatch[0], ''); }
             let qtyMatch = line.match(/\s+x\s+(\d+)(?:\s+(.*))?$/); if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } else { name = line.trim(); }
 
-            // 浮點數精度修正
-            const subtotal = Number((qty * price).toFixed(2));
-            
+            let prod = null; if (price > 0) { if (nhi) prod = allProducts.find(p => p.nhiCode === nhi && parseFloat(p.price) === price); if (!prod) prod = allProducts.find(p => p.name === name && parseFloat(p.price) === price); }
+            if (!prod && nhi) prod = allProducts.find(p => p.nhiCode === nhi && p.name === name); if (!prod) prod = allProducts.find(p => (nhi && p.nhiCode === nhi) || p.name === name);
+            if (prod) { if (!spec) spec = prod.spec || ''; if (!price && prod.price) price = parseFloat(prod.price); if (!mfg) mfg = prod.manufacturer || ''; if (!unit) unit = prod.unit || '盒'; }
+
+            let subtotal = Number((qty * price).toFixed(2));
             let nhiTag = nhi ? `<span style="color:#1976d2; margin-right:4px;">[${nhi}]</span>` : ''; let mfgTag = mfg ? `<span style="font-size:13px; color:#607d8b; margin-left:6px;">(廠牌: ${escapeHTML(mfg)})</span>` : ''; let specTag = spec ? `<span style="font-size:13px; color:#00838f; background:#e0f7fa; padding:2px 6px; border-radius:4px; margin-left:6px;">規格: ${escapeHTML(spec)}</span>` : '';
             let priceText = price > 0 ? `$${price} x ${qty} ${unit} = <span style="color:#d32f2f; font-weight:bold; font-size:16px;">$${subtotal}</span>` : `${qty} ${unit}`;
             html += `<li style="margin-bottom:8px; border-bottom: 1px dashed #eee; padding-bottom: 8px;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;"><div style="font-size:15px; line-height:1.4; color:#2c3e50; flex:1; min-width:250px;"><span style="font-weight:bold; margin-right:4px;">${index + 1}.</span>${nhiTag}<span style="font-weight:bold;">${escapeHTML(name)}</span>${mfgTag}${specTag}</div><div style="color:#e65100; font-size:15px; font-weight:bold; white-space:nowrap;">${priceText}</div></div></li>`;
         }); 
 
-        html += `</ul>`; if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${order.remark}</span></div>`; } 
+        html += `</ul>`; if (order.remark) { html += `<div style="margin-top:15px; padding:12px; background:#fff3e0; border-left:4px solid #ff9800; border-radius:4px; font-size:14px; color:#e65100;"><strong>📝 備註事項：</strong><br><span style="color:#555;">${escapeHTML(order.remark)}</span></div>`; } 
         container.innerHTML = html; document.getElementById('order-detail-total').innerText = `總金額：$${order.total}`;
         
         const actionsContainer = document.getElementById('order-detail-actions'); 
-        let actionsHtml = `<button type="button" style="padding:10px 20px; border:1px solid #546e7a; border-radius:8px; background:white; color:#546e7a; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
-
+        let actionsHtml = `<button type="button" style="padding:10px 20px; border:1px solid #546e7a; border-radius:8px; background:white; color:#546e7a; cursor:pointer; font-weight:bold;" onclick="printFrontendOrder('${order.orderId}')">🖨️ 列印 A4</button>`;
         if (order.status === '待處理' || order.status === '處理中' || order.status === '新訂單') { 
-            actionsHtml += `<button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#ff9800; color:white; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="returnOrderToCart('${order.orderId}')">🛒 退回購物車重結</button>
-            <button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="openEditOrder('${order.orderId}')">📝 單純修改數量</button>
-            <button type="button" style="padding:10px 20px; border:1px solid #e53935; border-radius:8px; background:white; color:#e53935; cursor:pointer; font-size:16px; font-weight:bold; transition:0.2s;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 刪除作廢</button>`; 
+            actionsHtml += `<button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#ff9800; color:white; cursor:pointer; font-weight:bold;" onclick="returnOrderToCart('${order.orderId}')">🛒 退回購物車重結</button>
+            <button type="button" style="padding:10px 20px; border:none; border-radius:8px; background:#1976d2; color:white; cursor:pointer; font-weight:bold;" onclick="openEditOrder('${order.orderId}')">📝 單純修改數量</button>
+            <button type="button" style="padding:10px 20px; border:1px solid #e53935; border-radius:8px; background:white; color:#e53935; cursor:pointer; font-weight:bold;" onclick="deleteMyOrder('${order.orderId}')">🗑️ 刪除作廢</button>`; 
         }
         actionsContainer.innerHTML = actionsHtml; document.getElementById('order-detail-modal').style.display = 'flex'; 
     }
 
     function returnOrderToCart(orderId) {
-        if(!confirm("⚠️ 確定要取消這筆訂單，並將商品全數退回購物車重新結帳嗎？\n\n(原訂單將被刪除作廢，您可以在購物車中重新挑選或修改數量後再次送出)")) return;
+        if(!confirm("⚠️ 確定要取消這筆訂單，並將商品退回購物車嗎？")) return;
         const order = myOrders.find(o => o.orderId === orderId); if(!order) return;
-        document.getElementById('order-detail-modal').style.display='none'; showToast("⏳ 正在取消訂單並退回購物車...");
+        document.getElementById('order-detail-modal').style.display='none'; showToast("⏳ 正在退回購物車...");
         
         callGasAPISilent({action: 'deleteMyOrder', orderId: orderId, username: currentUser.username}).then(res => {
             if(res && res.success) {
@@ -709,9 +916,7 @@
         else { 
             let html = `<div class="cart-table-wrapper"><table class="cart-table"><thead><tr><th style="width:50px;">項次</th><th style="width:140px; text-align:left;">健保資訊</th><th style="text-align:left;">品名</th><th style="width:120px;">單價 / 單位</th><th style="width:100px;">數量</th><th style="width:100px;">小計</th><th style="width:60px;">刪除</th></tr></thead><tbody>`;
             editingCart.forEach((i, x) => { 
-                // 浮點數精度修正
-                let sub = Number((i.price * i.qty).toFixed(2));
-                t += sub; 
+                let sub = Number((i.price * i.qty).toFixed(2)); t += sub; 
                 let nhiText = i.nhiCode ? `${i.nhiCode}` : '無'; let mfgText = i.mfg ? ` <span style="color:#607d8b; font-size:14px; margin-left:6px;">[${escapeHTML(i.mfg)}]</span>` : '';
                 html += `<tr><td data-label="項次" style="text-align:center;">${x + 1}</td><td data-label="健保資訊"><div style="font-weight:bold; color:#1976d2; font-size:14px;">${escapeHTML(nhiText)}</div>${i.nhiPriceStr || ''}</td><td data-label="品名"><div style="font-weight:bold; color:#2c3e50; font-size:16px;">${escapeHTML(i.name)}${mfgText}</div></td><td data-label="單價 / 單位" style="text-align:center;">$${i.price} / ${escapeHTML(i.unit || '盒')}</td><td data-label="數量" style="text-align:center;"><input type="number" value="${i.qty}" min="1" max="${i.maxStock}" onchange="updateEditCartQty(${x}, this.value)" class="cart-qty-input"></td><td data-label="小計" style="text-align:right; font-weight:bold; color:#d32f2f;">$${sub}</td><td data-label="刪除" style="text-align:center;"><button type="button" class="cart-del-btn" onclick="removeEditCartItem(${x})" title="刪除">${svgDelete}</button></td></tr>`; 
             }); 
@@ -727,7 +932,6 @@
         if(editingCart.length === 0) { alert("訂單不能沒有商品！如果您想取消整筆訂單，請先放棄修改，然後點擊「刪除作廢」按鈕。"); return; } 
         if(!confirm("確定要儲存修改後的訂單數量嗎？")) return; 
         
-        // 浮點數精度修正
         let total = editingCart.reduce((a, b) => a + Number((b.price * b.qty).toFixed(2)), 0); 
         let details = editingCart.map(item => { let prefix = item.nhiCode ? `[${item.nhiCode}] ` : ''; let mfgStr = item.mfg ? ` [廠牌:${item.mfg}]` : ''; return `${prefix}${item.name} x ${item.qty} ${item.unit || ''} (單價:${item.price})${mfgStr}`; }).join('\n'); 
         
@@ -768,11 +972,7 @@
             cart.forEach((i, x) => { 
                 if(!i) return; 
                 let itemPrice = parseFloat(i.price) || 0; let itemQty = parseInt(i.qty) || 1; 
-                
-                // 浮點數精度修正
-                let sub = Number((itemPrice * itemQty).toFixed(2));
-                t += sub; 
-                totalItems += itemQty; 
+                let sub = Number((itemPrice * itemQty).toFixed(2)); t += sub; totalItems += itemQty; 
                 
                 let nhiText = i.nhiCode ? `${i.nhiCode}` : '無'; let prod = allProducts.find(p => String(p.id) === String(i.id)); let nhiPriceText = '';
                 if (prod && prod.newNhiPrice && parseFloat(prod.newNhiPrice) !== parseFloat(prod.nhiPrice)) { nhiPriceText = `<br><span style="font-size:12px; color:#999; text-decoration:line-through;">舊: ${prod.nhiPrice}</span> <span style="font-size:13px; color:#d32f2f; font-weight:bold;">新: ${prod.newNhiPrice}</span>`; } else if (prod && prod.nhiPrice) { nhiPriceText = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${prod.nhiPrice}</span>`; }
@@ -793,12 +993,7 @@
         if(!confirm("確定要送出這筆訂單嗎？")) return; 
         
         const remark = document.getElementById('cart-remark').value; const currentCart = [...cart]; 
-        
-        // 浮點數精度修正
-        const total = cart.reduce((a,b)=>{
-            let sub = Number(((parseFloat(b.price)||0)*(parseInt(b.qty)||1)).toFixed(2));
-            return a + sub;
-        }, 0);
+        const total = cart.reduce((a,b)=>{ let sub = Number(((parseFloat(b.price)||0)*(parseInt(b.qty)||1)).toFixed(2)); return a + sub; }, 0);
         
         const originalBg = btn.style.background; btn.innerText = '⏳ 送出中...'; btn.disabled = true; btn.style.background = '#9e9e9e';
         showToast("🚀 訂單傳送中，正在驗證額度...");
@@ -807,7 +1002,11 @@
 
         callGasAPISilent({ action: 'submitOrder', username: currentUser.username, pharmacyName: currentUser.pharmacyName, contact: currentUser.contact, cart: currentCart, total: total, remark: remark }).then(res => { 
             btn.innerText = '確認結帳'; btn.disabled = false; btn.style.background = originalBg;
-            if(res && res.success){ document.getElementById('cart-modal').style.display='none'; cart=[]; saveCart(); switchView('orders'); myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: fullDetails, total: total, status: '新訂單', remark: remark }); renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！"); } else { alert(res.message || "訂單送出失敗，請稍後再試。"); } 
+            if(res && res.success){ 
+                document.getElementById('cart-modal').style.display='none'; 
+                cart=[]; saveCart(); document.getElementById('cart-remark').value = ''; document.querySelectorAll('.qty-input').forEach(input => input.value = 1);
+                switchView('orders'); myOrders.unshift({ time: '剛剛', orderId: '處理中...', details: fullDetails, total: total, status: '新訂單', remark: remark }); renderFrontOrders(); loadOrders(true); showToast("✅ 訂單送出成功！");
+            } else { alert(res.message || "訂單送出失敗，請稍後再試。"); } 
         }); 
     }
 
@@ -831,26 +1030,13 @@
 
             // 浮點數精度修正
             const subtotal = Number((qty * price).toFixed(2));
-            
             let nameMfg = escapeHTML(name) + (mfg ? ` <span style="font-size:16px; color:#555;">[${escapeHTML(mfg)}]</span>` : '');
             
-            return `<tr>
-                <td style="text-align:center;">${index + 1}</td>
-                <td>${escapeHTML(nhi)}</td>
-                <td>${nameMfg}</td>
-                <td>${escapeHTML(spec)}</td>
-                <td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${escapeHTML(unit)}</td>
-                <td style="text-align:right;">$${subtotal}</td>
-            </tr>`; 
+            return `<tr><td style="text-align:center;">${index + 1}</td><td>${escapeHTML(nhi)}</td><td>${nameMfg}</td><td>${escapeHTML(spec)}</td><td style="text-align:center; font-weight:bold; font-size:18px;">${qty} ${escapeHTML(unit)}</td><td style="text-align:right;">$${subtotal}</td></tr>`; 
         }).join(''); 
         
-        const safePharm = escapeHTML(currentUser.pharmacyName); 
-        const safeContact = escapeHTML(currentUser.contact || '無電話紀錄'); 
-        const safeRemark = order.remark ? escapeHTML(order.remark).replace(/\n/g, '<br>') : '';
-        const fullDateTime = order.time; 
-        
+        const safePharm = escapeHTML(currentUser.pharmacyName); const safeContact = escapeHTML(currentUser.contact || '無電話紀錄'); const safeRemark = order.remark ? escapeHTML(order.remark).replace(/\n/g, '<br>') : ''; const fullDateTime = order.time; 
         const htmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>列印出貨單 - ${order.orderId}</title><style>@page { size: A4 portrait; margin: 15mm; } body { font-family: "Microsoft JhengHei", Arial, sans-serif; color: #000; margin: 0; padding: 0; background: #fff; font-size: 16px; } .print-container { width: 100%; box-sizing: border-box; } .print-header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; text-align: center; } .print-header-title { font-size: 26px; font-weight: bold; margin-bottom: 5px; } .print-header-sub { font-size: 18px; color: #333; } .details-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; } .details-table th { border-bottom: 2px solid #333; padding: 12px 6px; text-align: left; font-size: 18px; } .details-table td { padding: 12px 6px; border-bottom: 1px dashed #999; vertical-align: middle; font-size: 18px; } .total-line { text-align: right; font-size: 26px; font-weight: bold; margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; } .remark-box { margin-top: 15px; padding: 10px; border: 1px dashed #000; font-size: 18px; font-weight: bold; } </style></head><body><div class="print-container"><div class="print-header"><div class="print-header-title">${safePharm} (電話：${safeContact})</div><div class="print-header-sub">訂單時間：${fullDateTime}</div></div><table class="details-table"><thead><tr><th style="width:40px; text-align:center;">項次</th><th style="width:110px;">健保碼</th><th>藥品名稱 / 廠牌</th><th style="width:100px;">規格</th><th style="width:60px; text-align:center;">數量</th><th style="width:80px; text-align:right;">金額</th></tr></thead><tbody>${trs}</tbody></table>${safeRemark ? `<div class="remark-box">備註：${safeRemark}</div>` : ''}<div class="total-line">總金額：$${order.total}</div></div></body></html>`; 
-        
         const iframe = document.createElement('iframe'); iframe.style.position = 'absolute'; iframe.style.width = '0px'; iframe.style.height = '0px'; iframe.style.border = 'none'; document.body.appendChild(iframe); iframe.contentWindow.document.open(); iframe.contentWindow.document.write(htmlContent); iframe.contentWindow.document.close();
         setTimeout(() => { iframe.contentWindow.focus(); iframe.contentWindow.print(); setTimeout(() => { document.body.removeChild(iframe); }, 1000); }, 500);
     }
