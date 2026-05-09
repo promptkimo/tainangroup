@@ -94,7 +94,7 @@
     
     /* 表格操作區 */
     .action-grid { display: grid; grid-template-columns: 65px 70px 42px 42px; gap: 6px; align-items: center; justify-content: end; }
-    .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; letter-spacing: 0.5px;}
+    .status-badge-front { padding: 4px 0; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box;}
     .status-in { background: #e8f5e9; color: #2e7d32; }
     .status-out { background: #ffebee; color: #d32f2f; }
     .qty-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; }
@@ -325,6 +325,7 @@
             <button type="button" id="nav-contact" onclick="switchView('contact')"><img src="./icon-contact.png" alt="客服"> <span class="nav-text">聯絡客服</span> <span id="msg-badge" class="badge" style="display:none;">0</span></button>
             <button type="button" id="nav-restock" onclick="switchView('restock')"><img src="./icon-restock.png" alt="通知"> <span class="nav-text">貨到通知</span> <span id="restock-badge" class="badge" style="display:none;">0</span></button>
             <button type="button" id="nav-admin" style="display:none;" onclick="goToAdmin()"><img src="./icon-admin.png" alt="管理後台"> <span class="nav-text" style="color:#f57c00;">管理後台</span></button>
+            <button type="button" id="nav-price-query" onclick="window.open('https://script.google.com/macros/s/AKfycbxlVyuCCt9nxMKeSTn0S1XXQQAE59wEUpBSMeBVfmKLJNf90wJbWCudZOjRqEclvM4kmg/exec', '_blank')"><img src="https://cdn-icons-png.flaticon.com/512/3144/3144865.png" alt="藥價查詢"> <span class="nav-text" style="color:#00838f;">藥價查詢</span></button>
           </div>
           <div class="top-bar-actions">
             <span id="welcome-message" style="color:#2e7d32;">歡迎</span>
@@ -471,7 +472,7 @@
   </div>
 
   <div id="news-detail-modal" class="modal-overlay">
-    <div class="cart-content" style="max-width: 800px; padding:0;" onclick="event.stopPropagation()">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom:2px solid #b2ebf2;">
         <h2 id="news-detail-title" style="margin:0; color:#00838f; font-size: 26px; line-height: 1.4;">公告標題</h2>
       </div>
@@ -487,7 +488,7 @@
   </div>
 
   <div id="cart-modal" class="modal-overlay">
-    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #3b8ebf;">
         <h2 style="margin:0; font-size: 26px; color:#2c3e50;">🛒 您的購物車</h2>
       </div>
@@ -508,7 +509,7 @@
   </div>
 
   <div id="order-detail-modal" class="modal-overlay">
-    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #4CAF50;">
         <h2 style="margin:0; font-size: 24px; color:#2e7d32;">📋 訂單完整明細</h2>
       </div>
@@ -518,7 +519,7 @@
       <div class="modal-footer-fixed">
           <div id="order-detail-total" style="text-align: right; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #d32f2f;">總金額：$0</div>
           <div style="display:flex; justify-content:center; flex-wrap:wrap; gap: 10px;" id="order-detail-actions"></div>
-          <div style="text-align:center; margin-top:15px;">
+          <div style="text-align:center; margin-top:10px;">
               <button type="button" style="padding:8px 20px; border:1px solid #ccc; border-radius:6px; background:#f4f4f4; color:#333; cursor:pointer; font-size:15px; font-weight:bold;" onclick="document.getElementById('order-detail-modal').style.display='none'">關閉視窗</button>
           </div>
       </div>
@@ -526,7 +527,7 @@
   </div>
 
   <div id="edit-order-modal" class="modal-overlay">
-    <div class="cart-content" style="padding:0;" onclick="event.stopPropagation()">
+    <div class="cart-content" onclick="event.stopPropagation()">
       <div class="modal-header-fixed" style="border-bottom: 2px solid #1976d2;">
           <h2 style="margin:0; font-size: 26px; color:#1976d2;">📝 修改訂單數量</h2>
           <div style="color:#e65100; font-weight:bold; font-size:14px; margin-top:5px;">提示：若將數量改為 0 (或點擊垃圾桶)，該品項將被取消。修改完成請點擊最下方儲存。</div>
@@ -1028,7 +1029,6 @@
             if (qtyMatch) { qty = parseInt(qtyMatch[1]); unit = (qtyMatch[2] || '').trim(); name = line.substring(0, qtyMatch.index).trim(); } 
             else { name = line.trim(); }
 
-            // 浮點數精度修正
             const subtotal = Number((qty * price).toFixed(2));
             let nameMfg = escapeHTML(name) + (mfg ? ` <span style="font-size:16px; color:#555;">[${escapeHTML(mfg)}]</span>` : '');
             
