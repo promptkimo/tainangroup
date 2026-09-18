@@ -334,6 +334,7 @@
 
     <div id="view-products" class="view-section active">
       <div class="search-container"><input type="text" id="search-input" placeholder="🔍 快速搜尋：輸入健保碼、藥名、英文名或主成分..." onkeyup="filterProducts()"></div>
+      <div id="nhi-update-note" style="display:none; text-align:right; color:#78909c; font-size:13px; margin:-6px 4px 10px 0;"></div>
       <div id="announcement-section">
          <div class="news-board news-top"><div class="news-header">最新消息</div><ul class="news-list" id="news-list-top"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
          <div class="news-board news-bottom"><div class="news-header">醫藥快訊</div><ul class="news-list" id="news-list-bottom"><li><div style="padding:20px; text-align:center; width:100%;">載入中...</div></li></ul></div>
@@ -554,6 +555,16 @@
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
+    // ⭐ 顯示健保價最後更新日
+    function renderNhiUpdateNote(res) {
+        const el = document.getElementById('nhi-update-note');
+        if (!el) return;
+        if (!res || !res.nhiUpdatedAt) { el.style.display = 'none'; return; }
+        const ed = res.nhiEdition ? `（健保署 ${res.nhiEdition} 版）` : '';
+        el.innerText = `💊 健保價最後更新：${res.nhiUpdatedAt} ${ed}`;
+        el.style.display = 'block';
+    }
+
     // ⭐ 民國日期 1151001 → 115/10/01
     function rocDateDisplay(d) {
         d = String(d || '').trim();
@@ -612,7 +623,7 @@
     }
 
     async function loadInitialData() { 
-        callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); checkRestockStatus(); } }); 
+        callGasAPI({ action: 'getProducts' }).then(res => { if (res && res.success) { allProducts = res.data; filterProducts(); checkRestockStatus(); renderNhiUpdateNote(res); } }); 
         callGasAPI({ action: 'getNews' }).then(res => { 
             if (res && res.success) { 
                 allNewsData = res.data; const listTop = document.getElementById('news-list-top'); const listBottom = document.getElementById('news-list-bottom'); let topHtml = ''; let bottomHtml = ''; 
