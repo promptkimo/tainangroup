@@ -88,6 +88,7 @@
     .prod-name { font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; }
     .prod-ing { font-size: 13px; color: #607d8b; }
     .price-text { font-size: 18px; font-weight: bold; color: #333;}
+    .nhi-change { font-size: 12px; font-weight: bold; margin-top: 3px; padding: 2px 6px; border-radius: 4px; display: inline-block; line-height: 1.4; }
     .nhi-text { font-size: 13px; color: #e91e63; font-weight: bold; margin-top: 4px; display: block;}
     
     /* 表格操作區 */
@@ -553,6 +554,29 @@
     window.addEventListener('click', function(e) { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; });
 
     function showToast(msg, isError = false) { const t = document.getElementById('toast'); t.innerText = msg; t.style.backgroundColor = isError ? '#d32f2f' : '#2e7d32'; t.classList.add('show'); clearTimeout(toastTimeout); toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 2000); }
+    // ⭐ 民國日期 1151001 → 115/10/01
+    function rocDateDisplay(d) {
+        d = String(d || '').trim();
+        if (d.length !== 7) return d;
+        return d.substring(0, 3) + '/' + d.substring(3, 5) + '/' + d.substring(5, 7);
+    }
+
+    // ⭐ 未來健保價異動標籤（幾月幾日起調整為多少）
+    function buildPriceChangeTag(p) {
+        const dateStr = String(p.newNhiDate || '').trim();
+        if (dateStr.length !== 7) return '';
+        const np = parseFloat(p.newNhiPrice);
+        const cp = parseFloat(p.nhiPrice);
+        if (isNaN(np)) return '';
+        const d = rocDateDisplay(dateStr);
+        let txt, color, bg;
+        if (np === 0)            { txt = `${d} 起停止給付`;              color = '#b71c1c'; bg = '#ffebee'; }
+        else if (np < cp)        { txt = `${d} 起調降為 $${p.newNhiPrice}`; color = '#c62828'; bg = '#ffebee'; }
+        else if (np > cp)        { txt = `${d} 起調升為 $${p.newNhiPrice}`; color = '#2e7d32'; bg = '#e8f5e9'; }
+        else                     { txt = `${d} 起 $${p.newNhiPrice}`;       color = '#ef6c00'; bg = '#fff3e0'; }
+        return `<div class="nhi-change" style="color:${color}; background:${bg};">${escapeHTML(txt)}</div>`;
+    }
+
     function escapeHTML(str) { return String(str||'').replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag)); }
     function safeEncode(str) { return encodeURIComponent(String(str || '')).replace(/'/g, "%27"); }
 
@@ -673,8 +697,11 @@
             } 
             
             let nhiPriceHtml = '';
-            const curNhiPrice = p.newNhiPrice || p.nhiPrice;
-            if (curNhiPrice) { nhiPriceHtml = `<div class="nhi-text">健保價: $${curNhiPrice}</div>`; } else { nhiPriceHtml = `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; }
+            const nhiVal = (p.nhiPrice === '' || p.nhiPrice === null || p.nhiPrice === undefined) ? null : parseFloat(p.nhiPrice);
+            if (nhiVal === 0) { nhiPriceHtml = `<div class="nhi-text" style="color:#b71c1c; font-weight:bold;">健保價: 停止給付</div>`; }
+            else if (p.nhiPrice) { nhiPriceHtml = `<div class="nhi-text">健保價: $${p.nhiPrice}</div>`; }
+            else { nhiPriceHtml = `<div class="nhi-text" style="color:#aaa;">健保價: --</div>`; }
+            nhiPriceHtml += buildPriceChangeTag(p);
             htmlArray.push(`<tr><td data-label="健保碼/藥價"><div style="font-weight:bold; color:#555;">${p.nhiCode||'-'}</div>${nhiPriceHtml}</td><td data-label="藥名/成分"><div class="truncate-text prod-name" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</div><div class="truncate-text prod-ing" title="${escapeHTML(p.ingredients)}">${escapeHTML(p.ingredients)}</div></td><td data-label="規格" style="white-space: nowrap;">${escapeHTML(p.spec)}</td><td data-label="製造商"><div class="truncate-text" title="${escapeHTML(p.manufacturer)}">${escapeHTML(p.manufacturer)}</div></td><td data-label="單價" class="price-text">$${p.price||0}</td><td data-label="狀態與操作">${actionHtml}</td></tr>`); 
         }); 
         tbody.innerHTML = htmlArray.join(''); paginationBox.style.display = 'flex'; document.getElementById('front-page-info').innerText = `第 ${currentFrontPage} / ${totalPages} 頁 (共 ${currentFilteredProducts.length} 筆)`; document.getElementById('btn-prev-page').disabled = (currentFrontPage === 1); document.getElementById('btn-next-page').disabled = (currentFrontPage === totalPages); 
@@ -871,7 +898,7 @@
             if (!price && prod && prod.price) price = parseFloat(prod.price); if (!unit && prod && prod.unit) unit = prod.unit; if (!mfg && prod && prod.manufacturer) mfg = prod.manufacturer;
             
             let nhiPriceStr = '';
-            const curNhiOrder = prod ? (prod.newNhiPrice || prod.nhiPrice) : '';
+            const curNhiOrder = prod ? prod.nhiPrice : '';
             if (curNhiOrder) { nhiPriceStr = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${curNhiOrder}</span>`; }
             editingCart.push({nhiCode: nhi, name: name, qty: qty, unit: unit, price: price, maxStock: finalMax, mfg: mfg, nhiPriceStr: nhiPriceStr}); 
         }); 
@@ -943,7 +970,7 @@
                 let sub = Number((itemPrice * itemQty).toFixed(2)); t += sub; totalItems += itemQty; 
                 
                 let nhiText = i.nhiCode ? `${i.nhiCode}` : '無'; let prod = allProducts.find(p => String(p.id) === String(i.id)); let nhiPriceText = '';
-                const curNhiCart = prod ? (prod.newNhiPrice || prod.nhiPrice) : '';
+                const curNhiCart = prod ? prod.nhiPrice : '';
                 if (curNhiCart) { nhiPriceText = `<br><span style="font-size:13px; color:#666; font-weight:normal;">健保價: ${curNhiCart}</span>`; }
                 let mfgText = i.mfg ? ` <span style="font-size:13px; color:#607d8b; margin-left:6px;">[${escapeHTML(i.mfg)}]</span>` : '';
                 
